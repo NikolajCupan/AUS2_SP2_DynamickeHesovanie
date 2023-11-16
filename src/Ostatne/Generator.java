@@ -65,7 +65,7 @@ public class Generator
         Suradnica suradnica2 = new Suradnica(0, 0);
         this.vygenerujSuradnice(suradnica1, suradnica2);
 
-        String popis = this.randomString(Nehnutelnost.class);
+        String popis = this.randomString(Konstanty.MAX_DLZKA_POPIS_NEHNUTELNOST);
 
         Nehnutelnost nehnutelnost = new Nehnutelnost(this.curNehnutelnostID, this.curSupisneCislo, popis, suradnica1, suradnica2);
         this.curNehnutelnostID++;
@@ -80,7 +80,7 @@ public class Generator
         Suradnica suradnica2 = new Suradnica(0, 0);
         this.vygenerujSuradnice(suradnica1, suradnica2);
 
-        String popis = this.randomString(Parcela.class);
+        String popis = this.randomString(Konstanty.MAX_DLZKA_POPIS_PARCELA);
 
         Parcela parcela = new Parcela(this.curParcelaID, popis, suradnica1, suradnica2);
         this.curParcelaID++;
@@ -133,20 +133,10 @@ public class Generator
         return min + (max - min) * this.random.nextDouble();
     }
 
-    private <T extends IPolygon> String randomString(Class<T> typ)
+    private String randomString(int dlzka)
     {
-        int dlzkaString = -1;
-        if (typ.equals(Nehnutelnost.class))
-        {
-            dlzkaString = Konstanty.MAX_DLZKA_POPIS_NEHNUTELNOST;
-        }
-        else if (typ.equals(Parcela.class))
-        {
-            dlzkaString = Konstanty.MAX_DLZKA_POPIS_PARCELA;
-        }
-
         StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < dlzkaString; i++)
+        for (int i = 0; i < dlzka; i++)
         {
             int index = this.random.nextInt(this.znaky.length());
             char randomChar = this.znaky.charAt(index);

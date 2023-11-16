@@ -1,16 +1,18 @@
 package Objekty;
 
+import Hesovanie.IRecord;
 import Ostatne.Konstanty;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.BitSet;
 
 public class Nehnutelnost extends Polygon
 {
     private static final int MAX_POCET_REFERENCII = 6;
 
     // Unikatny kluc
-    private int nehnutelnostID;
+    private final int nehnutelnostID;
 
     // Ostatne atributy
     private int supisneCislo;
@@ -23,6 +25,7 @@ public class Nehnutelnost extends Polygon
     {
         this.nastavSuradnice(suradnica1, suradnica2);
 
+        this.nehnutelnostID = nehnutelnostID;
         this.supisneCislo = supisneCislo;
         this.popis = popis;
         this.parcelyID = new ArrayList<>();
@@ -99,23 +102,35 @@ public class Nehnutelnost extends Polygon
     @Override
     public boolean equals(Object object)
     {
-        final double epsilon = 0.00001;
-
-        if (!(object instanceof Nehnutelnost nehnutelnost))
-        {
-            return false;
-        }
-
-        if (nehnutelnost.getNehnutelnostID() == this.nehnutelnostID &&
-            nehnutelnost.getSupisneCislo() == this.supisneCislo &&
-            Math.abs(this.getVlavoDoleX() - nehnutelnost.getVlavoDoleX()) < epsilon &&
-            Math.abs(this.getVlavoDoleY() - nehnutelnost.getVlavoDoleY()) < epsilon &&
-            Math.abs(this.getVpravoHoreX() - nehnutelnost.getVpravoHoreX()) < epsilon &&
-            Math.abs(this.getVpravoHoreY() - nehnutelnost.getVpravoHoreY()) < epsilon)
-        {
-            return true;
-        }
-
         return false;
+    }
+
+    @Override
+    public boolean jeRovnaky(IRecord zaznam)
+    {
+        return false;
+    }
+
+    @Override
+    public BitSet getHash()
+    {
+        return null;
+    }
+
+    @Override
+    public int getVelkost()
+    {
+        return 0;
+    }
+
+    @Override
+    public byte[] prevedNaPoleBajtov()
+    {
+        return null;
+    }
+
+    @Override
+    public void prevedZPolaBajtov(byte[] poleBajtov)
+    {
     }
 }
