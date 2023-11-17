@@ -1,42 +1,40 @@
 package Hesovanie;
 
+import Hesovanie.DynamickyZnakovyStrom.DynamickyZnakovyStrom;
 import Rozhrania.IData;
 
 import java.io.File;
+import java.io.RandomAccessFile;
+import java.util.BitSet;
 
 public class DynamickeHesovanie<T extends IData>
 {
+    private DynamickyZnakovyStrom dynamickyZnakovyStrom;
+
     // Udava kolko Recordov sa nachadza v 1 Blocku
     private final int blokovaciFaktorHlavnySubor;
     private final int blokovaciFaktorPreplnujuciSubor;
 
     // Samotne subory
-    private final File hlavnySubor;
-    private final File preplnujuciSubor;
+    private final Subor hlavnySubor;
+    private final Subor preplnujuciSubor;
+
 
     public DynamickeHesovanie(int blokovaciFaktorHlavnySubor, int blokovaciFaktorPreplnujuciSubor, String nazovHlavnySubor, String nazovPreplnujuciSubor)
     {
+        this.dynamickyZnakovyStrom = new DynamickyZnakovyStrom();
+
         this.blokovaciFaktorHlavnySubor = blokovaciFaktorHlavnySubor;
         this.blokovaciFaktorPreplnujuciSubor = blokovaciFaktorPreplnujuciSubor;
 
-        this.hlavnySubor = new File(nazovHlavnySubor);
-        this.preplnujuciSubor = new File(nazovPreplnujuciSubor);
+        this.hlavnySubor = new Subor(nazovHlavnySubor);
+        this.preplnujuciSubor = new Subor(nazovPreplnujuciSubor);
+    }
 
-        try
-        {
-            if (!this.hlavnySubor.exists())
-            {
-                this.hlavnySubor.createNewFile();
-            }
-
-            if (!this.preplnujuciSubor.exists())
-            {
-                this.preplnujuciSubor.createNewFile();
-            }
-        }
-        catch (Exception ex)
-        {
-            throw new RuntimeException("Chyba pri vytvarani suborov v Dynamickom Hesovani!");
-        }
+    public void vloz(T pridavany)
+    {
+        this.dynamickyZnakovyStrom.vloz(pridavany,
+                                        this.blokovaciFaktorHlavnySubor, this.blokovaciFaktorPreplnujuciSubor,
+                                        this.hlavnySubor, this.preplnujuciSubor);
     }
 }

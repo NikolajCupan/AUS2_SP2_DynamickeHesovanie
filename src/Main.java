@@ -1,4 +1,5 @@
 import Hesovanie.Block;
+import Hesovanie.DynamickeHesovanie;
 import Objekty.Nehnutelnost;
 import Objekty.Parcela;
 import Objekty.Suradnica;
@@ -18,25 +19,13 @@ public class Main
 
         Generator generator = new Generator(1, 1, 1, 0, 0, 100, 100, 1);
 
-        Block<Nehnutelnost> block1 = new Block<>(3, new Nehnutelnost());
-        block1.vloz(generator.getNehnutelnost());
-        block1.vloz(generator.getNehnutelnost());
-        block1.vloz(generator.getNehnutelnost());
+        DynamickeHesovanie<Parcela> dh = new DynamickeHesovanie<>(3, 10,"hlavny", "preplnujuci");
 
-        try (FileOutputStream stream = new FileOutputStream("test"))
-        {
-            stream.write(block1.prevedNaPoleBajtov());
-        }
-
-        File subor = new File("test");
-        byte[] poleBajtov = Files.readAllBytes(subor.toPath());
-        Block<Nehnutelnost> block2 = new Block<>(new Nehnutelnost());
-        block2.prevedZPolaBajtov(poleBajtov);
-
-        Nehnutelnost hladana = new Nehnutelnost(2, 1, "a", suradnica1, suradnica2);
-        hladana.getHash();
-        Nehnutelnost najdena = block2.vyhladaj(hladana);
-
-        int x = 100;
+        Parcela p1 = new Parcela(1, "prva", suradnica1, suradnica2);
+        Parcela p2 = new Parcela(2, "druha", suradnica1, suradnica2);
+        Parcela p3 = new Parcela(3, "tretia", suradnica1, suradnica2);
+        dh.vloz(p1);
+        dh.vloz(p2);
+        dh.vloz(p3);
     }
 }

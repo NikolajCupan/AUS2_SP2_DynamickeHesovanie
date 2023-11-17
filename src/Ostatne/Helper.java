@@ -44,7 +44,7 @@ public class Helper
         BitSet bitSet = new BitSet();
         long hash = (cislo * 2654435761L) % (1L << 32);
 
-        for (int i = 0; i < 64; i++)
+        for (int i = 0; i < 32; i++)
         {
             byte bit = (byte)((hash >> i) & 1);
 

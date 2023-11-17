@@ -33,12 +33,6 @@ public class Block<T extends IData> implements IRecord
         this.dummyZaznam = dummyZaznam;
     }
 
-    // Pre ucely inicializacie z pola bajtov
-    public Block(T dummyZaznam)
-    {
-        this.dummyZaznam = dummyZaznam;
-    }
-
     public void vloz(T pridavany)
     {
         if (this.pocetPlatnychZaznamov >= this.blokovaciFaktor)
@@ -94,9 +88,6 @@ public class Block<T extends IData> implements IRecord
     {
         int velkost = 0;
 
-        // Blokovaci faktor - int
-        velkost += Konstanty.VELKOST_INT;
-
         // Pocet platnych Zaznamov - int
         velkost += Konstanty.VELKOST_INT;
 
@@ -115,7 +106,6 @@ public class Block<T extends IData> implements IRecord
 
         try
         {
-            dataOutputStream.writeInt(this.blokovaciFaktor);
             dataOutputStream.writeInt(this.pocetPlatnychZaznamov);
 
             for (int i = 0; i < this.pocetPlatnychZaznamov; i++)
@@ -150,12 +140,6 @@ public class Block<T extends IData> implements IRecord
 
         try
         {
-            this.blokovaciFaktor = dataInputStream.readInt();
-            if (this.getVelkost() != poleBajtov.length)
-            {
-                throw new RuntimeException("Velkost pola bajtov sa nezhoduje s velkostou Blocku!");
-            }
-
             this.pocetPlatnychZaznamov = dataInputStream.readInt();
 
             this.zaznamy = new ArrayList<>();
