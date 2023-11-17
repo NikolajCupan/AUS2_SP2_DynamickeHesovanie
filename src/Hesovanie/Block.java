@@ -82,6 +82,21 @@ public class Block<T extends IData> implements IRecord
         return this.zaznamy.remove(this.pocetPlatnychZaznamov);
     }
 
+    public boolean jeBlockPlny()
+    {
+        return this.pocetPlatnychZaznamov >= this.blokovaciFaktor;
+    }
+
+    public int getPocetPlatnychZaznamov()
+    {
+        return this.pocetPlatnychZaznamov;
+    }
+
+    public ArrayList<T> getZaznamy()
+    {
+        return this.zaznamy;
+    }
+
     // Kolko bajtov zabera 1 Block
     @Override
     public int getVelkost()

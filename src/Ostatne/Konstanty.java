@@ -10,4 +10,6 @@ public class Konstanty
     public static final int VELKOST_DOUBLE = 8;
 
     public static final char DUMMY_ZNAK = '*';
+
+    public static final int POCET_BITOV_HASH = 32;
 }

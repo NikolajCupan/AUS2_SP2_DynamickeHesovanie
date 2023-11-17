@@ -1,5 +1,3 @@
 package Hesovanie.DynamickyZnakovyStrom;
 
-public abstract class Vrchol
-{
-}
+public abstract class Vrchol {}

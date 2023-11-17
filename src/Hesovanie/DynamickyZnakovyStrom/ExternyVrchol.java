@@ -10,23 +10,45 @@ public class ExternyVrchol extends Vrchol
     private long offset;
     private int pocetZaznamovBlock;
 
-    public ExternyVrchol(long offset)
+    public ExternyVrchol()
     {
-        this.offset = offset;
+        this.offset = -1;
         this.pocetZaznamovBlock = 0;
     }
 
-    public int getPocetZaznamovBlock()
+    // Vloz na dany offset cely Block
+    public<T extends IData> void vlozBlock(Block<T> pridavanyBlock, Subor hlavnySubor, long offset)
     {
-        return this.pocetZaznamovBlock;
+        this.offset = offset;
+        this.pocetZaznamovBlock = pridavanyBlock.getPocetPlatnychZaznamov();
+
+        try
+        {
+            hlavnySubor.uloz(this.offset, pridavanyBlock.prevedNaPoleBajtov());
+        }
+        catch (Exception ex)
+        {
+            throw new RuntimeException("Chyba pri vkladani do Externeho vrcholu!");
+        }
     }
 
+    // Vloz novy Zaznam do Blocku
     public<T extends IData> void vloz(T pridavany, int blokovaciFaktorHlavnySubor, Subor hlavnySubor)
     {
         try
         {
+            T dummyZaznam = (T)pridavany.getClass().getDeclaredConstructor().newInstance();
+
             // Inicializacia Blocku
-            Block<T> block = new Block<>(blokovaciFaktorHlavnySubor, (T)pridavany.getClass().getDeclaredConstructor().newInstance());
+            Block<T> block = new Block<>(blokovaciFaktorHlavnySubor, dummyZaznam);
+
+            if (this.offset == -1)
+            {
+                // Block nema alokovane miesto v Subore,
+                // nastav sa na koniec suboru
+                this.offset = hlavnySubor.getVelkostSuboru();
+            }
+
             byte[] poleBajtovSubor = hlavnySubor.citaj(this.offset, block.getVelkost());
             block.prevedZPolaBajtov(poleBajtovSubor);
 
@@ -39,5 +61,33 @@ public class ExternyVrchol extends Vrchol
         {
             throw new RuntimeException("Chyba pri vkladani do Externeho vrcholu!");
         }
+    }
+
+    // Vrati cely Block
+    public<T extends IData> Block<T> getBlock(T dummyZaznam, int blokovaciFaktorHlavnySubor, Subor hlavnySubor)
+    {
+        try
+        {
+            Block<T> block = new Block<>(blokovaciFaktorHlavnySubor, dummyZaznam);
+
+            byte[] poleBajtovSubor = hlavnySubor.citaj(this.offset, block.getVelkost());
+            block.prevedZPolaBajtov(poleBajtovSubor);
+
+            return block;
+        }
+        catch (Exception ex)
+        {
+            throw new RuntimeException("Chyba pri vkladani do Externeho vrcholu!");
+        }
+    }
+
+    public long getOffset()
+    {
+        return this.offset;
+    }
+
+    public int getPocetZaznamovBlock()
+    {
+        return this.pocetZaznamovBlock;
     }
 }

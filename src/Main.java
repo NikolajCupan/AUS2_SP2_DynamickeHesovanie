@@ -1,5 +1,6 @@
 import Hesovanie.Block;
 import Hesovanie.DynamickeHesovanie;
+import Hesovanie.DynamickyZnakovyStrom.ExternyVrchol;
 import Objekty.Nehnutelnost;
 import Objekty.Parcela;
 import Objekty.Suradnica;
@@ -21,11 +22,15 @@ public class Main
 
         DynamickeHesovanie<Parcela> dh = new DynamickeHesovanie<>(3, 10,"hlavny", "preplnujuci");
 
+        Block<Parcela> block = new Block<>(3, new Parcela());
+        int x = block.getVelkost();
         Parcela p1 = new Parcela(1, "prva", suradnica1, suradnica2);
         Parcela p2 = new Parcela(2, "druha", suradnica1, suradnica2);
         Parcela p3 = new Parcela(3, "tretia", suradnica1, suradnica2);
+        Parcela p4 = new Parcela(4, "tretia", suradnica1, suradnica2);
         dh.vloz(p1);
         dh.vloz(p2);
         dh.vloz(p3);
+        dh.vloz(p4);
     }
 }

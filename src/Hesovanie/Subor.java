@@ -56,4 +56,9 @@ public class Subor
             throw new RuntimeException("Chyba pri ukladani suboru!");
         }
     }
+
+    public long getVelkostSuboru()
+    {
+        return this.subor.length();
+    }
 }

@@ -3,10 +3,6 @@ package Hesovanie;
 import Hesovanie.DynamickyZnakovyStrom.DynamickyZnakovyStrom;
 import Rozhrania.IData;
 
-import java.io.File;
-import java.io.RandomAccessFile;
-import java.util.BitSet;
-
 public class DynamickeHesovanie<T extends IData>
 {
     private DynamickyZnakovyStrom dynamickyZnakovyStrom;

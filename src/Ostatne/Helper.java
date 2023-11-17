@@ -42,9 +42,9 @@ public class Helper
     public static BitSet generateHash(int cislo)
     {
         BitSet bitSet = new BitSet();
-        long hash = (cislo * 2654435761L) % (1L << 32);
+        long hash = (cislo * 2654435761L) % (1L << Konstanty.POCET_BITOV_HASH);
 
-        for (int i = 0; i < 32; i++)
+        for (int i = 0; i < Konstanty.POCET_BITOV_HASH; i++)
         {
             byte bit = (byte)((hash >> i) & 1);
 
