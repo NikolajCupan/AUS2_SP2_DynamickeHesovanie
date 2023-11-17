@@ -6,12 +6,10 @@ public class Helper
 {
     public static String rozsirString(String string, int novaDlzka)
     {
-        final char dummyZnak = '*';
-
         StringBuilder builder = new StringBuilder(string);
         while (builder.length() < novaDlzka)
         {
-            builder.append(dummyZnak);
+            builder.append(Konstanty.DUMMY_ZNAK);
         }
 
         return builder.toString();
