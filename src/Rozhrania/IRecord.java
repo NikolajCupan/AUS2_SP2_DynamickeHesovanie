@@ -1,4 +1,4 @@
-package Hesovanie;
+package Rozhrania;
 
 public interface IRecord
 {

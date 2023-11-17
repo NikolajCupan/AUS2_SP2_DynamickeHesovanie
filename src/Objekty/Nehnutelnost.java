@@ -1,6 +1,7 @@
 package Objekty;
 
-import Hesovanie.IRecord;
+import Rozhrania.IData;
+import Rozhrania.IRecord;
 import Ostatne.Helper;
 import Ostatne.Konstanty;
 
@@ -12,7 +13,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.BitSet;
 
-public class Nehnutelnost extends Polygon
+public class Nehnutelnost extends Polygon implements IData
 {
     private static final int MAX_POCET_REFERENCII = 6;
 

@@ -1,8 +1,8 @@
 package Objekty;
 
-import Hesovanie.IData;
+import Rozhrania.IPolygon;
 
-public abstract class Polygon implements IData
+public class Polygon implements IPolygon
 {
     protected Suradnica surVlavoDole;
     protected Suradnica surVpravoHore;
@@ -20,6 +20,7 @@ public abstract class Polygon implements IData
     }
 
     // Metoda vrati true ak dana suradnica lezi vo vnutri polygonu
+    @Override
     public boolean leziVnutri(double x, double y)
     {
         return x >= this.surVlavoDole.getX() &&
@@ -29,7 +30,8 @@ public abstract class Polygon implements IData
     }
 
     // Metoda vrati true ak cely obsah polygonu lezi vo vnutri polygonu
-    public boolean leziVnutri(Polygon vnutorny)
+    @Override
+    public boolean leziVnutri(IPolygon vnutorny)
     {
         if (vnutorny.getVlavoDoleX() >= this.surVlavoDole.getX() &&
             vnutorny.getVlavoDoleY() >= this.surVlavoDole.getY() &&
@@ -43,7 +45,8 @@ public abstract class Polygon implements IData
     }
 
     // Metoda vrati true ak sa polygony prekryvaju
-    public boolean prekryva(Polygon polygon)
+    @Override
+    public boolean prekryva(IPolygon polygon)
     {
         if (this.surVlavoDole.getX() > polygon.getVpravoHoreX() ||
             this.surVlavoDole.getY() > polygon.getVpravoHoreY() ||
@@ -56,21 +59,25 @@ public abstract class Polygon implements IData
         return true;
     }
 
+    @Override
     public double getVlavoDoleX()
     {
         return this.surVlavoDole.getX();
     }
 
+    @Override
     public double getVlavoDoleY()
     {
         return this.surVlavoDole.getY();
     }
 
+    @Override
     public double getVpravoHoreX()
     {
         return this.surVpravoHore.getX();
     }
 
+    @Override
     public double getVpravoHoreY()
     {
         return this.surVpravoHore.getY();

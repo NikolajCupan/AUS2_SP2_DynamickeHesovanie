@@ -1,4 +1,3 @@
-import Objekty.Nehnutelnost;
 import Objekty.Parcela;
 import Objekty.Suradnica;
 

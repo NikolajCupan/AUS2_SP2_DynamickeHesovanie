@@ -1,5 +1,8 @@
 package Hesovanie;
 
+import Rozhrania.IData;
+import Rozhrania.IRecord;
+
 public class Block<T extends IData> implements IRecord
 {
     @Override

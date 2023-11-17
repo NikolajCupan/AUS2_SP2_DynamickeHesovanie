@@ -2,7 +2,7 @@ package QuadStrom;
 
 import Objekty.Polygon;
 import Objekty.Suradnica;
-import Ostatne.IPolygon;
+import Rozhrania.IPolygon;
 
 import java.util.ArrayList;
 
