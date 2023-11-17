@@ -34,6 +34,7 @@ public class Main
         block2.prevedZPolaBajtov(poleBajtov);
 
         Nehnutelnost hladana = new Nehnutelnost(2, 1, "a", suradnica1, suradnica2);
+        hladana.getHash();
         Nehnutelnost najdena = block2.vyhladaj(hladana);
 
         int x = 100;

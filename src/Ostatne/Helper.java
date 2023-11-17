@@ -1,6 +1,7 @@
 package Ostatne;
 
 import java.io.DataInputStream;
+import java.util.BitSet;
 
 public class Helper
 {
@@ -36,5 +37,23 @@ public class Helper
         }
 
         return builder.toString();
+    }
+
+    public static BitSet generateHash(int cislo)
+    {
+        BitSet bitSet = new BitSet();
+        long hash = (cislo * 2654435761L) % (1L << 32);
+
+        for (int i = 0; i < 64; i++)
+        {
+            byte bit = (byte)((hash >> i) & 1);
+
+            if (bit == 1)
+            {
+                bitSet.set(i);
+            }
+        }
+
+        return bitSet;
     }
 }

@@ -107,7 +107,7 @@ public class Parcela extends Polygon implements IData
     @Override
     public BitSet getHash()
     {
-        return null;
+        return Helper.generateHash(this.parcelaID);
     }
 
     @Override

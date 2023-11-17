@@ -122,7 +122,7 @@ public class Nehnutelnost extends Polygon implements IData
     @Override
     public BitSet getHash()
     {
-        return null;
+        return Helper.generateHash(this.nehnutelnostID);
     }
 
     @Override
