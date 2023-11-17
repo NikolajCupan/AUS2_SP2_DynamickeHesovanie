@@ -1,8 +1,5 @@
 package Objekty;
 
-import Ostatne.Helper;
-import Ostatne.Konstanty;
-
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;

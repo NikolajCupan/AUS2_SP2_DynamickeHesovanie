@@ -146,8 +146,8 @@ public class Parcela extends Polygon
             dataOutputStream.writeInt(this.parcelaID);
 
             dataOutputStream.writeByte(this.popis.length());
-            this.popis = Helper.rozsirString(this.popis, Konstanty.MAX_DLZKA_POPIS_PARCELA);
-            dataOutputStream.writeBytes(this.popis);
+            String rozsirenyPopis = Helper.rozsirString(this.popis, Konstanty.MAX_DLZKA_POPIS_PARCELA);
+            dataOutputStream.writeBytes(rozsirenyPopis);
 
             dataOutputStream.write(this.surVlavoDole.prevedNaPoleBajtov());
             dataOutputStream.write(this.surVpravoHore.prevedNaPoleBajtov());
@@ -205,5 +205,40 @@ public class Parcela extends Polygon
         {
             throw new IllegalStateException("Konverzia pola bajtov na Parcelu sa nepodarila!");
         }
+    }
+
+    @Override
+    public boolean equals(Object object)
+    {
+        if (!(object instanceof Parcela parcela))
+        {
+            return false;
+        }
+
+        final double epsilon = 0.00001;
+        if (Math.abs(this.getVlavoDoleX() - parcela.getVlavoDoleX()) < epsilon &&
+            Math.abs(this.getVlavoDoleY() - parcela.getVlavoDoleY()) < epsilon &&
+            Math.abs(this.getVpravoHoreX() - parcela.getVpravoHoreX()) < epsilon &&
+            Math.abs(this.getVpravoHoreY() - parcela.getVpravoHoreY()) < epsilon &&
+            this.parcelaID == parcela.getParcelaID() &&
+            this.popis.equals(parcela.getPopis()))
+        {
+            if (this.nehnutelnostiID.size() != parcela.getNehnutelnostiID().size())
+            {
+                return false;
+            }
+
+            for (int i = 0; i < this.nehnutelnostiID.size(); i++)
+            {
+                if (!this.nehnutelnostiID.get(i).equals(parcela.getNehnutelnostiID().get(i)))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        return false;
     }
 }

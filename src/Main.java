@@ -1,3 +1,4 @@
+import Objekty.Nehnutelnost;
 import Objekty.Parcela;
 import Objekty.Suradnica;
 
@@ -10,15 +11,20 @@ public class Main
 {
     public static void main(String[] args) throws IOException
     {
+        Parcela zapisovana = new Parcela(9418349, "moja p", new Suradnica(3183, 7877), new Suradnica(-3838, -83883));
+
         try (FileOutputStream stream = new FileOutputStream("test"))
         {
-            Parcela parcela = new Parcela(9418349, "moja p", new Suradnica(3183, 7877), new Suradnica(-3838, -83883));
-            stream.write(parcela.prevedNaPoleBajtov());
+            stream.write(zapisovana.prevedNaPoleBajtov());
         }
 
         File subor = new File("test");
         byte[] poleBajtov = Files.readAllBytes(subor.toPath());
-        Parcela parcela = new Parcela();
-        parcela.prevedZPolaBajtov(poleBajtov);
+        Parcela nacitana = new Parcela();
+        nacitana.prevedZPolaBajtov(poleBajtov);
+
+        boolean rovnake = zapisovana.equals(nacitana);
+
+        int x = 100;
     }
 }
