@@ -88,7 +88,7 @@ public class Parcela extends Polygon implements IData
     public String toString()
     {
         DecimalFormat formatovac = new DecimalFormat("#.##");
-        return "Nehnuteľnost (ID " + this.parcelaID + "): " +
+        return "Parcela (ID " + this.parcelaID + "): " +
                 " {" + formatovac.format(this.getVlavoDoleX()) + ", " + formatovac.format(this.getVlavoDoleY()) +
                 "}, {" + formatovac.format(this.getVpravoHoreX()) + ", " + formatovac.format(this.getVpravoHoreY()) + "}";
     }

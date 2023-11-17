@@ -128,13 +128,20 @@ public class Generator
         surVpravoHore.setY(maxY);
     }
 
+    public int randomInt(int min, int max)
+    {
+        return this.random.nextInt((max - min) + 1) + min;
+    }
+
     public double randomDouble(double min, double max)
     {
         return min + (max - min) * this.random.nextDouble();
     }
 
-    private String randomString(int dlzka)
+    private String randomString(int maxDlzka)
     {
+        int dlzka = this.randomInt(0, maxDlzka);
+
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < dlzka; i++)
         {

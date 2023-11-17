@@ -19,7 +19,8 @@ public class Block<T extends IData> implements IRecord
     private ArrayList<T> zaznamy;
     private int pocetPlatnychZaznamov;
 
-    // Za ucelom volania operacii
+    // Za ucelom volania operacii a vytvorenia
+    // instancii pri nacitani z pola bajtov
     private final T dummyZaznam;
 
     public Block(int blokovaciFaktor, T dummyZaznam)
@@ -42,7 +43,7 @@ public class Block<T extends IData> implements IRecord
     {
         if (this.pocetPlatnychZaznamov >= this.blokovaciFaktor)
         {
-            throw new RuntimeException("Block je plny, nemozno vlozit dalsi zaznam!");
+            throw new RuntimeException("Block je plny, nemozno vlozit dalsi Zaznam!");
         }
 
         this.zaznamy.add(pridavany);
@@ -174,5 +175,31 @@ public class Block<T extends IData> implements IRecord
         {
             throw new IllegalStateException("Konverzia pola bajtov na Block sa nepodarila!");
         }
+    }
+
+    @Override
+    public boolean equals(Object object)
+    {
+        if (!(object instanceof Block block))
+        {
+            return false;
+        }
+
+        if (this.blokovaciFaktor == block.blokovaciFaktor &&
+            this.pocetPlatnychZaznamov == block.pocetPlatnychZaznamov &&
+            this.zaznamy.size() == block.zaznamy.size())
+        {
+            for (int i = 0; i < this.pocetPlatnychZaznamov; i++)
+            {
+                if (!this.zaznamy.get(i).equals(block.zaznamy.get(i)))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        return false;
     }
 }
