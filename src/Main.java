@@ -18,19 +18,12 @@ public class Main
 {
     public static void main(String[] args) throws IOException
     {
-        Generator generator = new Generator(1, 1, 1, 0, 0, 100, 100, 1, 0);
-        Block<Parcela> block = new Block<>(10, new Parcela());
+        Suradnica s = new Suradnica();
 
-        Subor subor = new Subor("test");
-        byte[] poleBajtov = subor.citaj(0, block.getVelkost());
-
-        block.prevedZPolaBajtov(poleBajtov);
-        block = block;
-        /*
-        for (int i = 0; i < 8; i++)
-        {
-            block.vloz(generator.getParcela());
-        }
-        */
+        DynamickeHesovanie<Parcela> h = new DynamickeHesovanie<>(1, 2, "hlavny", "preplnujuci");
+        Parcela p1 = new Parcela(1, "1", s, s);
+        Parcela p2 = new Parcela(2, "2", s, s);
+        h.vloz(p1, Parcela.class);
+        h.vloz(p2, Parcela.class);
     }
 }

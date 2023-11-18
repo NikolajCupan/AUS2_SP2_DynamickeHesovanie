@@ -31,6 +31,7 @@ public class Subor
     // od miesta urceneho offsetom
     public byte[] citaj(long offset, int pocetBajtov)
     {
+        this.skontrolujOffset(offset);
         byte[] buffer = new byte[pocetBajtov];
 
         try
@@ -50,6 +51,8 @@ public class Subor
     // pricom ak sa tam uz nachadzaju nejake data, tak tieto su prepisane
     public void uloz(long offset, byte[] poleBajtov)
     {
+        this.skontrolujOffset(offset);
+
         try
         {
             this.pristupovySubor.seek(offset);
@@ -61,8 +64,22 @@ public class Subor
         }
     }
 
-    public long getVelkostSuboru()
+    public long getNovyOffset()
+    {
+        // Zatial vzdy prideli offset na konci suboru
+        return this.getVelkostSuboru();
+    }
+
+    private long getVelkostSuboru()
     {
         return this.subor.length();
+    }
+
+    private void skontrolujOffset(long offset)
+    {
+        if (offset < 0)
+        {
+            throw new RuntimeException("Offset nemoze byt mensi ako 0!");
+        }
     }
 }

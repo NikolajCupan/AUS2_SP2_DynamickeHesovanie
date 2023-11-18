@@ -26,9 +26,9 @@ public class DynamickeHesovanie<T extends IData>
         this.preplnujuciSubor = new Subor(nazovPreplnujuciSubor);
     }
 
-    public void vloz(T pridavany)
+    public void vloz(T pridavany, Class<T> typ)
     {
-        this.dynamickyZnakovyStrom.vloz(pridavany,
+        this.dynamickyZnakovyStrom.vloz(pridavany, typ,
                                         this.blokovaciFaktorHlavnySubor, this.blokovaciFaktorPreplnujuciSubor,
                                         this.hlavnySubor, this.preplnujuciSubor);
     }

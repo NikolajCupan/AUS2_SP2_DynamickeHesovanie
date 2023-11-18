@@ -23,14 +23,21 @@ public class Block<T extends IData> implements IRecord
     // instancii pri nacitani z pola bajtov
     private final T dummyZaznam;
 
-    public Block(int blokovaciFaktor, T dummyZaznam)
+    public Block(int blokovaciFaktor, Class<T> typ)
     {
         this.blokovaciFaktor = blokovaciFaktor;
 
         this.zaznamy = new ArrayList<>();
         this.pocetPlatnychZaznamov = 0;
 
-        this.dummyZaznam = dummyZaznam;
+        try
+        {
+            this.dummyZaznam = typ.getDeclaredConstructor().newInstance();
+        }
+        catch (Exception ex)
+        {
+            throw new RuntimeException("Chyba pri vytvarani dummy Zaznamu v Blocku!");
+        }
     }
 
     public void vloz(T pridavany)
@@ -95,6 +102,18 @@ public class Block<T extends IData> implements IRecord
     public ArrayList<T> getZaznamy()
     {
         return this.zaznamy;
+    }
+
+    private T getDummyInstancia()
+    {
+        try
+        {
+            return (T)this.dummyZaznam.getClass().getDeclaredConstructor().newInstance();
+        }
+        catch (Exception ex)
+        {
+            throw new RuntimeException("Chyba pri vytvarani instancie dummy Zaznamu v Blocku!");
+        }
     }
 
     // Kolko bajtov zabera 1 Block
@@ -165,7 +184,7 @@ public class Block<T extends IData> implements IRecord
                 byte[] poleBajtovZaznam = dataInputStream.readNBytes(velkostZaznamu);
 
                 // Nova instancia typu T a jej inicializacia pomocou nacitaneho pola bajtov
-                T novyZaznam = (T)this.dummyZaznam.getClass().getDeclaredConstructor().newInstance();
+                T novyZaznam = this.getDummyInstancia();
                 novyZaznam.prevedZPolaBajtov(poleBajtovZaznam);
                 this.zaznamy.add(novyZaznam);
             }

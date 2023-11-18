@@ -19,7 +19,7 @@ public class ExternyVrchol extends Vrchol
     // Vloz na dany offset cely Block
     public<T extends IData> void vlozBlock(Block<T> pridavanyBlock, Subor hlavnySubor, long offset)
     {
-        this.offset = offset;
+        this.offset = (this.offset == -1) ? offset : this.offset;
         this.pocetZaznamovBlock = pridavanyBlock.getPocetPlatnychZaznamov();
 
         try
@@ -28,30 +28,26 @@ public class ExternyVrchol extends Vrchol
         }
         catch (Exception ex)
         {
-            throw new RuntimeException("Chyba pri vkladani do Externeho vrcholu!");
+            throw new RuntimeException("Chyba pri vkladani Blocku do Externeho vrcholu!");
         }
     }
 
-    // Vloz novy Zaznam do Blocku
-    public<T extends IData> void vloz(T pridavany, int blokovaciFaktorHlavnySubor, Subor hlavnySubor)
+    // Vloz novy Zaznam do Block, novyOffset nastaveny
+    // na hodnotu -1 znaci, ze sa pouzije aktualny offset
+    public<T extends IData> void vloz(T pridavany, Class<T> typ,
+                                      int blokovaciFaktorHlavnySubor, Subor hlavnySubor, long novyOffset)
     {
+        this.offset = (this.offset == -1) ? novyOffset : this.offset;
+
         try
         {
-            T dummyZaznam = (T)pridavany.getClass().getDeclaredConstructor().newInstance();
-
-            // Inicializacia Blocku
-            Block<T> block = new Block<>(blokovaciFaktorHlavnySubor, dummyZaznam);
-
-            if (this.offset == -1)
-            {
-                // Block nema alokovane miesto v Subore,
-                // nastav sa na koniec suboru
-                this.offset = hlavnySubor.getVelkostSuboru();
-            }
+            // Nacitanie Blocku do operacnej pamati
+            Block<T> block = new Block<>(blokovaciFaktorHlavnySubor, typ);
 
             byte[] poleBajtovSubor = hlavnySubor.citaj(this.offset, block.getVelkost());
             block.prevedZPolaBajtov(poleBajtovSubor);
 
+            // Aktualizovanie Blocku a ulozenie do Suboru
             block.vloz(pridavany);
             hlavnySubor.uloz(this.offset, block.prevedNaPoleBajtov());
 
@@ -64,11 +60,12 @@ public class ExternyVrchol extends Vrchol
     }
 
     // Vrati cely Block
-    public<T extends IData> Block<T> getBlock(T dummyZaznam, int blokovaciFaktorHlavnySubor, Subor hlavnySubor)
+    public<T extends IData> Block<T> getBlock(Class<T> typ, int blokovaciFaktorHlavnySubor, Subor hlavnySubor)
     {
         try
         {
-            Block<T> block = new Block<>(blokovaciFaktorHlavnySubor, dummyZaznam);
+            // Nacitaj Blocku zo Suboru a vrat ho
+            Block<T> block = new Block<>(blokovaciFaktorHlavnySubor, typ);
 
             byte[] poleBajtovSubor = hlavnySubor.citaj(this.offset, block.getVelkost());
             block.prevedZPolaBajtov(poleBajtovSubor);
