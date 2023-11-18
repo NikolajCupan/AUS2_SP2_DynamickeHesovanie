@@ -5,7 +5,7 @@ import Rozhrania.IData;
 
 public class DynamickeHesovanie<T extends IData>
 {
-    private DynamickyZnakovyStrom dynamickyZnakovyStrom;
+    private final DynamickyZnakovyStrom dynamickyZnakovyStrom;
 
     // Udava kolko Recordov sa nachadza v 1 Blocku
     private final int blokovaciFaktorHlavnySubor;
@@ -14,7 +14,6 @@ public class DynamickeHesovanie<T extends IData>
     // Samotne subory
     private final Subor hlavnySubor;
     private final Subor preplnujuciSubor;
-
 
     public DynamickeHesovanie(int blokovaciFaktorHlavnySubor, int blokovaciFaktorPreplnujuciSubor, String nazovHlavnySubor, String nazovPreplnujuciSubor)
     {

@@ -23,9 +23,11 @@ public class DynamickyZnakovyStrom
 
         Stack<Vrchol> zasobnik = new Stack<>();
         zasobnik.push(this.root);
+
         while (!zasobnik.isEmpty())
         {
             Vrchol curVrchol = zasobnik.pop();
+
             if (curVrchol instanceof InternyVrchol in)
             {
                 zasobnik.push(in.getLavySyn());

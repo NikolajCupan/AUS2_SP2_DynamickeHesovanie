@@ -1,6 +1,7 @@
 import Hesovanie.Block;
 import Hesovanie.DynamickeHesovanie;
 import Hesovanie.DynamickyZnakovyStrom.ExternyVrchol;
+import Hesovanie.Subor;
 import Objekty.Nehnutelnost;
 import Objekty.Parcela;
 import Objekty.Suradnica;
@@ -17,27 +18,19 @@ public class Main
 {
     public static void main(String[] args) throws IOException
     {
-        while (true)
+        Generator generator = new Generator(1, 1, 1, 0, 0, 100, 100, 1, 0);
+        Block<Parcela> block = new Block<>(10, new Parcela());
+
+        Subor subor = new Subor("test");
+        byte[] poleBajtov = subor.citaj(0, block.getVelkost());
+
+        block.prevedZPolaBajtov(poleBajtov);
+        block = block;
+        /*
+        for (int i = 0; i < 8; i++)
         {
-            try
-            {
-                Suradnica suradnica1 = new Suradnica();
-                Suradnica suradnica2 = new Suradnica();
-                Generator generator = new Generator(1, 1, 1, 0, 0, 100, 100, 1);
-                DynamickeHesovanie<Parcela> dh = new DynamickeHesovanie<>(10, 10, "hlavny", "preplnujuci");
-                for (int i = 0; i < 1; i++)
-                {
-                    dh.vloz(generator.getParcela());
-                }
-                System.out.println(dh.getPocetElemtov());
-                BitSet s = new BitSet();
-                s.set(100);
-                boolean a = s.get(3338);
-                int x = 100;
-            }
-            catch (Exception ex)
-            {
-            }
+            block.vloz(generator.getParcela());
         }
+        */
     }
 }

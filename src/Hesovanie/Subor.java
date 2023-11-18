@@ -27,6 +27,8 @@ public class Subor
         }
     }
 
+    // Nacita pocetBajtov bajtov zo Suboru zacinajuc
+    // od miesta urceneho offsetom
     public byte[] citaj(long offset, int pocetBajtov)
     {
         byte[] buffer = new byte[pocetBajtov];
@@ -44,6 +46,8 @@ public class Subor
         return buffer;
     }
 
+    // Ulozi poleBajtov do Suboru zacinajuc od miesta urceneho offsetom,
+    // pricom ak sa tam uz nachadzaju nejake data, tak tieto su prepisane
     public void uloz(long offset, byte[] poleBajtov)
     {
         try
