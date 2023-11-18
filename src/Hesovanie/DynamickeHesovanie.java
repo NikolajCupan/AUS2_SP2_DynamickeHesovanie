@@ -33,4 +33,9 @@ public class DynamickeHesovanie<T extends IData>
                                         this.blokovaciFaktorHlavnySubor, this.blokovaciFaktorPreplnujuciSubor,
                                         this.hlavnySubor, this.preplnujuciSubor);
     }
+
+    public int getPocetElemtov()
+    {
+        return this.dynamickyZnakovyStrom.getPocetElementov();
+    }
 }

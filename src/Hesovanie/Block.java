@@ -14,7 +14,7 @@ import java.util.Collections;
 
 public class Block<T extends IData> implements IRecord
 {
-    private int blokovaciFaktor;
+    private final int blokovaciFaktor;
 
     private ArrayList<T> zaznamy;
     private int pocetPlatnychZaznamov;
