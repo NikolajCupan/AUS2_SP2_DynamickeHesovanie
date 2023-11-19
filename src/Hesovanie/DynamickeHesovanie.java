@@ -33,6 +33,13 @@ public class DynamickeHesovanie<T extends IData>
                                         this.hlavnySubor, this.preplnujuciSubor);
     }
 
+    public T vyhladaj(T vyhladavany, Class<T> typ)
+    {
+        return this.dynamickyZnakovyStrom.vyhladaj(vyhladavany, typ,
+                                                   this.blokovaciFaktorHlavnySubor, this.blokovaciFaktorPreplnujuciSubor,
+                                                   this.hlavnySubor, this.preplnujuciSubor);
+    }
+
     public int getPocetElemtov()
     {
         return this.dynamickyZnakovyStrom.getPocetElementov();

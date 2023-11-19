@@ -213,4 +213,42 @@ public class DynamickyZnakovyStrom
             externyVrchol.vloz(pridavany, typ, blokovaciFaktorHlavnySubor, hlavnySubor, -1);
         }
     }
+
+    public<T extends IData> T vyhladaj(T vyhladavany, Class<T> typ,
+                                       int blokovaciFaktorHlavnySubor, int blokovaciFaktorPreplnujuciSubor,
+                                       Subor hlavnySubor, Subor preplnujuciSubor)
+    {
+        // Prechadzaj stromom az pokym sa nedostanes na Externy vrchol
+        BitSet vyhladavanyZaznamHash = vyhladavany.getHash();
+        ExternyVrchol najdenyExternyVrchol = this.vyhladajExternyVrchol(vyhladavanyZaznamHash);
+
+        // Nacitaj Block a prehladaj ho
+        Block<T> najdenyBlock = najdenyExternyVrchol.getBlock(typ, blokovaciFaktorHlavnySubor, hlavnySubor);
+        return najdenyBlock.vyhladaj(vyhladavany);
+    }
+
+    private ExternyVrchol vyhladajExternyVrchol(BitSet hash)
+    {
+        Vrchol curVrchol = this.root;
+        int curBitHash = 0;
+
+        while (curVrchol instanceof InternyVrchol internyVrchol)
+        {
+            int hodnotaBitu = hash.get(curBitHash) ? 1 : 0;
+            curBitHash++;
+
+            if (hodnotaBitu == 0)
+            {
+                // Vlavo
+                curVrchol = internyVrchol.getLavySyn();
+            }
+            else
+            {
+                // Vpravo
+                curVrchol = internyVrchol.getPravySyn();
+            }
+        }
+
+        return (ExternyVrchol)curVrchol;
+    }
 }
