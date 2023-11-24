@@ -2,8 +2,10 @@ package Hesovanie.DynamickyZnakovyStrom;
 
 import Hesovanie.Block;
 import Hesovanie.SpravcaSuborov;
+import Ostatne.Status;
 import Rozhrania.IData;
 
+import javax.swing.*;
 import java.util.BitSet;
 import java.util.Stack;
 
@@ -49,16 +51,13 @@ public class DynamickyZnakovyStrom
         Vrchol zaciatocnyVrchol = this.root;
 
         // Vytvorene pomocou new, aby bolo mozne pouzit ako output parameter
-        InternyVrchol[] predchadzajuciVrchol = new InternyVrchol[]{ null };
         int[] curBitHash = new int[]{ 0 };
-        boolean[] odpojLavehoSyna = new boolean[]{ false };
 
-        ExternyVrchol externyVrchol = this.traverzujNaExternyVrchol(zaciatocnyVrchol, predchadzajuciVrchol, pridavanyZaznamHash, curBitHash, odpojLavehoSyna);
-        this.vlozZaznamDoVrcholu(externyVrchol, predchadzajuciVrchol[0], pridavany, typ, spravcaSuborov, pridavanyZaznamHash, curBitHash[0], odpojLavehoSyna[0]);
+        ExternyVrchol externyVrchol = this.traverzujNaExternyVrchol(zaciatocnyVrchol, pridavanyZaznamHash, curBitHash);
+        this.vlozZaznamDoVrcholu(pridavany, typ, externyVrchol, spravcaSuborov, pridavanyZaznamHash, curBitHash[0]);
     }
 
-    private ExternyVrchol traverzujNaExternyVrchol(Vrchol zaciatocnyVrchol, InternyVrchol[] predchadzajuciVrchol, BitSet zaznamHash,
-                                                   int[] curBitHash, boolean[] odpojLavehoSyna)
+    private ExternyVrchol traverzujNaExternyVrchol(Vrchol zaciatocnyVrchol, BitSet zaznamHash, int[] curBitHash)
     {
         Vrchol curVrchol = zaciatocnyVrchol;
 
@@ -67,17 +66,14 @@ public class DynamickyZnakovyStrom
             int hodnotaBitu = zaznamHash.get(curBitHash[0]) ? 1 : 0;
             curBitHash[0]++;
 
-            predchadzajuciVrchol[0] = internyVrchol;
             if (hodnotaBitu == 0)
             {
                 // Vlavo
-                odpojLavehoSyna[0] = true;
                 curVrchol = internyVrchol.getLavySyn();
             }
             else
             {
                 // Vpravo
-                odpojLavehoSyna[0] = false;
                 curVrchol = internyVrchol.getPravySyn();
             }
         }
@@ -86,25 +82,32 @@ public class DynamickyZnakovyStrom
         return (ExternyVrchol)curVrchol;
     }
 
-    private<T extends IData> void vlozZaznamDoVrcholu(ExternyVrchol externyVrchol, InternyVrchol predchadzajuciVrchol, T pridavany, Class<T> typ,
-                                                      SpravcaSuborov spravcaSuborov, BitSet pridavanyZaznamHash,
-                                                      int curBitHash, boolean odpojLavehoSyna)
+    private<T extends IData> void vlozZaznamDoVrcholu(T pridavany, Class<T> typ, ExternyVrchol externyVrchol, SpravcaSuborov spravcaSuborov,
+                                                      BitSet pridavanyZaznamHash, int curBitHash)
     {
         Block<T> presuvanyBlock = null;
+        long odlozenyOffset = externyVrchol.getOffset();
 
         while (true)
         {
-            if (externyVrchol.getPocetZaznamovBlock() < spravcaSuborov.getBlokovaciFaktorHlavnySubor() ||
-                curBitHash >= pridavany.getPocetBitovHash())
+            if (curBitHash >= pridavany.getPocetBitovHash())
             {
-                // V Blocku je miesto pre pridavany Zaznam alebo boli pouzite vsetky bity hashu
+                // Pouzite vsetky bity z hesu
+                externyVrchol.vloz(pridavany, typ, spravcaSuborov);
+                break;
+            }
+
+            if (externyVrchol.getPocetZaznamovBlock() < spravcaSuborov.getBlokovaciFaktorHlavnySubor() &&
+                presuvanyBlock == null)
+            {
+                // V Blocku je miesto pre pridavany Zaznam
                 externyVrchol.vloz(pridavany, typ, spravcaSuborov);
                 break;
             }
 
             // Metoda odpoji najdeny najdeny Externy vrchol od zvysku stromu
             // a nahradi ho novym Internym vrcholom
-            InternyVrchol novyInternyVrchol = this.odpojExternyVrchol(odpojLavehoSyna, predchadzajuciVrchol);
+            InternyVrchol novyInternyVrchol = this.odpojExternyVrchol(externyVrchol);
 
             // Nacitaj Block z odpojeneho Externeho vrcholu
             // a presuvaj zaznamy do novo vytvorenych Externych vrcholov
@@ -155,7 +158,7 @@ public class DynamickyZnakovyStrom
                 // Novy Zaznam bol uspesne vlozeny do stromu
 
                 // Pouzi offset, ktory mal odpojeny Block
-                ((ExternyVrchol)novyInternyVrchol.getLavySyn()).vlozBlock(lavyBlock, spravcaSuborov, externyVrchol.getOffset());
+                ((ExternyVrchol)novyInternyVrchol.getLavySyn()).vlozBlock(lavyBlock, spravcaSuborov, odlozenyOffset);
                 // Nutne poziadat o novy offset
                 ((ExternyVrchol)novyInternyVrchol.getPravySyn()).vlozBlock(pravyBlock, spravcaSuborov, -1);
 
@@ -164,18 +167,16 @@ public class DynamickyZnakovyStrom
 
             // Novy Zaznam nemohol byt vlozeny, cely proces je nutne opakovat
             presuvanyBlock = lavyBlock.jeBlockPlny() ? lavyBlock : pravyBlock;
-            odpojLavehoSyna = lavyBlock.jeBlockPlny();
-
-            predchadzajuciVrchol = novyInternyVrchol;
-
+            externyVrchol = lavyBlock.jeBlockPlny() ? (ExternyVrchol)novyInternyVrchol.getLavySyn() : (ExternyVrchol)novyInternyVrchol.getPravySyn();
             curBitHash++;
         }
     }
 
-    private InternyVrchol odpojExternyVrchol(boolean odpojLavehoSyna, InternyVrchol predchadzajuciVrchol)
+    private InternyVrchol odpojExternyVrchol(ExternyVrchol odpajany)
     {
         // Vytvor na mieste odpajaneho vrcholu novy Interny vrchol
         // a nastav referenciu v predchadzajucom vrchole
+        InternyVrchol predchadzajuciVrchol = odpajany.getOtec();
         InternyVrchol novyInternyVrchol = new InternyVrchol();
 
         if (predchadzajuciVrchol == null)
@@ -185,7 +186,8 @@ public class DynamickyZnakovyStrom
         }
         else
         {
-            if (odpojLavehoSyna)
+            novyInternyVrchol.setOtec(predchadzajuciVrchol);
+            if (odpajany.getStatus() == Status.LAVY_SYN)
             {
                 predchadzajuciVrchol.setLavySyn(novyInternyVrchol);
             }
@@ -196,7 +198,10 @@ public class DynamickyZnakovyStrom
         }
 
         novyInternyVrchol.setLavySyn(new ExternyVrchol());
+        novyInternyVrchol.getLavySyn().setOtec(novyInternyVrchol);
+
         novyInternyVrchol.setPravySyn(new ExternyVrchol());
+        novyInternyVrchol.getPravySyn().setOtec(novyInternyVrchol);
 
         return novyInternyVrchol;
     }
@@ -205,10 +210,144 @@ public class DynamickyZnakovyStrom
     {
         // Prechadzaj stromom az pokym sa nedostanes na Externy vrchol
         BitSet vyhladavanyZaznamHash = vyhladavany.getHash();
-        ExternyVrchol najdenyExternyVrchol = this.traverzujNaExternyVrchol(this.root, new InternyVrchol[]{ null }, vyhladavanyZaznamHash, new int[]{ 0 }, new boolean[]{ false });
+        ExternyVrchol najdenyExternyVrchol = this.traverzujNaExternyVrchol(this.root, vyhladavanyZaznamHash, new int[]{ 0 });
 
         // Nacitaj Block a prehladaj ho
         Block<T> najdenyBlock = najdenyExternyVrchol.getBlock(typ, spravcaSuborov);
         return najdenyBlock.vyhladaj(vyhladavany);
+    }
+
+    public<T extends IData> T vymaz(T vymazavany, Class<T> typ, SpravcaSuborov spravcaSuborov)
+    {
+        // Prechadzaj stromom az pokym sa nedostanes na Externy vrchol
+        BitSet vymazavanyZaznamHash = vymazavany.getHash();
+        ExternyVrchol najdenyExternyVrchol = this.traverzujNaExternyVrchol(this.root, vymazavanyZaznamHash, new int[]{ 0 });
+
+        Block<T> block = najdenyExternyVrchol.getBlock(typ, spravcaSuborov);
+        T realneVymazany = block.vymaz(vymazavany);
+
+        if (realneVymazany == null)
+        {
+            // Zaznam sa v Subore nenachadza
+            return null;
+        }
+
+        this.vymazPrazdneVrcholy(typ, najdenyExternyVrchol, block, spravcaSuborov);
+        return realneVymazany;
+    }
+
+    private<T extends IData> void vymazPrazdneVrcholy(Class<T> typ, ExternyVrchol spracovanyVrchol, Block<T> kumulovanyBlock, SpravcaSuborov spravcaSuborov)
+    {
+        ExternyVrchol curSpracuvanyVrchol = spracovanyVrchol;
+
+        if (curSpracuvanyVrchol.getStatus() == Status.KOREN)
+        {
+            this.mazaneZKorena(spravcaSuborov, kumulovanyBlock);
+            return;
+        }
+
+        while (true)
+        {
+            int pocetKumulovanyBlock = kumulovanyBlock.getPocetPlatnychZaznamov();
+
+            if (curSpracuvanyVrchol.getStatus() == Status.KOREN)
+            {
+                // Dostali sme sa az na koren
+                break;
+            }
+
+            if (curSpracuvanyVrchol.getSurodenec() instanceof InternyVrchol)
+            {
+                // Ak surodenec je Internym vrcholom, tak urcite nie je mozne vykonat mazanie Vrcholov
+                break;
+            }
+
+            ExternyVrchol surodenec = (ExternyVrchol)curSpracuvanyVrchol.getSurodenec();
+            int spoluElementov = surodenec.getPocetZaznamovBlock() + pocetKumulovanyBlock;
+
+            if (spoluElementov > spravcaSuborov.getBlokovaciFaktorHlavnySubor())
+            {
+                // Vrcholy nemozno zlucit, nakolko sa Zaznamy nezmestia do jedineho Blocku
+                break;
+            }
+
+            // Zluc zaznamy do kumulovaneho Blocku
+            Block<T> surodenecBlock = surodenec.getBlock(typ, spravcaSuborov);
+            if (surodenecBlock != null)
+            {
+                for (T zaznam : surodenecBlock.getZaznamy())
+                {
+                    kumulovanyBlock.vloz(zaznam);
+                }
+            }
+
+            curSpracuvanyVrchol = this.odpojInternyVrchol(curSpracuvanyVrchol.getOtec(), spravcaSuborov);
+        }
+
+        if (kumulovanyBlock.getPocetPlatnychZaznamov() != 0)
+        {
+            curSpracuvanyVrchol.vlozBlock(kumulovanyBlock, spravcaSuborov, -1);
+        }
+        else
+        {
+            spravcaSuborov.uvolniBlockHlavnySubor(curSpracuvanyVrchol.getOffset());
+            curSpracuvanyVrchol.setOffset(-1);
+            curSpracuvanyVrchol.setPocetZaznamovBlock(0);
+        }
+    }
+
+    private<T extends IData> void mazaneZKorena(SpravcaSuborov spravcaSuborov, Block<T> aktualizovanyBlock)
+    {
+        ExternyVrchol korenExterny = (ExternyVrchol)this.root;
+
+        if (aktualizovanyBlock.getPocetPlatnychZaznamov() == 0)
+        {
+            spravcaSuborov.uvolniBlockHlavnySubor(korenExterny.getOffset());
+            this.root = new ExternyVrchol();
+        }
+        else
+        {
+            korenExterny.vlozBlock(aktualizovanyBlock, spravcaSuborov, korenExterny.getOffset());
+        }
+    }
+
+    private ExternyVrchol odpojInternyVrchol(InternyVrchol odpajany, SpravcaSuborov spravcaSuborov)
+    {
+        this.uvolniBlocky(odpajany, spravcaSuborov);
+
+        InternyVrchol otecOdpajaneho = odpajany.getOtec();
+        ExternyVrchol novyExternyVrchol = new ExternyVrchol();
+        novyExternyVrchol.setOtec(otecOdpajaneho);
+
+        if (odpajany.getStatus() == Status.LAVY_SYN)
+        {
+            otecOdpajaneho.setLavySyn(novyExternyVrchol);
+        }
+        else if (odpajany.getStatus() == Status.PRAVY_SYN)
+        {
+            otecOdpajaneho.setPravySyn(novyExternyVrchol);
+        }
+        else if (odpajany.getStatus() == Status.KOREN)
+        {
+            this.root = novyExternyVrchol;
+        }
+
+        return novyExternyVrchol;
+    }
+
+    private void uvolniBlocky(InternyVrchol odpajany, SpravcaSuborov spravcaSuborov)
+    {
+        ExternyVrchol lavySyn = (ExternyVrchol)odpajany.getLavySyn();
+        ExternyVrchol pravySyn = (ExternyVrchol)odpajany.getPravySyn();
+
+        if (lavySyn.getPocetZaznamovBlock() != -1)
+        {
+            spravcaSuborov.uvolniBlockHlavnySubor(lavySyn.getOffset());
+        }
+
+        if (pravySyn.getOffset() != -1)
+        {
+            spravcaSuborov.uvolniBlockHlavnySubor(pravySyn.getOffset());
+        }
     }
 }

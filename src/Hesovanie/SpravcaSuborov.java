@@ -81,10 +81,15 @@ public class SpravcaSuborov
         }
     }
 
-    public long getNovyOffset()
+    public long dajVolnyBlockHlavnySubor()
     {
         // Zatial vzdy prideli offset na konci suboru
         return this.getVelkostSuboru();
+    }
+
+    public void uvolniBlockHlavnySubor(long offset)
+    {
+
     }
 
     private void skontrolujOffset(long offset)

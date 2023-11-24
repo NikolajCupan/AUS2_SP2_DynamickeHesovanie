@@ -14,6 +14,7 @@ public class ExternyVrchol extends Vrchol
     {
         this.offset = -1;
         this.pocetZaznamovBlock = 0;
+        this.otec = null;
     }
 
     // Vloz na dany offset cely Block
@@ -25,7 +26,7 @@ public class ExternyVrchol extends Vrchol
         }
         else
         {
-            this.offset = (this.offset == -1) ? spravcaSuborov.getNovyOffset() : this.offset;
+            this.offset = (this.offset == -1) ? spravcaSuborov.dajVolnyBlockHlavnySubor() : this.offset;
         }
 
         this.pocetZaznamovBlock = pridavanyBlock.getPocetPlatnychZaznamov();
@@ -42,7 +43,7 @@ public class ExternyVrchol extends Vrchol
 
     public<T extends IData> void vloz(T pridavany, Class<T> typ, SpravcaSuborov spravcaSuborov)
     {
-        this.offset = (this.offset == -1) ? spravcaSuborov.getNovyOffset() : this.offset;
+        this.offset = (this.offset == -1) ? spravcaSuborov.dajVolnyBlockHlavnySubor() : this.offset;
 
         try
         {
@@ -67,6 +68,11 @@ public class ExternyVrchol extends Vrchol
     // Vrati cely Block
     public<T extends IData> Block<T> getBlock(Class<T> typ, SpravcaSuborov spravcaSuborov)
     {
+        if (this.offset == -1)
+        {
+            return null;
+        }
+
         try
         {
             // Nacitaj Block zo Suboru a vrat ho
@@ -79,7 +85,7 @@ public class ExternyVrchol extends Vrchol
         }
         catch (Exception ex)
         {
-            throw new RuntimeException("Chyba pri vkladani do Externeho vrcholu!");
+            throw new RuntimeException("Chyba pri nacitani Blocku z Externeho vrcholu!");
         }
     }
 
@@ -91,5 +97,15 @@ public class ExternyVrchol extends Vrchol
     public int getPocetZaznamovBlock()
     {
         return this.pocetZaznamovBlock;
+    }
+
+    public void setOffset(long offset)
+    {
+        this.offset = offset;
+    }
+
+    public void setPocetZaznamovBlock(int pocetZaznamovBlock)
+    {
+        this.pocetZaznamovBlock = pocetZaznamovBlock;
     }
 }

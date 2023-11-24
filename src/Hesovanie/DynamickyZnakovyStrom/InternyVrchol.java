@@ -9,6 +9,13 @@ public class InternyVrchol extends Vrchol
     {
         this.lavySyn = null;
         this.pravySyn = null;
+        this.otec = null;
+    }
+
+    public void odstranSynov()
+    {
+        this.lavySyn = null;
+        this.pravySyn = null;
     }
 
     public Vrchol getLavySyn()

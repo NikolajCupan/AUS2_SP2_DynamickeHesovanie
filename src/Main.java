@@ -1,57 +1,54 @@
 import Hesovanie.DynamickeHesovanie;
 import Objekty.Parcela;
+import Objekty.Suradnica;
 import Ostatne.Generator;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.io.File;
 
 public class Main
 {
+    private static final String NAZOV_HS = "hlavny";
+    private static final String NAZOV_PS = "preplnujuci";
+
     public static void main(String[] args)
     {
-        final int pocetElementov = 100000;
+        vymazSubory();
+        Suradnica suradnica = new Suradnica();
 
         Generator generator = new Generator(1, 1, 1, 0, 0, 100, 100, 1);
-        DynamickeHesovanie<Parcela> h = new DynamickeHesovanie<>(2, 2, "hlavny", "preplnujuci");
-        ArrayList<Parcela> al = new ArrayList<>();
-        ArrayList<Integer> indexy = new ArrayList<>();
+        DynamickeHesovanie<Parcela> dh = new DynamickeHesovanie<>(2, 2, "hlavny", "preplnujuci");
 
-        for (int i = 0; i < pocetElementov; i++)
+        Parcela p1 = new Parcela(1, "1", suradnica, suradnica);
+        Parcela p2 = new Parcela(2, "2", suradnica, suradnica);
+        Parcela p3 = new Parcela(3, "3", suradnica, suradnica);
+        Parcela p4 = new Parcela(4, "4", suradnica, suradnica);
+
+        dh.vloz(p1, Parcela.class);
+        dh.vloz(p2, Parcela.class);
+        dh.vloz(p3, Parcela.class);
+        dh.vloz(p4, Parcela.class);
+
+        dh.vymaz(p3, Parcela.class);
+        dh.vymaz(p4, Parcela.class);
+        dh.vymaz(p1, Parcela.class);
+        dh.vymaz(p2, Parcela.class);
+
+        int x = 100;
+    }
+
+    public static void vymazSubory()
+    {
+        File hlavnySubor = new File(NAZOV_HS);
+        File preplnujuciSubor = new File(NAZOV_PS);
+
+        if (hlavnySubor.exists())
         {
-            indexy.add(i);
-
-            Parcela parcela = generator.getParcela();
-            h.vloz(parcela, Parcela.class);
-            al.add(parcela);
+            hlavnySubor.delete();
         }
 
-        int pocet = h.getPocetElemtov();
-        int spracovane = 0;
-        int ok = 0;
-        int bad = 0;
-
-        Collections.shuffle(indexy);
-        for (int i = 0; i < pocetElementov; i++)
+        if (preplnujuciSubor.exists())
         {
-            int index = indexy.get(i);
-            Parcela hladana = al.get(index);
-            Parcela najdenaDH = h.vyhladaj(hladana, Parcela.class);
-
-            if (hladana.jeRovnaky(najdenaDH))
-            {
-                ok++;
-            }
-            else
-            {
-                bad++;
-            }
-
-            spracovane++;
+            preplnujuciSubor.delete();
         }
-
-        System.out.println("Ok: " + ok);
-        System.out.println("Bad: " + bad);
-        System.out.println("Spracovane: " + spracovane);
-        System.out.println("Pocet: " + pocet);
     }
 }

@@ -13,7 +13,7 @@ import java.util.BitSet;
 public class Parcela extends Polygon implements IData
 {
     private static final int MAX_POCET_REFERENCII = 5;
-    private static final int POCET_BITOV_HASH = 32;
+    private static final int POCET_BITOV_HASH = 2;
 
     // Unikatny kluc
     private int parcelaID;
@@ -109,6 +109,30 @@ public class Parcela extends Polygon implements IData
     public BitSet getHash()
     {
         BitSet bitSet = new BitSet();
+
+        switch (this.parcelaID)
+        {
+            case 1:
+                break;
+
+            case 2:
+                break;
+
+            case 3:
+                bitSet.set(0);
+                break;
+
+            case 4:
+                bitSet.set(0);
+                break;
+
+            default:
+                throw new RuntimeException("Chyba");
+        }
+
+        return bitSet;
+        /*
+        BitSet bitSet = new BitSet();
         long hash = (this.parcelaID * 2654435761L) % (1L << POCET_BITOV_HASH);
 
         for (int i = 0; i < POCET_BITOV_HASH; i++)
@@ -122,6 +146,7 @@ public class Parcela extends Polygon implements IData
         }
 
         return bitSet;
+        */
     }
 
     @Override
