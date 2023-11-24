@@ -6,4 +6,5 @@ public interface IData extends IRecord
 {
     boolean jeRovnaky(IRecord zaznam);
     BitSet getHash();
+    int getPocetBitovHash();
 }

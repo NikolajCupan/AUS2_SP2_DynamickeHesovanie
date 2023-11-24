@@ -1,7 +1,7 @@
 package Hesovanie.DynamickyZnakovyStrom;
 
 import Hesovanie.Block;
-import Hesovanie.Subor;
+import Hesovanie.SpravcaSuborov;
 import Rozhrania.IData;
 
 public class ExternyVrchol extends Vrchol
@@ -17,14 +17,22 @@ public class ExternyVrchol extends Vrchol
     }
 
     // Vloz na dany offset cely Block
-    public<T extends IData> void vlozBlock(Block<T> pridavanyBlock, Subor hlavnySubor, long offset)
+    public<T extends IData> void vlozBlock(Block<T> pridavanyBlock, SpravcaSuborov spravcaSuborov, long forcedOffset)
     {
-        this.offset = (this.offset == -1) ? offset : this.offset;
+        if (forcedOffset != -1)
+        {
+            this.offset = forcedOffset;
+        }
+        else
+        {
+            this.offset = (this.offset == -1) ? spravcaSuborov.getNovyOffset() : this.offset;
+        }
+
         this.pocetZaznamovBlock = pridavanyBlock.getPocetPlatnychZaznamov();
 
         try
         {
-            hlavnySubor.uloz(this.offset, pridavanyBlock.prevedNaPoleBajtov());
+            spravcaSuborov.uloz(this.offset, pridavanyBlock.prevedNaPoleBajtov());
         }
         catch (Exception ex)
         {
@@ -32,24 +40,21 @@ public class ExternyVrchol extends Vrchol
         }
     }
 
-    // Vloz novy Zaznam do Block, novyOffset nastaveny
-    // na hodnotu -1 znaci, ze sa pouzije aktualny offset
-    public<T extends IData> void vloz(T pridavany, Class<T> typ,
-                                      int blokovaciFaktorHlavnySubor, Subor hlavnySubor, long novyOffset)
+    public<T extends IData> void vloz(T pridavany, Class<T> typ, SpravcaSuborov spravcaSuborov)
     {
-        this.offset = (this.offset == -1) ? novyOffset : this.offset;
+        this.offset = (this.offset == -1) ? spravcaSuborov.getNovyOffset() : this.offset;
 
         try
         {
             // Nacitanie Blocku do operacnej pamati
-            Block<T> block = new Block<>(blokovaciFaktorHlavnySubor, typ);
+            Block<T> block = new Block<>(spravcaSuborov.getBlokovaciFaktorHlavnySubor(), typ);
 
-            byte[] poleBajtovSubor = hlavnySubor.citaj(this.offset, block.getVelkost());
+            byte[] poleBajtovSubor = spravcaSuborov.citaj(this.offset, block.getVelkost());
             block.prevedZPolaBajtov(poleBajtovSubor);
 
             // Aktualizovanie Blocku a ulozenie do Suboru
             block.vloz(pridavany);
-            hlavnySubor.uloz(this.offset, block.prevedNaPoleBajtov());
+            spravcaSuborov.uloz(this.offset, block.prevedNaPoleBajtov());
 
             this.pocetZaznamovBlock++;
         }
@@ -60,14 +65,14 @@ public class ExternyVrchol extends Vrchol
     }
 
     // Vrati cely Block
-    public<T extends IData> Block<T> getBlock(Class<T> typ, int blokovaciFaktorHlavnySubor, Subor hlavnySubor)
+    public<T extends IData> Block<T> getBlock(Class<T> typ, SpravcaSuborov spravcaSuborov)
     {
         try
         {
-            // Nacitaj Blocku zo Suboru a vrat ho
-            Block<T> block = new Block<>(blokovaciFaktorHlavnySubor, typ);
+            // Nacitaj Block zo Suboru a vrat ho
+            Block<T> block = new Block<>(spravcaSuborov.getBlokovaciFaktorHlavnySubor(), typ);
 
-            byte[] poleBajtovSubor = hlavnySubor.citaj(this.offset, block.getVelkost());
+            byte[] poleBajtovSubor = spravcaSuborov.citaj(this.offset, block.getVelkost());
             block.prevedZPolaBajtov(poleBajtovSubor);
 
             return block;

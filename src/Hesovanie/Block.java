@@ -14,18 +14,18 @@ import java.util.Collections;
 
 public class Block<T extends IData> implements IRecord
 {
-    private final int blokovaciFaktor;
-
     private ArrayList<T> zaznamy;
+
+    private final int maxPocetZaznamov;
     private int pocetPlatnychZaznamov;
 
     // Za ucelom volania operacii a vytvorenia
     // instancii pri nacitani z pola bajtov
     private final T dummyZaznam;
 
-    public Block(int blokovaciFaktor, Class<T> typ)
+    public Block(int maxPocetZaznamov, Class<T> typ)
     {
-        this.blokovaciFaktor = blokovaciFaktor;
+        this.maxPocetZaznamov = maxPocetZaznamov;
 
         this.zaznamy = new ArrayList<>();
         this.pocetPlatnychZaznamov = 0;
@@ -42,7 +42,7 @@ public class Block<T extends IData> implements IRecord
 
     public void vloz(T pridavany)
     {
-        if (this.pocetPlatnychZaznamov >= this.blokovaciFaktor)
+        if (this.pocetPlatnychZaznamov >= this.maxPocetZaznamov)
         {
             throw new RuntimeException("Block je plny, nemozno vlozit dalsi Zaznam!");
         }
@@ -91,7 +91,7 @@ public class Block<T extends IData> implements IRecord
 
     public boolean jeBlockPlny()
     {
-        return this.pocetPlatnychZaznamov >= this.blokovaciFaktor;
+        return this.pocetPlatnychZaznamov >= this.maxPocetZaznamov;
     }
 
     public int getPocetPlatnychZaznamov()
@@ -127,7 +127,7 @@ public class Block<T extends IData> implements IRecord
 
         // Velkost samotnych Zaznamov, uvazujem o maximalnej moznej velkosti,
         // tym padom do uvahy beriem blokovaci faktor, nie pocet platnych zaznamov
-        velkost += this.dummyZaznam.getVelkost() * this.blokovaciFaktor;
+        velkost += this.dummyZaznam.getVelkost() * this.maxPocetZaznamov;
 
         return velkost;
     }
@@ -148,7 +148,7 @@ public class Block<T extends IData> implements IRecord
             }
 
             // Zvysne miesto v Blocku dopln dummy znakmi
-            int pocetNeplatnychZaznamov = this.blokovaciFaktor - this.pocetPlatnychZaznamov;
+            int pocetNeplatnychZaznamov = this.maxPocetZaznamov - this.pocetPlatnychZaznamov;
             int velkostZaznamu = this.dummyZaznam.getVelkost();
             int pocetBajtov = velkostZaznamu * pocetNeplatnychZaznamov;
 
@@ -203,7 +203,7 @@ public class Block<T extends IData> implements IRecord
             return false;
         }
 
-        if (this.blokovaciFaktor == block.blokovaciFaktor &&
+        if (this.maxPocetZaznamov == block.maxPocetZaznamov &&
             this.pocetPlatnychZaznamov == block.pocetPlatnychZaznamov &&
             this.zaznamy.size() == block.zaznamy.size())
         {

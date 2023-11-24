@@ -1,8 +1,7 @@
 package Hesovanie.DynamickyZnakovyStrom;
 
 import Hesovanie.Block;
-import Hesovanie.Subor;
-import Ostatne.Konstanty;
+import Hesovanie.SpravcaSuborov;
 import Rozhrania.IData;
 
 import java.util.BitSet;
@@ -43,68 +42,77 @@ public class DynamickyZnakovyStrom
         return pocet;
     }
 
-    public<T extends IData> void vloz(T pridavany, Class<T> typ,
-                                      int blokovaciFaktorHlavnySubor, int blokovaciFaktorPreplnujuciSubor,
-                                      Subor hlavnySubor, Subor preplnujuciSubor)
+    public<T extends IData> void vloz(T pridavany, Class<T> typ, SpravcaSuborov spravcaSuborov)
     {
         // Traverzuj stromom, pokym sa nedostanes na Externy vrchol
-        int curBitHash = 0;
         BitSet pridavanyZaznamHash = pridavany.getHash();
+        Vrchol zaciatocnyVrchol = this.root;
 
-        InternyVrchol predchadzajuciVrchol = null;
-        boolean odpojLavehoSyna = false;
-        Vrchol curVrchol = this.root;
+        // Vytvorene pomocou new, aby bolo mozne pouzit ako output parameter
+        InternyVrchol[] predchadzajuciVrchol = new InternyVrchol[]{ null };
+        int[] curBitHash = new int[]{ 0 };
+        boolean[] odpojLavehoSyna = new boolean[]{ false };
+
+        ExternyVrchol externyVrchol = this.traverzujNaExternyVrchol(zaciatocnyVrchol, predchadzajuciVrchol, pridavanyZaznamHash, curBitHash, odpojLavehoSyna);
+        this.vlozZaznamDoVrcholu(externyVrchol, predchadzajuciVrchol[0], pridavany, typ, spravcaSuborov, pridavanyZaznamHash, curBitHash[0], odpojLavehoSyna[0]);
+    }
+
+    private ExternyVrchol traverzujNaExternyVrchol(Vrchol zaciatocnyVrchol, InternyVrchol[] predchadzajuciVrchol, BitSet zaznamHash,
+                                                   int[] curBitHash, boolean[] odpojLavehoSyna)
+    {
+        Vrchol curVrchol = zaciatocnyVrchol;
 
         while (curVrchol instanceof InternyVrchol internyVrchol)
         {
-            int hodnotaBitu = pridavanyZaznamHash.get(curBitHash) ? 1 : 0;
-            curBitHash++;
+            int hodnotaBitu = zaznamHash.get(curBitHash[0]) ? 1 : 0;
+            curBitHash[0]++;
 
-            predchadzajuciVrchol = internyVrchol;
+            predchadzajuciVrchol[0] = internyVrchol;
             if (hodnotaBitu == 0)
             {
                 // Vlavo
-                odpojLavehoSyna = true;
+                odpojLavehoSyna[0] = true;
                 curVrchol = internyVrchol.getLavySyn();
             }
             else
             {
                 // Vpravo
-                odpojLavehoSyna = false;
+                odpojLavehoSyna[0] = false;
                 curVrchol = internyVrchol.getPravySyn();
             }
         }
 
         // Dostal som sa na Externy vrchol
-        ExternyVrchol externyVrchol = (ExternyVrchol)curVrchol;
-        if (externyVrchol.getPocetZaznamovBlock() < blokovaciFaktorHlavnySubor)
-        {
-            // V Blocku je miesto pre pridavany Zaznam
-            this.vlozDoExistujuceho(externyVrchol, pridavany, typ, blokovaciFaktorHlavnySubor, hlavnySubor);
-            return;
-        }
+        return (ExternyVrchol)curVrchol;
+    }
 
-        // V Blocku nie je miesto pre pridavany Zaznam
+    private<T extends IData> void vlozZaznamDoVrcholu(ExternyVrchol externyVrchol, InternyVrchol predchadzajuciVrchol, T pridavany, Class<T> typ,
+                                                      SpravcaSuborov spravcaSuborov, BitSet pridavanyZaznamHash,
+                                                      int curBitHash, boolean odpojLavehoSyna)
+    {
+        Block<T> presuvanyBlock = null;
+
         while (true)
         {
-            if (curBitHash >= Konstanty.POCET_BITOV_HASH)
+            if (externyVrchol.getPocetZaznamovBlock() < spravcaSuborov.getBlokovaciFaktorHlavnySubor() ||
+                curBitHash >= pridavany.getPocetBitovHash())
             {
-                // Doslo k vyuzitiu vsetkych bitov,
-                // nutnost vlozit do preplnujuceho suboru
-                throw new RuntimeException("Minuli sa vsetky bity!");
+                // V Blocku je miesto pre pridavany Zaznam alebo boli pouzite vsetky bity hashu
+                externyVrchol.vloz(pridavany, typ, spravcaSuborov);
+                break;
             }
 
             // Metoda odpoji najdeny najdeny Externy vrchol od zvysku stromu
             // a nahradi ho novym Internym vrcholom
             InternyVrchol novyInternyVrchol = this.odpojExternyVrchol(odpojLavehoSyna, predchadzajuciVrchol);
 
-            // Nacitaj zaznamy z odpojeneho Externoho vrcholu
-            // a presuvaj ich do novo vytvorenych Externych vrcholov
-            Block<T> odpojenyVrcholBlock = externyVrchol.getBlock(typ, blokovaciFaktorHlavnySubor, hlavnySubor);
-            Block<T> lavyBlock = new Block<>(blokovaciFaktorHlavnySubor, typ);
-            Block<T> pravyBlock = new Block<>(blokovaciFaktorHlavnySubor, typ);
+            // Nacitaj Block z odpojeneho Externeho vrcholu
+            // a presuvaj zaznamy do novo vytvorenych Externych vrcholov
+            presuvanyBlock = (presuvanyBlock == null) ? externyVrchol.getBlock(typ, spravcaSuborov) : presuvanyBlock;
+            Block<T> lavyBlock = new Block<>(spravcaSuborov.getBlokovaciFaktorHlavnySubor(), typ);
+            Block<T> pravyBlock = new Block<>(spravcaSuborov.getBlokovaciFaktorHlavnySubor(), typ);
 
-            for (T zaznam : odpojenyVrcholBlock.getZaznamy())
+            for (T zaznam : presuvanyBlock.getZaznamy())
             {
                 BitSet presuvanyZaznamHash = zaznam.getHash();
                 int hodnotaBitu = presuvanyZaznamHash.get(curBitHash) ? 1 : 0;
@@ -147,26 +155,19 @@ public class DynamickyZnakovyStrom
                 // Novy Zaznam bol uspesne vlozeny do stromu
 
                 // Pouzi offset, ktory mal odpojeny Block
-                ((ExternyVrchol)novyInternyVrchol.getLavySyn()).vlozBlock(lavyBlock, hlavnySubor, externyVrchol.getOffset());
+                ((ExternyVrchol)novyInternyVrchol.getLavySyn()).vlozBlock(lavyBlock, spravcaSuborov, externyVrchol.getOffset());
                 // Nutne poziadat o novy offset
-                ((ExternyVrchol)novyInternyVrchol.getPravySyn()).vlozBlock(pravyBlock, hlavnySubor, hlavnySubor.getNovyOffset());
+                ((ExternyVrchol)novyInternyVrchol.getPravySyn()).vlozBlock(pravyBlock, spravcaSuborov, -1);
 
                 break;
             }
 
             // Novy Zaznam nemohol byt vlozeny, cely proces je nutne opakovat
-            if (lavyBlock.jeBlockPlny())
-            {
-                odpojLavehoSyna = true;
-                ((ExternyVrchol)novyInternyVrchol.getLavySyn()).vlozBlock(lavyBlock, hlavnySubor, externyVrchol.getOffset());
-            }
-            else
-            {
-                odpojLavehoSyna = false;
-                ((ExternyVrchol)novyInternyVrchol.getPravySyn()).vlozBlock(lavyBlock, hlavnySubor, externyVrchol.getOffset());
-            }
+            presuvanyBlock = lavyBlock.jeBlockPlny() ? lavyBlock : pravyBlock;
+            odpojLavehoSyna = lavyBlock.jeBlockPlny();
 
             predchadzajuciVrchol = novyInternyVrchol;
+
             curBitHash++;
         }
     }
@@ -200,55 +201,14 @@ public class DynamickyZnakovyStrom
         return novyInternyVrchol;
     }
 
-    private<T extends IData> void vlozDoExistujuceho(ExternyVrchol externyVrchol, T pridavany, Class<T> typ, int blokovaciFaktorHlavnySubor, Subor hlavnySubor)
-    {
-        if (externyVrchol.getOffset() == -1)
-        {
-            // Externy nema pridelene miesto v subore
-            long pridelenyOffset = hlavnySubor.getNovyOffset();
-            externyVrchol.vloz(pridavany, typ, blokovaciFaktorHlavnySubor, hlavnySubor, pridelenyOffset);
-        }
-        else
-        {
-            externyVrchol.vloz(pridavany, typ, blokovaciFaktorHlavnySubor, hlavnySubor, -1);
-        }
-    }
-
-    public<T extends IData> T vyhladaj(T vyhladavany, Class<T> typ,
-                                       int blokovaciFaktorHlavnySubor, int blokovaciFaktorPreplnujuciSubor,
-                                       Subor hlavnySubor, Subor preplnujuciSubor)
+    public<T extends IData> T vyhladaj(T vyhladavany, Class<T> typ, SpravcaSuborov spravcaSuborov)
     {
         // Prechadzaj stromom az pokym sa nedostanes na Externy vrchol
         BitSet vyhladavanyZaznamHash = vyhladavany.getHash();
-        ExternyVrchol najdenyExternyVrchol = this.vyhladajExternyVrchol(vyhladavanyZaznamHash);
+        ExternyVrchol najdenyExternyVrchol = this.traverzujNaExternyVrchol(this.root, new InternyVrchol[]{ null }, vyhladavanyZaznamHash, new int[]{ 0 }, new boolean[]{ false });
 
         // Nacitaj Block a prehladaj ho
-        Block<T> najdenyBlock = najdenyExternyVrchol.getBlock(typ, blokovaciFaktorHlavnySubor, hlavnySubor);
+        Block<T> najdenyBlock = najdenyExternyVrchol.getBlock(typ, spravcaSuborov);
         return najdenyBlock.vyhladaj(vyhladavany);
-    }
-
-    private ExternyVrchol vyhladajExternyVrchol(BitSet hash)
-    {
-        Vrchol curVrchol = this.root;
-        int curBitHash = 0;
-
-        while (curVrchol instanceof InternyVrchol internyVrchol)
-        {
-            int hodnotaBitu = hash.get(curBitHash) ? 1 : 0;
-            curBitHash++;
-
-            if (hodnotaBitu == 0)
-            {
-                // Vlavo
-                curVrchol = internyVrchol.getLavySyn();
-            }
-            else
-            {
-                // Vpravo
-                curVrchol = internyVrchol.getPravySyn();
-            }
-        }
-
-        return (ExternyVrchol)curVrchol;
     }
 }

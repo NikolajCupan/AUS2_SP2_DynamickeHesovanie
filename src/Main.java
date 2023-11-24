@@ -1,24 +1,13 @@
-import Hesovanie.Block;
 import Hesovanie.DynamickeHesovanie;
-import Hesovanie.DynamickyZnakovyStrom.ExternyVrchol;
-import Hesovanie.Subor;
-import Objekty.Nehnutelnost;
 import Objekty.Parcela;
-import Objekty.Suradnica;
 import Ostatne.Generator;
-import com.sun.source.tree.TryTree;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.BitSet;
 import java.util.Collections;
 
 public class Main
 {
-    public static void main(String[] args) throws IOException
+    public static void main(String[] args)
     {
         final int pocetElementov = 100000;
 
@@ -36,6 +25,11 @@ public class Main
             al.add(parcela);
         }
 
+        int pocet = h.getPocetElemtov();
+        int spracovane = 0;
+        int ok = 0;
+        int bad = 0;
+
         Collections.shuffle(indexy);
         for (int i = 0; i < pocetElementov; i++)
         {
@@ -43,7 +37,21 @@ public class Main
             Parcela hladana = al.get(index);
             Parcela najdenaDH = h.vyhladaj(hladana, Parcela.class);
 
-            System.out.println("AL: " + hladana.toString() + ", DH: " + najdenaDH.toString());
+            if (hladana.jeRovnaky(najdenaDH))
+            {
+                ok++;
+            }
+            else
+            {
+                bad++;
+            }
+
+            spracovane++;
         }
+
+        System.out.println("Ok: " + ok);
+        System.out.println("Bad: " + bad);
+        System.out.println("Spracovane: " + spracovane);
+        System.out.println("Pocet: " + pocet);
     }
 }

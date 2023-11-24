@@ -16,6 +16,7 @@ import java.util.BitSet;
 public class Nehnutelnost extends Polygon implements IData
 {
     private static final int MAX_POCET_REFERENCII = 6;
+    private static final int POCET_BITOV_HASH = 32;
 
     // Unikatny kluc
     private int nehnutelnostID;
@@ -122,7 +123,26 @@ public class Nehnutelnost extends Polygon implements IData
     @Override
     public BitSet getHash()
     {
-        return Helper.generateHash(this.nehnutelnostID);
+        BitSet bitSet = new BitSet();
+        long hash = (this.nehnutelnostID * 2654435761L) % (1L << POCET_BITOV_HASH);
+
+        for (int i = 0; i < POCET_BITOV_HASH; i++)
+        {
+            byte bit = (byte)((hash >> i) & 1);
+
+            if (bit == 1)
+            {
+                bitSet.set(i);
+            }
+        }
+
+        return bitSet;
+    }
+
+    @Override
+    public int getPocetBitovHash()
+    {
+        return POCET_BITOV_HASH;
     }
 
     @Override

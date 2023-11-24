@@ -6,38 +6,23 @@ import Rozhrania.IData;
 public class DynamickeHesovanie<T extends IData>
 {
     private final DynamickyZnakovyStrom dynamickyZnakovyStrom;
-
-    // Udava kolko Recordov sa nachadza v 1 Blocku
-    private final int blokovaciFaktorHlavnySubor;
-    private final int blokovaciFaktorPreplnujuciSubor;
-
-    // Samotne subory
-    private final Subor hlavnySubor;
-    private final Subor preplnujuciSubor;
+    private final SpravcaSuborov spravcaSuborov;
 
     public DynamickeHesovanie(int blokovaciFaktorHlavnySubor, int blokovaciFaktorPreplnujuciSubor, String nazovHlavnySubor, String nazovPreplnujuciSubor)
     {
         this.dynamickyZnakovyStrom = new DynamickyZnakovyStrom();
-
-        this.blokovaciFaktorHlavnySubor = blokovaciFaktorHlavnySubor;
-        this.blokovaciFaktorPreplnujuciSubor = blokovaciFaktorPreplnujuciSubor;
-
-        this.hlavnySubor = new Subor(nazovHlavnySubor);
-        this.preplnujuciSubor = new Subor(nazovPreplnujuciSubor);
+        this.spravcaSuborov = new SpravcaSuborov(blokovaciFaktorHlavnySubor, blokovaciFaktorPreplnujuciSubor,
+                                                 nazovHlavnySubor, nazovPreplnujuciSubor);
     }
 
     public void vloz(T pridavany, Class<T> typ)
     {
-        this.dynamickyZnakovyStrom.vloz(pridavany, typ,
-                                        this.blokovaciFaktorHlavnySubor, this.blokovaciFaktorPreplnujuciSubor,
-                                        this.hlavnySubor, this.preplnujuciSubor);
+        this.dynamickyZnakovyStrom.vloz(pridavany, typ, this.spravcaSuborov);
     }
 
     public T vyhladaj(T vyhladavany, Class<T> typ)
     {
-        return this.dynamickyZnakovyStrom.vyhladaj(vyhladavany, typ,
-                                                   this.blokovaciFaktorHlavnySubor, this.blokovaciFaktorPreplnujuciSubor,
-                                                   this.hlavnySubor, this.preplnujuciSubor);
+        return this.dynamickyZnakovyStrom.vyhladaj(vyhladavany, typ, this.spravcaSuborov);
     }
 
     public int getPocetElemtov()
