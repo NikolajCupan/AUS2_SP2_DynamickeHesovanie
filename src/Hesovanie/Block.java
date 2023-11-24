@@ -23,12 +23,18 @@ public class Block<T extends IData> implements IRecord
     // instancii pri nacitani z pola bajtov
     private final T dummyZaznam;
 
+    private long offsetPrevVolny;
+    private long offsetNextVolny;
+
     public Block(int maxPocetZaznamov, Class<T> typ)
     {
         this.maxPocetZaznamov = maxPocetZaznamov;
 
         this.zaznamy = new ArrayList<>();
         this.pocetPlatnychZaznamov = 0;
+
+        this.offsetPrevVolny = -1;
+        this.offsetNextVolny = -1;
 
         try
         {
@@ -94,6 +100,16 @@ public class Block<T extends IData> implements IRecord
         return this.pocetPlatnychZaznamov >= this.maxPocetZaznamov;
     }
 
+    public long getOffsetPrevVolny()
+    {
+        return offsetPrevVolny;
+    }
+
+    public long getOffsetNextVolny()
+    {
+        return offsetNextVolny;
+    }
+
     public int getPocetPlatnychZaznamov()
     {
         return this.pocetPlatnychZaznamov;
@@ -116,11 +132,24 @@ public class Block<T extends IData> implements IRecord
         }
     }
 
+    public void setOffsetPrevVolny(long offsetPrevVolny)
+    {
+        this.offsetPrevVolny = offsetPrevVolny;
+    }
+
+    public void setOffsetNextVolny(long offsetNextVolny)
+    {
+        this.offsetNextVolny = offsetNextVolny;
+    }
+
     // Kolko bajtov zabera 1 Block
     @Override
     public int getVelkost()
     {
         int velkost = 0;
+
+        // Offset predchadzajuceho a nasledujuceho volneho Blocku
+        velkost += 2 * Konstanty.VELKOST_LONG;
 
         // Pocet platnych Zaznamov - int
         velkost += Konstanty.VELKOST_INT;
@@ -140,6 +169,9 @@ public class Block<T extends IData> implements IRecord
 
         try
         {
+            dataOutputStream.writeLong(this.offsetPrevVolny);
+            dataOutputStream.writeLong(this.offsetNextVolny);
+
             dataOutputStream.writeInt(this.pocetPlatnychZaznamov);
 
             for (int i = 0; i < this.pocetPlatnychZaznamov; i++)
@@ -174,6 +206,9 @@ public class Block<T extends IData> implements IRecord
 
         try
         {
+            this.offsetPrevVolny = dataInputStream.readLong();
+            this.offsetNextVolny = dataInputStream.readLong();
+
             this.pocetPlatnychZaznamov = dataInputStream.readInt();
 
             this.zaznamy = new ArrayList<>();

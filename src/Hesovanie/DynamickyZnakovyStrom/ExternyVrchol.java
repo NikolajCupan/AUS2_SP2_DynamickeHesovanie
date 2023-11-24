@@ -18,7 +18,7 @@ public class ExternyVrchol extends Vrchol
     }
 
     // Vloz na dany offset cely Block
-    public<T extends IData> void vlozBlock(Block<T> pridavanyBlock, SpravcaSuborov spravcaSuborov, long forcedOffset)
+    public<T extends IData> void vlozBlock(Block<T> pridavanyBlock, Class<T> typ, SpravcaSuborov spravcaSuborov, long forcedOffset)
     {
         if (forcedOffset != -1)
         {
@@ -26,7 +26,7 @@ public class ExternyVrchol extends Vrchol
         }
         else
         {
-            this.offset = (this.offset == -1) ? spravcaSuborov.dajVolnyBlockHlavnySubor() : this.offset;
+            this.offset = (this.offset == -1) ? spravcaSuborov.dajVolnyBlockHlavnySubor(typ) : this.offset;
         }
 
         this.pocetZaznamovBlock = pridavanyBlock.getPocetPlatnychZaznamov();
@@ -43,7 +43,7 @@ public class ExternyVrchol extends Vrchol
 
     public<T extends IData> void vloz(T pridavany, Class<T> typ, SpravcaSuborov spravcaSuborov)
     {
-        this.offset = (this.offset == -1) ? spravcaSuborov.dajVolnyBlockHlavnySubor() : this.offset;
+        this.offset = (this.offset == -1) ? spravcaSuborov.dajVolnyBlockHlavnySubor(typ) : this.offset;
 
         try
         {

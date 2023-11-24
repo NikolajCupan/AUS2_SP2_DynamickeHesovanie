@@ -158,9 +158,9 @@ public class DynamickyZnakovyStrom
                 // Novy Zaznam bol uspesne vlozeny do stromu
 
                 // Pouzi offset, ktory mal odpojeny Block
-                ((ExternyVrchol)novyInternyVrchol.getLavySyn()).vlozBlock(lavyBlock, spravcaSuborov, odlozenyOffset);
+                ((ExternyVrchol)novyInternyVrchol.getLavySyn()).vlozBlock(lavyBlock, typ, spravcaSuborov, odlozenyOffset);
                 // Nutne poziadat o novy offset
-                ((ExternyVrchol)novyInternyVrchol.getPravySyn()).vlozBlock(pravyBlock, spravcaSuborov, -1);
+                ((ExternyVrchol)novyInternyVrchol.getPravySyn()).vlozBlock(pravyBlock, typ, spravcaSuborov, -1);
 
                 break;
             }
@@ -242,7 +242,7 @@ public class DynamickyZnakovyStrom
 
         if (curSpracuvanyVrchol.getStatus() == Status.KOREN)
         {
-            this.mazaneZKorena(spravcaSuborov, kumulovanyBlock);
+            this.mazaneZKorena(spravcaSuborov, kumulovanyBlock, typ);
             return;
         }
 
@@ -281,39 +281,39 @@ public class DynamickyZnakovyStrom
                 }
             }
 
-            curSpracuvanyVrchol = this.odpojInternyVrchol(curSpracuvanyVrchol.getOtec(), spravcaSuborov);
+            curSpracuvanyVrchol = this.odpojInternyVrchol(curSpracuvanyVrchol.getOtec(), spravcaSuborov, typ);
         }
 
         if (kumulovanyBlock.getPocetPlatnychZaznamov() != 0)
         {
-            curSpracuvanyVrchol.vlozBlock(kumulovanyBlock, spravcaSuborov, -1);
+            curSpracuvanyVrchol.vlozBlock(kumulovanyBlock, typ, spravcaSuborov, -1);
         }
         else
         {
-            spravcaSuborov.uvolniBlockHlavnySubor(curSpracuvanyVrchol.getOffset());
+            spravcaSuborov.uvolniBlockHlavnySubor(curSpracuvanyVrchol.getOffset(), typ);
             curSpracuvanyVrchol.setOffset(-1);
             curSpracuvanyVrchol.setPocetZaznamovBlock(0);
         }
     }
 
-    private<T extends IData> void mazaneZKorena(SpravcaSuborov spravcaSuborov, Block<T> aktualizovanyBlock)
+    private<T extends IData> void mazaneZKorena(SpravcaSuborov spravcaSuborov, Block<T> aktualizovanyBlock, Class<T> typ)
     {
         ExternyVrchol korenExterny = (ExternyVrchol)this.root;
 
         if (aktualizovanyBlock.getPocetPlatnychZaznamov() == 0)
         {
-            spravcaSuborov.uvolniBlockHlavnySubor(korenExterny.getOffset());
+            spravcaSuborov.uvolniBlockHlavnySubor(korenExterny.getOffset(), typ);
             this.root = new ExternyVrchol();
         }
         else
         {
-            korenExterny.vlozBlock(aktualizovanyBlock, spravcaSuborov, korenExterny.getOffset());
+            korenExterny.vlozBlock(aktualizovanyBlock, typ, spravcaSuborov, korenExterny.getOffset());
         }
     }
 
-    private ExternyVrchol odpojInternyVrchol(InternyVrchol odpajany, SpravcaSuborov spravcaSuborov)
+    private<T extends IData> ExternyVrchol odpojInternyVrchol(InternyVrchol odpajany, SpravcaSuborov spravcaSuborov, Class<T> typ)
     {
-        this.uvolniBlocky(odpajany, spravcaSuborov);
+        this.uvolniBlocky(odpajany, spravcaSuborov, typ);
 
         InternyVrchol otecOdpajaneho = odpajany.getOtec();
         ExternyVrchol novyExternyVrchol = new ExternyVrchol();
@@ -335,19 +335,19 @@ public class DynamickyZnakovyStrom
         return novyExternyVrchol;
     }
 
-    private void uvolniBlocky(InternyVrchol odpajany, SpravcaSuborov spravcaSuborov)
+    private<T extends IData> void uvolniBlocky(InternyVrchol odpajany, SpravcaSuborov spravcaSuborov, Class<T> typ)
     {
         ExternyVrchol lavySyn = (ExternyVrchol)odpajany.getLavySyn();
         ExternyVrchol pravySyn = (ExternyVrchol)odpajany.getPravySyn();
 
-        if (lavySyn.getPocetZaznamovBlock() != -1)
+        if (lavySyn.getOffset() != -1)
         {
-            spravcaSuborov.uvolniBlockHlavnySubor(lavySyn.getOffset());
+            spravcaSuborov.uvolniBlockHlavnySubor(lavySyn.getOffset(), typ);
         }
 
         if (pravySyn.getOffset() != -1)
         {
-            spravcaSuborov.uvolniBlockHlavnySubor(pravySyn.getOffset());
+            spravcaSuborov.uvolniBlockHlavnySubor(pravySyn.getOffset(), typ);
         }
     }
 }

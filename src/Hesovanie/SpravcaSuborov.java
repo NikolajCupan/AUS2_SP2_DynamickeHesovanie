@@ -1,5 +1,7 @@
 package Hesovanie;
 
+import Rozhrania.IData;
+
 import java.io.File;
 import java.io.RandomAccessFile;
 
@@ -15,6 +17,8 @@ public class SpravcaSuborov
     private final File preplnujuciSubor;
     private final RandomAccessFile preplnujuciPrustupovySubor;
 
+    private long offsetPrvyVolnyHlavnySubor;
+
     public SpravcaSuborov(int blokovaciFaktorHlavnySubor, int blokovaciFaktorPreplnujuciSubor, String nazovHlavnySubor, String nazovPreplnujuciSubor)
     {
         this.blokovaciFaktorHlavnySubor = blokovaciFaktorHlavnySubor;
@@ -22,6 +26,8 @@ public class SpravcaSuborov
 
         this.hlavnySubor = new File(nazovHlavnySubor);
         this.preplnujuciSubor = new File(nazovPreplnujuciSubor);
+
+        this.offsetPrvyVolnyHlavnySubor = -1;
 
         try
         {
@@ -81,15 +87,145 @@ public class SpravcaSuborov
         }
     }
 
-    public long dajVolnyBlockHlavnySubor()
+    public<T extends IData> long dajVolnyBlockHlavnySubor(Class<T> typ)
     {
         // Zatial vzdy prideli offset na konci suboru
-        return this.getVelkostSuboru();
+        if (this.offsetPrvyVolnyHlavnySubor == -1)
+        {
+            // Nutne pridelit na konci suboru
+            return this.getVelkostSuboru();
+        }
+
+        Block<T> prvyVolnyBlock = new Block<>(this.blokovaciFaktorHlavnySubor, typ);
+        prvyVolnyBlock.prevedZPolaBajtov(this.citaj(this.offsetPrvyVolnyHlavnySubor, prvyVolnyBlock.getVelkost()));
+
+        if (prvyVolnyBlock.getOffsetNextVolny() == -1)
+        {
+            // Nema nasledovnika
+            long pridelenyOffset = this.offsetPrvyVolnyHlavnySubor;
+            this.offsetPrvyVolnyHlavnySubor = -1;
+            return pridelenyOffset;
+        }
+
+        // Ma nasledovnika, nutne spracovat
+        Block<T> nasledovnik = new Block<>(this.blokovaciFaktorHlavnySubor, typ);
+        nasledovnik.prevedZPolaBajtov(this.citaj(prvyVolnyBlock.getOffsetNextVolny(), nasledovnik.getVelkost()));
+        nasledovnik.setOffsetPrevVolny(-1);
+
+        this.uloz(prvyVolnyBlock.getOffsetNextVolny(), nasledovnik.prevedNaPoleBajtov());
+
+        long pridelenyOffset = this.offsetPrvyVolnyHlavnySubor;
+        this.offsetPrvyVolnyHlavnySubor = prvyVolnyBlock.getOffsetNextVolny();
+
+        return pridelenyOffset;
     }
 
-    public void uvolniBlockHlavnySubor(long offset)
+    public<T extends IData> void uvolniBlockHlavnySubor(long novyPrvyOffset, Class<T> typ)
     {
+        this.skontrolujOffset(novyPrvyOffset);
 
+        if (this.offsetPrvyVolnyHlavnySubor == -1)
+        {
+            Block<T> prazdnyBlock = new Block<>(this.getBlokovaciFaktorHlavnySubor(), typ);
+            this.uloz(novyPrvyOffset, prazdnyBlock.prevedNaPoleBajtov());
+            this.offsetPrvyVolnyHlavnySubor = novyPrvyOffset;
+        }
+        else
+        {
+            long staryPrvyOffset = this.offsetPrvyVolnyHlavnySubor;
+
+            Block<T> novyPrvyVolny = new Block<>(this.getBlokovaciFaktorHlavnySubor(), typ);
+
+            Block<T> staryPrvyVolny = new Block<>(this.getBlokovaciFaktorHlavnySubor(), typ);
+            staryPrvyVolny.prevedZPolaBajtov(this.citaj(staryPrvyOffset, staryPrvyVolny.getVelkost()));
+
+            staryPrvyVolny.setOffsetPrevVolny(novyPrvyOffset);
+            novyPrvyVolny.setOffsetNextVolny(staryPrvyOffset);
+
+            this.offsetPrvyVolnyHlavnySubor = novyPrvyOffset;
+
+            this.uloz(staryPrvyOffset, staryPrvyVolny.prevedNaPoleBajtov());
+            this.uloz(novyPrvyOffset, novyPrvyVolny.prevedNaPoleBajtov());
+        }
+
+        this.skusZmensitHlavnySubor(typ);
+    }
+
+    private<T extends IData> void skusZmensitHlavnySubor(Class<T> typ)
+    {
+        try
+        {
+            while (true)
+            {
+                Block<T> block = new Block<>(this.getBlokovaciFaktorHlavnySubor(), typ);
+
+                long velkostSuboru = this.getVelkostSuboru();
+                long offsetPoslednehoBlocku = velkostSuboru - block.getVelkost();
+
+                // Moznost zmensit subor
+                Block<T> blockNaKonciSuboru = new Block<>(this.getBlokovaciFaktorHlavnySubor(), typ);
+                blockNaKonciSuboru.prevedZPolaBajtov(this.citaj(offsetPoslednehoBlocku, blockNaKonciSuboru.getVelkost()));
+
+                if (blockNaKonciSuboru.getPocetPlatnychZaznamov() == 0)
+                {
+                    // Block mozno zmazat
+                    long nextOffset = blockNaKonciSuboru.getOffsetNextVolny();
+                    long prevOffset = blockNaKonciSuboru.getOffsetPrevVolny();
+
+                    if (nextOffset != -1 && prevOffset != -1)
+                    {
+                        Block<T> prevBlock = new Block<>(this.blokovaciFaktorHlavnySubor, typ);
+                        Block<T> nextBlock = new Block<>(this.blokovaciFaktorHlavnySubor, typ);
+                        prevBlock.prevedZPolaBajtov(this.citaj(prevOffset, prevBlock.getVelkost()));
+                        nextBlock.prevedZPolaBajtov(this.citaj(nextOffset, nextBlock.getVelkost()));
+
+                        prevBlock.setOffsetNextVolny(nextOffset);
+                        nextBlock.setOffsetPrevVolny(prevOffset);
+
+                        this.uloz(prevOffset, prevBlock.prevedNaPoleBajtov());
+                        this.uloz(nextOffset, nextBlock.prevedNaPoleBajtov());
+
+                        this.hlavnyPristupovySubor.setLength(offsetPoslednehoBlocku);
+                    }
+                    else if (nextOffset == -1 && prevOffset != -1)
+                    {
+                        Block<T> prevBlock = new Block<>(this.blokovaciFaktorHlavnySubor, typ);
+                        prevBlock.prevedZPolaBajtov(this.citaj(prevOffset, prevBlock.getVelkost()));
+
+                        prevBlock.setOffsetNextVolny(-1);
+
+                        this.uloz(prevOffset, prevBlock.prevedNaPoleBajtov());
+                    }
+                    else if (nextOffset != -1 && prevOffset == -1)
+                    {
+                        Block<T> nextBlock = new Block<>(this.blokovaciFaktorHlavnySubor, typ);
+                        nextBlock.prevedZPolaBajtov(this.citaj(nextOffset, nextBlock.getVelkost()));
+
+                        nextBlock.setOffsetPrevVolny(-1);
+
+                        this.uloz(nextOffset, nextBlock.prevedNaPoleBajtov());
+                        this.offsetPrvyVolnyHlavnySubor = nextOffset;
+
+                        this.hlavnyPristupovySubor.setLength(offsetPoslednehoBlocku);
+                    }
+                    else if (nextOffset == -1 && prevOffset == -1)
+                    {
+                        // Jednoducho subor orezem
+                        this.offsetPrvyVolnyHlavnySubor = -1;
+                        this.hlavnyPristupovySubor.setLength(offsetPoslednehoBlocku);
+                        break;
+                    }
+                }
+                else
+                {
+                    break;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            throw new RuntimeException("Chyba pri zmensovani suboru");
+        }
     }
 
     private void skontrolujOffset(long offset)

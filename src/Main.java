@@ -22,16 +22,28 @@ public class Main
         Parcela p2 = new Parcela(2, "2", suradnica, suradnica);
         Parcela p3 = new Parcela(3, "3", suradnica, suradnica);
         Parcela p4 = new Parcela(4, "4", suradnica, suradnica);
+        Parcela p5 = new Parcela(5, "5", suradnica, suradnica);
+        Parcela p6 = new Parcela(6, "6", suradnica, suradnica);
+        Parcela p7 = new Parcela(7, "7", suradnica, suradnica);
+        Parcela p8 = new Parcela(8, "8", suradnica, suradnica);
 
         dh.vloz(p1, Parcela.class);
         dh.vloz(p2, Parcela.class);
         dh.vloz(p3, Parcela.class);
         dh.vloz(p4, Parcela.class);
+        dh.vloz(p5, Parcela.class);
+        dh.vloz(p6, Parcela.class);
+        dh.vloz(p7, Parcela.class);
+        dh.vloz(p8, Parcela.class);
 
-        dh.vymaz(p3, Parcela.class);
-        dh.vymaz(p4, Parcela.class);
         dh.vymaz(p1, Parcela.class);
         dh.vymaz(p2, Parcela.class);
+        dh.vymaz(p3, Parcela.class);
+        dh.vymaz(p4, Parcela.class);
+        dh.vymaz(p5, Parcela.class);
+        dh.vymaz(p6, Parcela.class);
+        dh.vymaz(p7, Parcela.class);
+        dh.vymaz(p8, Parcela.class);
 
         int x = 100;
     }

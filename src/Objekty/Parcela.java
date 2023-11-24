@@ -113,17 +113,23 @@ public class Parcela extends Polygon implements IData
         switch (this.parcelaID)
         {
             case 1:
-                break;
-
             case 2:
                 break;
 
             case 3:
+            case 4:
+                bitSet.set(1);
+                break;
+
+            case 5:
+            case 6:
                 bitSet.set(0);
                 break;
 
-            case 4:
+            case 7:
+            case 8:
                 bitSet.set(0);
+                bitSet.set(1);
                 break;
 
             default:

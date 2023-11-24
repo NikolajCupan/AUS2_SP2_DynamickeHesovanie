@@ -7,6 +7,7 @@ public class Konstanty
 
     public static final int VELKOST_BAJT = 1;
     public static final int VELKOST_INT = 4;
+    public static final int VELKOST_LONG = 8;
     public static final int VELKOST_DOUBLE = 8;
 
     public static final char DUMMY_ZNAK = '*';
