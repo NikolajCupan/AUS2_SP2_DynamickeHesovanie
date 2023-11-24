@@ -25,7 +25,7 @@ public class DynamickeHesovanie<T extends IData>
         return this.dynamickyZnakovyStrom.vyhladaj(vyhladavany, typ, this.spravcaSuborov);
     }
 
-    public int getPocetElemtov()
+    public int getPocetElementov()
     {
         return this.dynamickyZnakovyStrom.getPocetElementov();
     }
