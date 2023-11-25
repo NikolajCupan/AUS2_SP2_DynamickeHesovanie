@@ -8,12 +8,17 @@ public class ExternyVrchol extends Vrchol
 {
     // Udava, na ktorom bajte zacina dany Block
     private long offset;
+
+    // Vratane Zaznamov v Preplnujucich blockoch
     private int pocetZaznamovBlock;
+    private int pocetPreplnujucichBlockov;
 
     public ExternyVrchol()
     {
         this.offset = -1;
         this.pocetZaznamovBlock = 0;
+        this.pocetPreplnujucichBlockov = 0;
+
         this.otec = null;
     }
 
@@ -33,7 +38,7 @@ public class ExternyVrchol extends Vrchol
 
         try
         {
-            spravcaSuborov.uloz(this.offset, pridavanyBlock.prevedNaPoleBajtov());
+            spravcaSuborov.ulozHlavnySubor(this.offset, pridavanyBlock.prevedNaPoleBajtov());
         }
         catch (Exception ex)
         {
@@ -50,12 +55,17 @@ public class ExternyVrchol extends Vrchol
             // Nacitanie Blocku do operacnej pamati
             Block<T> block = new Block<>(spravcaSuborov.getBlokovaciFaktorHlavnySubor(), typ);
 
-            byte[] poleBajtovSubor = spravcaSuborov.citaj(this.offset, block.getVelkost());
+            byte[] poleBajtovSubor = spravcaSuborov.citajHlavnySubor(this.offset, block.getVelkost());
             block.prevedZPolaBajtov(poleBajtovSubor);
 
             // Aktualizovanie Blocku a ulozenie do Suboru
-            block.vloz(pridavany);
-            spravcaSuborov.uloz(this.offset, block.prevedNaPoleBajtov());
+            boolean vytvorenyNovyPreplnujuciBlock = block.vloz(pridavany, spravcaSuborov);
+            if (vytvorenyNovyPreplnujuciBlock)
+            {
+                this.pocetPreplnujucichBlockov++;
+            }
+
+            spravcaSuborov.ulozHlavnySubor(this.offset, block.prevedNaPoleBajtov());
 
             this.pocetZaznamovBlock++;
         }
@@ -78,7 +88,7 @@ public class ExternyVrchol extends Vrchol
             // Nacitaj Block zo Suboru a vrat ho
             Block<T> block = new Block<>(spravcaSuborov.getBlokovaciFaktorHlavnySubor(), typ);
 
-            byte[] poleBajtovSubor = spravcaSuborov.citaj(this.offset, block.getVelkost());
+            byte[] poleBajtovSubor = spravcaSuborov.citajHlavnySubor(this.offset, block.getVelkost());
             block.prevedZPolaBajtov(poleBajtovSubor);
 
             return block;
@@ -107,5 +117,15 @@ public class ExternyVrchol extends Vrchol
     public void setPocetZaznamovBlock(int pocetZaznamovBlock)
     {
         this.pocetZaznamovBlock = pocetZaznamovBlock;
+    }
+
+    @Override
+    public String toString()
+    {
+        String string = "Externy vrchol (";
+        string += "pocetZaznamovBlock: " + this.pocetZaznamovBlock + ", pocetPreplnujucichBlockov: " + this.pocetPreplnujucichBlockov + ", ";
+        string += "offset: " + this.offset + ")";
+
+        return string;
     }
 }

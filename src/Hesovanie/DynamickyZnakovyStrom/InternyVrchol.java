@@ -37,4 +37,32 @@ public class InternyVrchol extends Vrchol
     {
         this.pravySyn = pravySyn;
     }
+
+    @Override
+    public String toString()
+    {
+        String string = "Interny vrchol (";
+
+        if (this.lavySyn != null)
+        {
+            string += "Lavy syn: existuje,";
+        }
+        else
+        {
+            string +=  "\tLavy syn: neexistuje";
+        }
+
+        if (this.pravySyn != null)
+        {
+            string +=  "\tPravy syn: existuje";
+        }
+        else
+        {
+            string +=  "\tPravy syn: neexistuje";
+        }
+
+        string += ")";
+
+        return string;
+    }
 }

@@ -1,6 +1,7 @@
 package Ostatne;
 
 import java.io.DataInputStream;
+import java.util.BitSet;
 
 public class Helper
 {
@@ -36,5 +37,26 @@ public class Helper
         }
 
         return builder.toString();
+    }
+
+    public static String hashToString(BitSet bitSet, int pocetBitov)
+    {
+        String string = "";
+        for (int i = 1; i <= pocetBitov; i++)
+        {
+            int hodnotaBitu = bitSet.get(i) ? 1 : 0;
+            string += hodnotaBitu;
+
+            if (i % 8 == 0)
+            {
+                string += "  ";
+            }
+            else if (i % 4 == 0)
+            {
+                string += " ";
+            }
+        }
+
+        return new StringBuilder(string).reverse().toString();
     }
 }

@@ -5,7 +5,6 @@ import Hesovanie.SpravcaSuborov;
 import Ostatne.Status;
 import Rozhrania.IData;
 
-import javax.swing.*;
 import java.util.BitSet;
 import java.util.Stack;
 
@@ -93,6 +92,11 @@ public class DynamickyZnakovyStrom
             if (curBitHash >= pridavany.getPocetBitovHash())
             {
                 // Pouzite vsetky bity z hesu
+                if (presuvanyBlock != null)
+                {
+                    externyVrchol.vlozBlock(presuvanyBlock, typ, spravcaSuborov, odlozenyOffset);
+                }
+
                 externyVrchol.vloz(pridavany, typ, spravcaSuborov);
                 break;
             }
@@ -123,12 +127,12 @@ public class DynamickyZnakovyStrom
                 if (hodnotaBitu == 0)
                 {
                     // Vlavo
-                    lavyBlock.vloz(zaznam);
+                    lavyBlock.vloz(zaznam, spravcaSuborov);
                 }
                 else
                 {
                     // Vpravo
-                    pravyBlock.vloz(zaznam);
+                    pravyBlock.vloz(zaznam, spravcaSuborov);
                 }
             }
 
@@ -139,7 +143,7 @@ public class DynamickyZnakovyStrom
                 // Vlavo
                 if (!lavyBlock.jeBlockPlny())
                 {
-                    lavyBlock.vloz(pridavany);
+                    lavyBlock.vloz(pridavany, spravcaSuborov);
                     novyPridavanyVlozeny = true;
                 }
             }
@@ -148,7 +152,7 @@ public class DynamickyZnakovyStrom
                 // Vpravo
                 if (!pravyBlock.jeBlockPlny())
                 {
-                    pravyBlock.vloz(pridavany);
+                    pravyBlock.vloz(pridavany, spravcaSuborov);
                     novyPridavanyVlozeny = true;
                 }
             }
@@ -214,7 +218,7 @@ public class DynamickyZnakovyStrom
 
         // Nacitaj Block a prehladaj ho
         Block<T> najdenyBlock = najdenyExternyVrchol.getBlock(typ, spravcaSuborov);
-        return najdenyBlock.vyhladaj(vyhladavany);
+        return najdenyBlock.vyhladaj(vyhladavany, spravcaSuborov);
     }
 
     public<T extends IData> T vymaz(T vymazavany, Class<T> typ, SpravcaSuborov spravcaSuborov)
@@ -277,7 +281,7 @@ public class DynamickyZnakovyStrom
             {
                 for (T zaznam : surodenecBlock.getZaznamy())
                 {
-                    kumulovanyBlock.vloz(zaznam);
+                    kumulovanyBlock.vloz(zaznam, spravcaSuborov);
                 }
             }
 
@@ -348,6 +352,29 @@ public class DynamickyZnakovyStrom
         if (pravySyn.getOffset() != -1)
         {
             spravcaSuborov.uvolniBlockHlavnySubor(pravySyn.getOffset(), typ);
+        }
+    }
+
+    public void vypisStrom()
+    {
+        Stack<Vrchol> zasobnik = new Stack<>();
+        zasobnik.push(this.root);
+
+        while (!zasobnik.isEmpty())
+        {
+            Vrchol curVrchol = zasobnik.pop();
+
+            if (curVrchol instanceof InternyVrchol internyVrchol)
+            {
+                System.out.println(internyVrchol.toString());
+
+                zasobnik.push(internyVrchol.getLavySyn());
+                zasobnik.push(internyVrchol.getPravySyn());
+            }
+            else
+            {
+                System.out.println(((ExternyVrchol) curVrchol).toString());
+            }
         }
     }
 }

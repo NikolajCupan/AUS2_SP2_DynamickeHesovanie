@@ -18,6 +18,7 @@ public class SpravcaSuborov
     private final RandomAccessFile preplnujuciPrustupovySubor;
 
     private long offsetPrvyVolnyHlavnySubor;
+    private long offsetPrvyVolnyPreplnujuciSubor;
 
     public SpravcaSuborov(int blokovaciFaktorHlavnySubor, int blokovaciFaktorPreplnujuciSubor, String nazovHlavnySubor, String nazovPreplnujuciSubor)
     {
@@ -28,6 +29,7 @@ public class SpravcaSuborov
         this.preplnujuciSubor = new File(nazovPreplnujuciSubor);
 
         this.offsetPrvyVolnyHlavnySubor = -1;
+        this.offsetPrvyVolnyPreplnujuciSubor = -1;
 
         try
         {
@@ -50,17 +52,29 @@ public class SpravcaSuborov
         }
     }
 
-    // Nacita pocetBajtov bajtov z hlavneho suboru zacinajuc
+    // Nacita pocetBajtov bajtov z Hlavneho suboru zacinajuc
     // od miesta urceneho offsetom
-    public byte[] citaj(long offset, int pocetBajtov)
+    public byte[] citajHlavnySubor(long offset, int pocetBajtov)
+    {
+        return this.citaj(offset, pocetBajtov, this.hlavnyPristupovySubor);
+    }
+
+    // Nacita pocetBajtov bajtov z Preplnujuceho suboru zacinajuc
+    // od miesta urceneho offsetom
+    public byte[] citajPreplnujuciSubor(long offset, int pocetBajtov)
+    {
+        return this.citaj(offset, pocetBajtov, this.preplnujuciPrustupovySubor);
+    }
+
+    private byte[] citaj(long offset, int pocetBajtov, RandomAccessFile pristupovySubor)
     {
         this.skontrolujOffset(offset);
         byte[] buffer = new byte[pocetBajtov];
 
         try
         {
-            this.hlavnyPristupovySubor.seek(offset);
-            this.hlavnyPristupovySubor.read(buffer);
+            pristupovySubor.seek(offset);
+            pristupovySubor.read(buffer);
         }
         catch (Exception ex)
         {
@@ -70,16 +84,28 @@ public class SpravcaSuborov
         return buffer;
     }
 
-    // Ulozi poleBajtov do hlavneho suboru zacinajuc od miesta urceneho offsetom,
+    // Ulozi poleBajtov do Hlavneho suboru zacinajuc od miesta urceneho offsetom,
     // pricom ak sa tam uz nachadzaju nejake data, tak tieto su prepisane
-    public void uloz(long offset, byte[] poleBajtov)
+    public void ulozHlavnySubor(long offset, byte[] poleBajtov)
+    {
+        this.uloz(offset, poleBajtov, this.hlavnyPristupovySubor);
+    }
+
+    // Ulozi poleBajtov do Preplnujuceho suboru zacinajuc od miesta urceneho offsetom,
+    // pricom ak sa tam uz nachadzaju nejake data, tak tieto su prepisane
+    public void ulozPreplnujuciSubor(long offset, byte[] poleBajtov)
+    {
+        this.uloz(offset, poleBajtov, this.preplnujuciPrustupovySubor);
+    }
+
+    private void uloz(long offset, byte[] poleBajtov, RandomAccessFile pristupovySubor)
     {
         this.skontrolujOffset(offset);
 
         try
         {
-            this.hlavnyPristupovySubor.seek(offset);
-            this.hlavnyPristupovySubor.write(poleBajtov);
+            pristupovySubor.seek(offset);
+            pristupovySubor.write(poleBajtov);
         }
         catch (Exception ex)
         {
@@ -89,15 +115,14 @@ public class SpravcaSuborov
 
     public<T extends IData> long dajVolnyBlockHlavnySubor(Class<T> typ)
     {
-        // Zatial vzdy prideli offset na konci suboru
         if (this.offsetPrvyVolnyHlavnySubor == -1)
         {
             // Nutne pridelit na konci suboru
-            return this.getVelkostSuboru();
+            return this.getVelkostHlavnySubor();
         }
 
         Block<T> prvyVolnyBlock = new Block<>(this.blokovaciFaktorHlavnySubor, typ);
-        prvyVolnyBlock.prevedZPolaBajtov(this.citaj(this.offsetPrvyVolnyHlavnySubor, prvyVolnyBlock.getVelkost()));
+        prvyVolnyBlock.prevedZPolaBajtov(this.citajHlavnySubor(this.offsetPrvyVolnyHlavnySubor, prvyVolnyBlock.getVelkost()));
 
         if (prvyVolnyBlock.getOffsetNextVolny() == -1)
         {
@@ -109,13 +134,45 @@ public class SpravcaSuborov
 
         // Ma nasledovnika, nutne spracovat
         Block<T> nasledovnik = new Block<>(this.blokovaciFaktorHlavnySubor, typ);
-        nasledovnik.prevedZPolaBajtov(this.citaj(prvyVolnyBlock.getOffsetNextVolny(), nasledovnik.getVelkost()));
+        nasledovnik.prevedZPolaBajtov(this.citajHlavnySubor(prvyVolnyBlock.getOffsetNextVolny(), nasledovnik.getVelkost()));
         nasledovnik.setOffsetPrevVolny(-1);
 
-        this.uloz(prvyVolnyBlock.getOffsetNextVolny(), nasledovnik.prevedNaPoleBajtov());
+        this.ulozHlavnySubor(prvyVolnyBlock.getOffsetNextVolny(), nasledovnik.prevedNaPoleBajtov());
 
         long pridelenyOffset = this.offsetPrvyVolnyHlavnySubor;
         this.offsetPrvyVolnyHlavnySubor = prvyVolnyBlock.getOffsetNextVolny();
+
+        return pridelenyOffset;
+    }
+
+    public<T extends IData> long dajVolnyBlockPreplnujuciSubor(Class<T> typ)
+    {
+        if (this.offsetPrvyVolnyPreplnujuciSubor == -1)
+        {
+            // Nutne pridelit na konci suboru
+            return this.getVelkostPreplnujuciSubor();
+        }
+
+        Block<T> prvyVolnyBlock = new Block<>(this.blokovaciFaktorPreplnujuciSubor, typ);
+        prvyVolnyBlock.prevedZPolaBajtov(this.citajPreplnujuciSubor(this.offsetPrvyVolnyPreplnujuciSubor, prvyVolnyBlock.getVelkost()));
+
+        if (prvyVolnyBlock.getOffsetNextVolny() == -1)
+        {
+            // Nema nasledovnika
+            long pridelenyOffset = this.offsetPrvyVolnyPreplnujuciSubor;
+            this.offsetPrvyVolnyPreplnujuciSubor = -1;
+            return pridelenyOffset;
+        }
+
+        // Ma nasledovnika, nutne spracovat
+        Block<T> nasledovnik = new Block<>(this.blokovaciFaktorPreplnujuciSubor, typ);
+        nasledovnik.prevedZPolaBajtov(this.citajPreplnujuciSubor(prvyVolnyBlock.getOffsetNextVolny(), nasledovnik.getVelkost()));
+        nasledovnik.setOffsetPrevVolny(-1);
+
+        this.ulozPreplnujuciSubor(prvyVolnyBlock.getOffsetNextVolny(), nasledovnik.prevedNaPoleBajtov());
+
+        long pridelenyOffset = this.offsetPrvyVolnyPreplnujuciSubor;
+        this.offsetPrvyVolnyPreplnujuciSubor = prvyVolnyBlock.getOffsetNextVolny();
 
         return pridelenyOffset;
     }
@@ -127,7 +184,7 @@ public class SpravcaSuborov
         if (this.offsetPrvyVolnyHlavnySubor == -1)
         {
             Block<T> prazdnyBlock = new Block<>(this.getBlokovaciFaktorHlavnySubor(), typ);
-            this.uloz(novyPrvyOffset, prazdnyBlock.prevedNaPoleBajtov());
+            this.ulozHlavnySubor(novyPrvyOffset, prazdnyBlock.prevedNaPoleBajtov());
             this.offsetPrvyVolnyHlavnySubor = novyPrvyOffset;
         }
         else
@@ -137,15 +194,15 @@ public class SpravcaSuborov
             Block<T> novyPrvyVolny = new Block<>(this.getBlokovaciFaktorHlavnySubor(), typ);
 
             Block<T> staryPrvyVolny = new Block<>(this.getBlokovaciFaktorHlavnySubor(), typ);
-            staryPrvyVolny.prevedZPolaBajtov(this.citaj(staryPrvyOffset, staryPrvyVolny.getVelkost()));
+            staryPrvyVolny.prevedZPolaBajtov(this.citajHlavnySubor(staryPrvyOffset, staryPrvyVolny.getVelkost()));
 
             staryPrvyVolny.setOffsetPrevVolny(novyPrvyOffset);
             novyPrvyVolny.setOffsetNextVolny(staryPrvyOffset);
 
             this.offsetPrvyVolnyHlavnySubor = novyPrvyOffset;
 
-            this.uloz(staryPrvyOffset, staryPrvyVolny.prevedNaPoleBajtov());
-            this.uloz(novyPrvyOffset, novyPrvyVolny.prevedNaPoleBajtov());
+            this.ulozHlavnySubor(staryPrvyOffset, staryPrvyVolny.prevedNaPoleBajtov());
+            this.ulozHlavnySubor(novyPrvyOffset, novyPrvyVolny.prevedNaPoleBajtov());
         }
 
         this.skusZmensitHlavnySubor(typ);
@@ -159,12 +216,12 @@ public class SpravcaSuborov
             {
                 Block<T> block = new Block<>(this.getBlokovaciFaktorHlavnySubor(), typ);
 
-                long velkostSuboru = this.getVelkostSuboru();
+                long velkostSuboru = this.getVelkostHlavnySubor();
                 long offsetPoslednehoBlocku = velkostSuboru - block.getVelkost();
 
                 // Moznost zmensit subor
                 Block<T> blockNaKonciSuboru = new Block<>(this.getBlokovaciFaktorHlavnySubor(), typ);
-                blockNaKonciSuboru.prevedZPolaBajtov(this.citaj(offsetPoslednehoBlocku, blockNaKonciSuboru.getVelkost()));
+                blockNaKonciSuboru.prevedZPolaBajtov(this.citajHlavnySubor(offsetPoslednehoBlocku, blockNaKonciSuboru.getVelkost()));
 
                 if (blockNaKonciSuboru.getPocetPlatnychZaznamov() == 0)
                 {
@@ -176,36 +233,36 @@ public class SpravcaSuborov
                     {
                         Block<T> prevBlock = new Block<>(this.blokovaciFaktorHlavnySubor, typ);
                         Block<T> nextBlock = new Block<>(this.blokovaciFaktorHlavnySubor, typ);
-                        prevBlock.prevedZPolaBajtov(this.citaj(prevOffset, prevBlock.getVelkost()));
-                        nextBlock.prevedZPolaBajtov(this.citaj(nextOffset, nextBlock.getVelkost()));
+                        prevBlock.prevedZPolaBajtov(this.citajHlavnySubor(prevOffset, prevBlock.getVelkost()));
+                        nextBlock.prevedZPolaBajtov(this.citajHlavnySubor(nextOffset, nextBlock.getVelkost()));
 
                         prevBlock.setOffsetNextVolny(nextOffset);
                         nextBlock.setOffsetPrevVolny(prevOffset);
 
-                        this.uloz(prevOffset, prevBlock.prevedNaPoleBajtov());
-                        this.uloz(nextOffset, nextBlock.prevedNaPoleBajtov());
+                        this.ulozHlavnySubor(prevOffset, prevBlock.prevedNaPoleBajtov());
+                        this.ulozHlavnySubor(nextOffset, nextBlock.prevedNaPoleBajtov());
 
                         this.hlavnyPristupovySubor.setLength(offsetPoslednehoBlocku);
                     }
                     else if (nextOffset == -1 && prevOffset != -1)
                     {
                         Block<T> prevBlock = new Block<>(this.blokovaciFaktorHlavnySubor, typ);
-                        prevBlock.prevedZPolaBajtov(this.citaj(prevOffset, prevBlock.getVelkost()));
+                        prevBlock.prevedZPolaBajtov(this.citajHlavnySubor(prevOffset, prevBlock.getVelkost()));
 
                         prevBlock.setOffsetNextVolny(-1);
 
-                        this.uloz(prevOffset, prevBlock.prevedNaPoleBajtov());
+                        this.ulozHlavnySubor(prevOffset, prevBlock.prevedNaPoleBajtov());
 
                         this.hlavnyPristupovySubor.setLength(offsetPoslednehoBlocku);
                     }
                     else if (nextOffset != -1 && prevOffset == -1)
                     {
                         Block<T> nextBlock = new Block<>(this.blokovaciFaktorHlavnySubor, typ);
-                        nextBlock.prevedZPolaBajtov(this.citaj(nextOffset, nextBlock.getVelkost()));
+                        nextBlock.prevedZPolaBajtov(this.citajHlavnySubor(nextOffset, nextBlock.getVelkost()));
 
                         nextBlock.setOffsetPrevVolny(-1);
 
-                        this.uloz(nextOffset, nextBlock.prevedNaPoleBajtov());
+                        this.ulozHlavnySubor(nextOffset, nextBlock.prevedNaPoleBajtov());
                         this.offsetPrvyVolnyHlavnySubor = nextOffset;
 
                         this.hlavnyPristupovySubor.setLength(offsetPoslednehoBlocku);
@@ -230,6 +287,24 @@ public class SpravcaSuborov
         }
     }
 
+    public<T extends IData> void vypisHlavnySubor(Class<T> typ)
+    {
+        Block<T> block = new Block<>(this.blokovaciFaktorHlavnySubor, typ);
+
+        long curOffset = 0;
+        int velkostBlocku = block.getVelkost();
+        long velkostSuboru = this.getVelkostHlavnySubor();
+
+        while (curOffset <= velkostSuboru - velkostBlocku)
+        {
+            block.prevedZPolaBajtov(this.citajHlavnySubor(curOffset, velkostBlocku));
+            System.out.println("Offset: " + curOffset);
+            System.out.println(block + "\n");
+
+            curOffset += velkostBlocku;
+        }
+    }
+
     private void skontrolujOffset(long offset)
     {
         if (offset < 0)
@@ -238,9 +313,14 @@ public class SpravcaSuborov
         }
     }
 
-    private long getVelkostSuboru()
+    private long getVelkostHlavnySubor()
     {
         return this.hlavnySubor.length();
+    }
+
+    private long getVelkostPreplnujuciSubor()
+    {
+        return this.preplnujuciSubor.length();
     }
 
     public int getBlokovaciFaktorHlavnySubor()
@@ -251,10 +331,5 @@ public class SpravcaSuborov
     public int getBlokovaciFaktorPreplnujuciSubor()
     {
         return this.blokovaciFaktorPreplnujuciSubor;
-    }
-
-    public RandomAccessFile getHlavnyPristupovySubor()
-    {
-        return this.hlavnyPristupovySubor;
     }
 }

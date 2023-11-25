@@ -23,6 +23,7 @@ public class Block<T extends IData> implements IRecord
     // instancii pri nacitani z pola bajtov
     private final T dummyZaznam;
 
+    private long offsetPreplnujuciSubor;
     private long offsetPrevVolny;
     private long offsetNextVolny;
 
@@ -33,6 +34,7 @@ public class Block<T extends IData> implements IRecord
         this.zaznamy = new ArrayList<>();
         this.pocetPlatnychZaznamov = 0;
 
+        this.offsetPreplnujuciSubor = -1;
         this.offsetPrevVolny = -1;
         this.offsetNextVolny = -1;
 
@@ -46,28 +48,138 @@ public class Block<T extends IData> implements IRecord
         }
     }
 
-    public void vloz(T pridavany)
+    // Navratova hodnota metody:
+    // True -> bol vytvoreny novy Preplnujici block
+    // False -> nebol vytvoreny novy Preplnujuci block
+    public boolean vloz(T pridavany, SpravcaSuborov spravcaSuborov)
     {
         if (this.pocetPlatnychZaznamov >= this.maxPocetZaznamov)
         {
-            throw new RuntimeException("Block je plny, nemozno vlozit dalsi Zaznam!");
+            // Nutne vlozit do Preplnujuceho suboru
+            return this.vlozDoPreplnujucehoSuboru(pridavany, spravcaSuborov);
         }
+        else
+        {
+            // Mozno vlozit do Hlavneho suboru
+            this.zaznamy.add(pridavany);
+            this.pocetPlatnychZaznamov++;
 
-        this.zaznamy.add(pridavany);
-        this.pocetPlatnychZaznamov++;
+            // Nebolo nutne vytvorit novy Preplnujuci block
+            return false;
+        }
     }
 
-    public T vyhladaj(T vyhladavany)
+    // Navratova hodnota metody:
+    // True -> bol vytvoreny novy Preplnujici block
+    // False -> nebol vytvoreny novy Preplnujuci block
+    private boolean vlozDoPreplnujucehoSuboru(T pridavany, SpravcaSuborov spravcaSuborov)
     {
-        for (int i = 0; i < this.pocetPlatnychZaznamov; i++)
+        Block<T> curBlock = this;
+        long odlozenyOffset = -1;
+
+        while (true)
         {
-            if (this.zaznamy.get(i).jeRovnaky(vyhladavany))
+            if (curBlock.offsetPreplnujuciSubor != -1)
             {
-                return this.zaznamy.get(i);
+                // Block ma prideleny Preplnujuci Block
+                Block<T> preplnujuciBlock = (Block<T>)new Block<>(spravcaSuborov.getBlokovaciFaktorPreplnujuciSubor(), pridavany.getClass());
+                preplnujuciBlock.prevedZPolaBajtov(spravcaSuborov.citajPreplnujuciSubor(curBlock.offsetPreplnujuciSubor, preplnujuciBlock.getVelkost()));
+
+                boolean uspesneVlozene = this.skusVlozitDoPreplnujucehoBlocku(pridavany, preplnujuciBlock, spravcaSuborov);
+                if (uspesneVlozene)
+                {
+                    spravcaSuborov.ulozPreplnujuciSubor(curBlock.offsetPreplnujuciSubor, preplnujuciBlock.prevedNaPoleBajtov());
+
+                    // Zaznam bol vlozeny do existujuceho Preplnujuceho blocku
+                    return false;
+                }
+
+
+
+                // Uchovam si offset daneho Preplnujuceho blocku
+                odlozenyOffset = curBlock.getOffsetPreplnujuciSubor();
+
+                // V danom Preplnujucom Blocku nie je dostatok miesta
+                // pre dalsi Zaznam, tym padom je nutne cely proces opakovat
+                curBlock = preplnujuciBlock;
+            }
+            else
+            {
+                // Block potrebuje dalsi Preplnujuci subor
+                curBlock.offsetPreplnujuciSubor = spravcaSuborov.dajVolnyBlockPreplnujuciSubor(pridavany.getClass());
+                Block<T> preplnujuciBlock = (Block<T>)new Block<>(spravcaSuborov.getBlokovaciFaktorPreplnujuciSubor(), pridavany.getClass());
+
+                // Pridaj a uloz
+                boolean uspesneVlozene = this.skusVlozitDoPreplnujucehoBlocku(pridavany, preplnujuciBlock, spravcaSuborov);
+                if (uspesneVlozene)
+                {
+                    spravcaSuborov.ulozPreplnujuciSubor(curBlock.offsetPreplnujuciSubor, preplnujuciBlock.prevedNaPoleBajtov());
+
+                    if (!curBlock.equals(this))
+                    {
+                        // Block, s ktorym aktualne pracujem je Preplnujuci block,
+                        // preto ho musim ulozit, ukladanie Blockov v Hlavnom subore
+                        // zabezpeci volajuca metoda
+                        spravcaSuborov.ulozPreplnujuciSubor(odlozenyOffset, curBlock.prevedNaPoleBajtov());
+                    }
+
+                    // Pre vlozenie Zaznamu bolo nutne alokovat novy Preplnujuci block
+                    return true;
+                }
+
+                throw new RuntimeException("Novo vytvoreny preplnujuci subor je plny!");
+            }
+        }
+    }
+
+    private boolean skusVlozitDoPreplnujucehoBlocku(T pridavany, Block<T> preplnujuciBlock, SpravcaSuborov spravcaSuborov)
+    {
+        if (preplnujuciBlock.pocetPlatnychZaznamov >= spravcaSuborov.getBlokovaciFaktorPreplnujuciSubor())
+        {
+            return false;
+        }
+
+        // V Preplnujucom blocku je miesto pre novy Zaznam
+        preplnujuciBlock.zaznamy.add(pridavany);
+        preplnujuciBlock.pocetPlatnychZaznamov++;
+        return true;
+    }
+
+    public T vyhladaj(T vyhladavany, SpravcaSuborov spravcaSuborov)
+    {
+        T najdeny = this.prehladajBlock(vyhladavany, this);
+        if (najdeny != null)
+        {
+            return najdeny;
+        }
+
+        Block<T> curBlock = this;
+        while (curBlock.offsetPreplnujuciSubor != -1)
+        {
+            byte[] nacitanyBlock = spravcaSuborov.citajPreplnujuciSubor(curBlock.offsetPreplnujuciSubor, curBlock.getVelkost());
+            curBlock.prevedZPolaBajtov(nacitanyBlock);
+
+            najdeny = this.prehladajBlock(vyhladavany, curBlock);
+            if (najdeny != null)
+            {
+                return najdeny;
             }
         }
 
-        // Dany Zaznam sa v Blocku nenachadza
+        // Zaznam nebol najdeny
+        return null;
+    }
+
+    private T prehladajBlock(T vyhladavany, Block<T> prehladavanyBlock)
+    {
+        for (int i = 0; i < prehladavanyBlock.pocetPlatnychZaznamov; i++)
+        {
+            if (prehladavanyBlock.zaznamy.get(i).jeRovnaky(vyhladavany))
+            {
+                return prehladavanyBlock.zaznamy.get(i);
+            }
+        }
+
         return null;
     }
 
@@ -98,6 +210,11 @@ public class Block<T extends IData> implements IRecord
     public boolean jeBlockPlny()
     {
         return this.pocetPlatnychZaznamov >= this.maxPocetZaznamov;
+    }
+
+    public long getOffsetPreplnujuciSubor()
+    {
+        return this.offsetPreplnujuciSubor;
     }
 
     public long getOffsetPrevVolny()
@@ -132,6 +249,11 @@ public class Block<T extends IData> implements IRecord
         }
     }
 
+    public void setOffsetPreplnujuciSubor(long offsetPreplnujuciSubor)
+    {
+        this.offsetPreplnujuciSubor = offsetPreplnujuciSubor;
+    }
+
     public void setOffsetPrevVolny(long offsetPrevVolny)
     {
         this.offsetPrevVolny = offsetPrevVolny;
@@ -150,6 +272,9 @@ public class Block<T extends IData> implements IRecord
 
         // Offset predchadzajuceho a nasledujuceho volneho Blocku
         velkost += 2 * Konstanty.VELKOST_LONG;
+
+        // Offest do Preplnujuceho subotu
+        velkost += Konstanty.VELKOST_LONG;
 
         // Pocet platnych Zaznamov - int
         velkost += Konstanty.VELKOST_INT;
@@ -171,6 +296,7 @@ public class Block<T extends IData> implements IRecord
         {
             dataOutputStream.writeLong(this.offsetPrevVolny);
             dataOutputStream.writeLong(this.offsetNextVolny);
+            dataOutputStream.writeLong(this.offsetPreplnujuciSubor);
 
             dataOutputStream.writeInt(this.pocetPlatnychZaznamov);
 
@@ -208,6 +334,7 @@ public class Block<T extends IData> implements IRecord
         {
             this.offsetPrevVolny = dataInputStream.readLong();
             this.offsetNextVolny = dataInputStream.readLong();
+            this.offsetPreplnujuciSubor = dataInputStream.readLong();
 
             this.pocetPlatnychZaznamov = dataInputStream.readInt();
 
@@ -254,5 +381,23 @@ public class Block<T extends IData> implements IRecord
         }
 
         return false;
+    }
+
+    @Override
+    public String toString()
+    {
+        String string = "Block (maxPocetZaznamov: " + this.maxPocetZaznamov + ", pocetPlatnychZaznamov: " + this.pocetPlatnychZaznamov + ", zaznamy:\n";
+
+        for (int i = 0; i < this.pocetPlatnychZaznamov; i++)
+        {
+            string += "\t\t[";
+            string += this.zaznamy.get(i).toString();
+            string += "], \n";
+        }
+
+        string += "offsetPreplnujuciSubor: " + this.offsetPreplnujuciSubor + ", offsetPrevVolny: " + this.offsetPrevVolny
+                  + ", offsetNextVolny: " + this.offsetNextVolny + ")";
+
+        return string;
     }
 }

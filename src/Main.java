@@ -81,18 +81,20 @@ public class Main
         dh.vloz(p3, Parcela.class);
         dh.vloz(p4, Parcela.class);
         dh.vloz(p5, Parcela.class);
-        dh.vloz(p6, Parcela.class);
+        //dh.vloz(p6, Parcela.class);
         dh.vloz(p7, Parcela.class);
         dh.vloz(p8, Parcela.class);
 
-        dh.vymaz(p1, Parcela.class);
-        dh.vymaz(p2, Parcela.class);
-        dh.vymaz(p3, Parcela.class);
-        dh.vymaz(p4, Parcela.class);
-        dh.vymaz(p5, Parcela.class);
-        dh.vymaz(p6, Parcela.class);
-        dh.vymaz(p7, Parcela.class);
-        dh.vymaz(p8, Parcela.class);
+        //dh.vymaz(p1, Parcela.class);
+        //dh.vymaz(p2, Parcela.class);
+        //dh.vymaz(p3, Parcela.class);
+        //dh.vymaz(p4, Parcela.class);
+        //dh.vymaz(p5, Parcela.class);
+        //dh.vymaz(p6, Parcela.class);
+        //dh.vymaz(p7, Parcela.class);
+        //dh.vymaz(p8, Parcela.class);
+        dh.vypisHlavnySubor(Parcela.class);
+        dh.vypisStrom(Parcela.class);
 
         int x = 100;
     }
