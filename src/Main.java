@@ -4,6 +4,8 @@ import Objekty.Suradnica;
 import Ostatne.Generator;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
 
 public class Main
 {
@@ -13,6 +15,53 @@ public class Main
     public static void main(String[] args)
     {
         vymazSubory();
+
+        /*
+        Generator generator = new Generator(1, 1, 1, 0, 0, 0, 0, 1, 0);
+
+        DynamickeHesovanie<Parcela> dh = new DynamickeHesovanie<>(10, 10, NAZOV_HS, NAZOV_PS);
+        ArrayList<Parcela> zoznam = new ArrayList<>();
+
+        for (int i = 0; i < 500000; i++)
+        {
+            Parcela parcela = generator.getParcela();
+            dh.vloz(parcela, Parcela.class);
+            zoznam.add(parcela);
+        }
+
+        if (dh.getPocetElementov() != zoznam.size())
+        {
+            throw new RuntimeException("Rozdielna zakladna velkost");
+        }
+
+        Collections.shuffle(zoznam);
+        for (int i = 0; i < 500000; i++)
+        {
+            Parcela zoznamZmazana = zoznam.remove(zoznam.size() - 1);
+            Parcela dhZmazana = dh.vymaz(zoznamZmazana, Parcela.class);
+
+            if (!zoznamZmazana.jeRovnaky(dhZmazana))
+            {
+                throw new RuntimeException("Rozdielne zmazane parcely");
+            }
+
+            if (dh.getPocetElementov() != zoznam.size())
+            {
+                throw new RuntimeException("Rozdielna velkost po mazani");
+            }
+
+            if (i % 10000 == 0)
+            {
+                System.out.println(i);
+            }
+        }
+
+        if (dh.getPocetElementov() != zoznam.size())
+        {
+            throw new RuntimeException("Rozdielna velkost na konci");
+        }
+        */
+
         Suradnica suradnica = new Suradnica();
 
         Generator generator = new Generator(1, 1, 1, 0, 0, 100, 100, 1);

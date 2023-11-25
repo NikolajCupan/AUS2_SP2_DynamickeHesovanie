@@ -195,6 +195,8 @@ public class SpravcaSuborov
                         prevBlock.setOffsetNextVolny(-1);
 
                         this.uloz(prevOffset, prevBlock.prevedNaPoleBajtov());
+
+                        this.hlavnyPristupovySubor.setLength(offsetPoslednehoBlocku);
                     }
                     else if (nextOffset != -1 && prevOffset == -1)
                     {
@@ -243,11 +245,16 @@ public class SpravcaSuborov
 
     public int getBlokovaciFaktorHlavnySubor()
     {
-        return blokovaciFaktorHlavnySubor;
+        return this.blokovaciFaktorHlavnySubor;
     }
 
     public int getBlokovaciFaktorPreplnujuciSubor()
     {
-        return blokovaciFaktorPreplnujuciSubor;
+        return this.blokovaciFaktorPreplnujuciSubor;
+    }
+
+    public RandomAccessFile getHlavnyPristupovySubor()
+    {
+        return this.hlavnyPristupovySubor;
     }
 }

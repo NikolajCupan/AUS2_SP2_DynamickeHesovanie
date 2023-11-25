@@ -102,12 +102,12 @@ public class Block<T extends IData> implements IRecord
 
     public long getOffsetPrevVolny()
     {
-        return offsetPrevVolny;
+        return this.offsetPrevVolny;
     }
 
     public long getOffsetNextVolny()
     {
-        return offsetNextVolny;
+        return this.offsetNextVolny;
     }
 
     public int getPocetPlatnychZaznamov()

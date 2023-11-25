@@ -3,6 +3,8 @@ package Hesovanie;
 import Hesovanie.DynamickyZnakovyStrom.DynamickyZnakovyStrom;
 import Rozhrania.IData;
 
+import java.io.RandomAccessFile;
+
 public class DynamickeHesovanie<T extends IData>
 {
     private final DynamickyZnakovyStrom dynamickyZnakovyStrom;
@@ -33,5 +35,12 @@ public class DynamickeHesovanie<T extends IData>
     public int getPocetElementov()
     {
         return this.dynamickyZnakovyStrom.getPocetElementov();
+    }
+
+    public void vypis(Class<T> typ)
+    {
+        RandomAccessFile subor = this.spravcaSuborov.getHlavnyPristupovySubor();
+        Block<T> block = new Block<>(this.spravcaSuborov.getBlokovaciFaktorPreplnujuciSubor(), typ);
+        int velkostBlocku = block.getVelkost();
     }
 }
