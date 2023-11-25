@@ -355,7 +355,7 @@ public class DynamickyZnakovyStrom
         }
     }
 
-    public void vypisStrom()
+    public<T extends IData> void vypisStrom(SpravcaSuborov spravcaSuborov, Class<T> typ)
     {
         Stack<Vrchol> zasobnik = new Stack<>();
         zasobnik.push(this.root);
@@ -366,14 +366,12 @@ public class DynamickyZnakovyStrom
 
             if (curVrchol instanceof InternyVrchol internyVrchol)
             {
-                System.out.println(internyVrchol.toString());
-
                 zasobnik.push(internyVrchol.getLavySyn());
                 zasobnik.push(internyVrchol.getPravySyn());
             }
             else
             {
-                System.out.println(((ExternyVrchol) curVrchol).toString());
+                System.out.println(((ExternyVrchol)curVrchol).naString(spravcaSuborov, typ) + "\n");
             }
         }
     }

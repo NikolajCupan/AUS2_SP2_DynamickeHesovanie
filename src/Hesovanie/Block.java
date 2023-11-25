@@ -386,17 +386,18 @@ public class Block<T extends IData> implements IRecord
     @Override
     public String toString()
     {
-        String string = "Block (maxPocetZaznamov: " + this.maxPocetZaznamov + ", pocetPlatnychZaznamov: " + this.pocetPlatnychZaznamov + ", zaznamy:\n";
+        String string = "";
+        string += "- max pocet zaznamov: " + this.maxPocetZaznamov + "\n";
+        string += "- pocet platnych zaznamov: " + this.pocetPlatnychZaznamov + "\n";
+        string += "- offset preplnujuci subor: " + this.offsetPreplnujuciSubor + "\n";
+        string += "- offset prev volny: " + this.offsetPrevVolny + "\n";
+        string += "- offset next bolny: " + this.offsetNextVolny + "\n";
 
+        string += "- zaznamy:\n";
         for (int i = 0; i < this.pocetPlatnychZaznamov; i++)
         {
-            string += "\t\t[";
             string += this.zaznamy.get(i).toString();
-            string += "], \n";
         }
-
-        string += "offsetPreplnujuciSubor: " + this.offsetPreplnujuciSubor + ", offsetPrevVolny: " + this.offsetPrevVolny
-                  + ", offsetNextVolny: " + this.offsetNextVolny + ")";
 
         return string;
     }

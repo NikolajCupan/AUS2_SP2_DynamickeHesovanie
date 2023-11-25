@@ -298,7 +298,7 @@ public class SpravcaSuborov
         while (curOffset <= velkostSuboru - velkostBlocku)
         {
             block.prevedZPolaBajtov(this.citajHlavnySubor(curOffset, velkostBlocku));
-            System.out.println("Offset: " + curOffset);
+            System.out.println("Offset " + curOffset + ":");
             System.out.println(block + "\n");
 
             curOffset += velkostBlocku;

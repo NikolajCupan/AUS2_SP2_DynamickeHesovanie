@@ -89,10 +89,21 @@ public class Parcela extends Polygon implements IData
     public String toString()
     {
         DecimalFormat formatovac = new DecimalFormat("#.##");
-        String string = "Parcela (ID " + this.parcelaID + "): " +
-                        " {" + formatovac.format(this.getVlavoDoleX()) + ", " + formatovac.format(this.getVlavoDoleY()) +
-                        "}, {" + formatovac.format(this.getVpravoHoreX()) + ", " + formatovac.format(this.getVpravoHoreY()) + "},";
-        string += Helper.hashToString(this.getHash(), POCET_BITOV_HASH);
+        String string = "";
+        string += "\tParcela:\n";
+        string += "\t- ID: " + this.parcelaID + "\n";
+        string += "\t- popis: " + this.popis + "\n";
+        string += "\t- suradnice: {" + formatovac.format(this.getVlavoDoleX()) + ", " + formatovac.format(this.getVlavoDoleY()) + "},"
+                  + " {" + formatovac.format(this.getVpravoHoreX()) + ", " + formatovac.format(this.getVpravoHoreY()) + "}\n";
+
+        string += "\t- referencie: ";
+        for (Integer nehnutelnostID : this.nehnutelnostiID)
+        {
+            string += nehnutelnostID + " ";
+        }
+        string += "\n";
+
+        string += "\t- hash: " + Helper.hashToString(this.getHash(), POCET_BITOV_HASH) + "\n";
 
         return string;
     }

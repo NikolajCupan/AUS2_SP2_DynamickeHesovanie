@@ -119,12 +119,22 @@ public class ExternyVrchol extends Vrchol
         this.pocetZaznamovBlock = pocetZaznamovBlock;
     }
 
-    @Override
-    public String toString()
+    public<T extends IData> String naString(SpravcaSuborov spravcaSuborov, Class<T> typ)
     {
-        String string = "Externy vrchol (";
-        string += "pocetZaznamovBlock: " + this.pocetZaznamovBlock + ", pocetPreplnujucichBlockov: " + this.pocetPreplnujucichBlockov + ", ";
-        string += "offset: " + this.offset + ")";
+        String string = "Externy vrchol:\n";
+        string += "- offset: " + this.offset + "\n";
+        string += "- pocet zaznamov block: " + this.pocetZaznamovBlock + "\n";
+        string += "- pocet preplnujucich blockov: " + this.pocetPreplnujucichBlockov + "\n";
+
+        if (this.offset != -1)
+        {
+            Block<T> block = new Block<>(spravcaSuborov.getBlokovaciFaktorHlavnySubor(), typ);
+            block.prevedZPolaBajtov(spravcaSuborov.citajHlavnySubor(this.offset, block.getVelkost()));
+            for (T zaznam : block.getZaznamy())
+            {
+                string += zaznam;
+            }
+        }
 
         return string;
     }

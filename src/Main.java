@@ -1,4 +1,5 @@
 import Hesovanie.DynamickeHesovanie;
+import Objekty.Nehnutelnost;
 import Objekty.Parcela;
 import Objekty.Suradnica;
 import Ostatne.Generator;
@@ -70,7 +71,13 @@ public class Main
         Parcela p1 = new Parcela(1, "1", suradnica, suradnica);
         Parcela p2 = new Parcela(2, "2", suradnica, suradnica);
         Parcela p3 = new Parcela(3, "3", suradnica, suradnica);
+
         Parcela p4 = new Parcela(4, "4", suradnica, suradnica);
+        Nehnutelnost n1 = new Nehnutelnost(100, 1, "100", suradnica, suradnica);
+        Nehnutelnost n2 = new Nehnutelnost(200, 1, "250", suradnica, suradnica);
+        p4.skusPridatNehnutelnost(n1);
+        p4.skusPridatNehnutelnost(n2);
+
         Parcela p5 = new Parcela(5, "5", suradnica, suradnica);
         Parcela p6 = new Parcela(6, "6", suradnica, suradnica);
         Parcela p7 = new Parcela(7, "7", suradnica, suradnica);

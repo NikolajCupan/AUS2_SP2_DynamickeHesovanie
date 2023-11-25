@@ -47,6 +47,11 @@ public class Helper
             int hodnotaBitu = bitSet.get(i) ? 1 : 0;
             string += hodnotaBitu;
 
+            if (i == 1 || i == pocetBitov)
+            {
+                continue;
+            }
+
             if (i % 8 == 0)
             {
                 string += "  ";

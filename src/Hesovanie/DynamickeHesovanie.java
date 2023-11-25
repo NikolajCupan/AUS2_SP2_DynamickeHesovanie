@@ -42,6 +42,6 @@ public class DynamickeHesovanie<T extends IData>
 
     public void vypisStrom(Class<T> typ)
     {
-        this.dynamickyZnakovyStrom.vypisStrom();
+        this.dynamickyZnakovyStrom.vypisStrom(this.spravcaSuborov, typ);
     }
 }
