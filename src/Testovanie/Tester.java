@@ -2,37 +2,26 @@ package Testovanie;
 
 import Hesovanie.DynamickeHesovanie;
 import Objekty.Parcela;
+import Objekty.Suradnica;
 import Ostatne.Generator;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Random;
 
 public class Tester
 {
     // Dynamicke hesovanie
-    private static final int BF_HS_SUBOR_MIN = 1;
-    private static final int BF_HS_SUBOR_MAX = 1;
+    private static final int BF_HS_MIN = 1;
+    private static final int BF_HS_MAX = 100;
 
-    private static final int BF_PS_SUBOR_MIN = 1;
-    private static final int BF_PS_SUBOR_MAX = 1;
+    private static final int BF_PS_MIN = 1;
+    private static final int BF_PS_MAX = 100;
 
     // Subory
     private static final String NAZOV_HS = "hlavny";
     private static final String NAZOV_PS = "preplnujuci";
-
-    // Hranice quad stromu a generovanych suradnic
-    private static final double GEN_X_MIN = -100;
-    private static final double GEN_Y_MIN = -100;
-    private static final double GEN_X_MAX = 100;
-    private static final double GEN_Y_MAX = 100;
-
-    // Hranice pre faktor zmensenia vygenerovanych suradnic
-    private static final double FAKTOR_ZMENSENIA_MIN = 1;
-    private static final double FAKTOR_ZMENSENIA_MAX = 10000;
-
-    private static final int DEAULT_MAX_UROVEN_MIN = 0;
-    private static final int DEFAULT_MAX_UROVEN_MAX = 15;
 
     private final Random random;
 
@@ -53,37 +42,24 @@ public class Tester
         {
             this.vymazSubory();
 
-            int blokovaciFaktorHlavnySubor = this.randomInt(BF_HS_SUBOR_MIN, BF_HS_SUBOR_MAX);
-            int blokovaciFaktorPreplnujuciSubor = this.randomInt(BF_PS_SUBOR_MIN, BF_PS_SUBOR_MAX);
-
-            double x1 = this.randomDouble(GEN_X_MIN, GEN_X_MAX);
-            double y1 = this.randomDouble(GEN_Y_MIN, GEN_Y_MAX);
-            double x2 = this.randomDouble(GEN_X_MIN, GEN_X_MAX);
-            double y2 = this.randomDouble(GEN_Y_MIN, GEN_Y_MAX);
-
-            // Hranice najvacsieho quadu
-            double minX = Math.min(x1, x2);
-            double minY = Math.min(y1, y2);
-            double maxX = Math.max(x1, x2);
-            double maxY = Math.max(y1, y2);
-
-            // O kolko su vygenerovane nehnutelnosti zmensene pred vkladanim
-            double faktorZmensenia = this.randomDouble(FAKTOR_ZMENSENIA_MIN, FAKTOR_ZMENSENIA_MAX);
-            int maxUroven = this.randomInt(DEAULT_MAX_UROVEN_MIN, DEFAULT_MAX_UROVEN_MAX);
+            int blokovaciFaktorHlavnySubor = this.randomInt(BF_HS_MIN, BF_HS_MAX);
+            int blokovaciFaktorPreplnujuciSubor = this.randomInt(BF_PS_MIN, BF_PS_MAX);
 
             long seedReplikacia = this.random.nextLong();
-            Generator generator = new Generator(1, 1, 1, minX, minY, maxX, maxY, faktorZmensenia, seedReplikacia);
+            Generator generator = new Generator(1, 1, 1, 0, 0, 0, 0, 1, seedReplikacia);
 
-            System.out.println("Spusta sa replikacia cislo: " + i + ", seed: " + seedReplikacia);
+            System.out.println("Spusta sa replikacia cislo: " + i + ", BF_HS: " + blokovaciFaktorHlavnySubor + ", BF_PS: " + blokovaciFaktorPreplnujuciSubor+ ", seed: " + seedReplikacia);
 
-            this.testZakladneOperacie(blokovaciFaktorHlavnySubor, blokovaciFaktorPreplnujuciSubor, generator);
+            this.testZakladneOperacie01(blokovaciFaktorHlavnySubor, blokovaciFaktorPreplnujuciSubor, generator);
+            this.testZakladneOperacie02(blokovaciFaktorHlavnySubor, blokovaciFaktorPreplnujuciSubor);
+            this.testZakladneOperacie03(blokovaciFaktorHlavnySubor, blokovaciFaktorPreplnujuciSubor);
         }
     }
 
-    private void testZakladneOperacie(int blokovaciFaktorHlavnySubor, int blokovaciFaktorPreplnujuciSubor, Generator generator)
+    private void testZakladneOperacie01(int blokovaciFaktorHlavnySubor, int blokovaciFaktorPreplnujuciSubor, Generator generator)
     {
         // Vlastne parametre testu
-        final int ZACIATOCNA_VELKOST = 50000;
+        final int ZACIATOCNA_VELKOST = 10000;
         final int POCET_OPERACII = 10000;
 
         final int PRST_VYHLADAJ = 50;
@@ -137,6 +113,128 @@ public class Tester
         if (zoznam.size() != dh.getPocetElementov())
         {
             throw new RuntimeException("Pocet elementov po vykonani vsetkych operacii nie je rovnaky!");
+        }
+    }
+
+    private void testZakladneOperacie02(int blokovaciFaktorHlavnySubor, int blokovaciFaktorPreplnujuciSubor)
+    {
+        // Vlastne parametre testu
+        final int ZACIATOCNA_VELKOST = 10000;
+
+        ArrayList<Parcela> zoznam = new ArrayList<>();
+        DynamickeHesovanie<Parcela> dh = new DynamickeHesovanie<>(blokovaciFaktorHlavnySubor, blokovaciFaktorPreplnujuciSubor, NAZOV_HS, NAZOV_PS);
+
+        for (int i = 0; i < ZACIATOCNA_VELKOST; i++)
+        {
+            Parcela parcela = new Parcela(i, String.valueOf(i), new Suradnica(), new Suradnica());
+            zoznam.add(parcela);
+        }
+
+        if (dh.getPocetElementov() != 0)
+        {
+            throw new RuntimeException("Pocet elementov v Dynamickom hesovani nie je nulovy!");
+        }
+
+        Collections.shuffle(zoznam);
+        int curPocet = 0;
+
+        for (Parcela parcela : zoznam)
+        {
+            dh.vloz(parcela, Parcela.class);
+            curPocet++;
+
+            if (curPocet != dh.getPocetElementov())
+            {
+                throw new RuntimeException("Pocet elementov v Dynamickom hesovani sa nezhoduje s ocakavanym poctom!");
+            }
+        }
+
+        if (zoznam.size() != dh.getPocetElementov())
+        {
+            throw new RuntimeException("Pocet elementov po vykonani vsetkych vkladani nie je rovnaky!");
+        }
+
+        Collections.shuffle(zoznam);
+        for (Parcela parcela : zoznam)
+        {
+            Parcela najdenaDh = dh.vyhladaj(parcela, Parcela.class);
+
+            if (!parcela.jeRovnaky(najdenaDh))
+            {
+                throw new RuntimeException("Najdene elementy sa nezhoduju!");
+            }
+        }
+
+        if (zoznam.size() != dh.getPocetElementov())
+        {
+            throw new RuntimeException("Pocet elementov v Dynamickom hesovani a Zozname sa nezhoduje!");
+        }
+    }
+
+    private void testZakladneOperacie03(int blokovaciFaktorHlavnySubor, int blokovaciFaktorPreplnujuciSubor)
+    {
+        // Vlastne parametre testu
+        final int ZACIATOCNA_VELKOST = 10000;
+        final int MIN_POCET_BITOV_HASH = 1;
+        final int MAX_POCET_BITOV_HASH = 100;
+
+        int pocetBitovHash = this.randomInt(MIN_POCET_BITOV_HASH, MAX_POCET_BITOV_HASH);
+
+        ArrayList<Integer> zoznamID = new ArrayList<>();
+        for (int i = 0; i < ZACIATOCNA_VELKOST; i++)
+        {
+            zoznamID.add(i);
+        }
+        Collections.shuffle(zoznamID);
+
+        ArrayList<Dummy> zoznam = new ArrayList<>();
+        DynamickeHesovanie<Dummy> dh = new DynamickeHesovanie<>(blokovaciFaktorHlavnySubor, blokovaciFaktorPreplnujuciSubor, NAZOV_HS, NAZOV_PS);
+
+        for (int i = 0; i < ZACIATOCNA_VELKOST; i++)
+        {
+            Integer ID = zoznamID.get(i);
+            Dummy dummy = new Dummy(ID, pocetBitovHash);
+            zoznam.add(dummy);
+        }
+
+        if (dh.getPocetElementov() != 0)
+        {
+            throw new RuntimeException("Pocet elementov v Dynamickom hesovani nie je nulovy!");
+        }
+
+        Collections.shuffle(zoznam);
+        int curPocet = 0;
+
+        for (Dummy dummy : zoznam)
+        {
+            dh.vloz(dummy, Dummy.class);
+            curPocet++;
+
+            if (curPocet != dh.getPocetElementov())
+            {
+                throw new RuntimeException("Pocet elementov v Dynamickom hesovani sa nezhoduje s ocakavanym poctom!");
+            }
+        }
+
+        if (zoznam.size() != dh.getPocetElementov())
+        {
+            throw new RuntimeException("Pocet elementov po vykonani vsetkych vkladani nie je rovnaky!");
+        }
+
+        Collections.shuffle(zoznam);
+        for (Dummy dummy : zoznam)
+        {
+            Dummy najdenaDh = dh.vyhladaj(dummy, Dummy.class);
+
+            if (!dummy.jeRovnaky(najdenaDh))
+            {
+                throw new RuntimeException("Najdene elementy sa nezhoduju!");
+            }
+        }
+
+        if (zoznam.size() != dh.getPocetElementov())
+        {
+            throw new RuntimeException("Pocet elementov v Dynamickom hesovani a Zozname sa nezhoduje!");
         }
     }
 

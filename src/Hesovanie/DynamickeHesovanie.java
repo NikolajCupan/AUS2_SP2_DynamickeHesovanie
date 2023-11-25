@@ -30,11 +30,6 @@ public class DynamickeHesovanie<T extends IData>
         return this.dynamickyZnakovyStrom.vymaz(vymazavany, typ, this.spravcaSuborov);
     }
 
-    public int getPocetElementov()
-    {
-        return this.dynamickyZnakovyStrom.getPocetElementov();
-    }
-
     public void vypisHlavnySubor(Class<T> typ)
     {
         this.spravcaSuborov.vypisHlavnySubor(typ);
@@ -48,5 +43,10 @@ public class DynamickeHesovanie<T extends IData>
     public void vypisStrom(Class<T> typ)
     {
         this.dynamickyZnakovyStrom.vypisStrom(this.spravcaSuborov, typ);
+    }
+
+    public int getPocetElementov()
+    {
+        return this.dynamickyZnakovyStrom.getPocetElementov();
     }
 }
