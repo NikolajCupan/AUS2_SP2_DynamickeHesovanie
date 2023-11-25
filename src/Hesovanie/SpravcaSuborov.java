@@ -305,6 +305,24 @@ public class SpravcaSuborov
         }
     }
 
+    public<T extends IData> void vypisPreplnujuciSubor(Class<T> typ)
+    {
+        Block<T> block = new Block<>(this.blokovaciFaktorPreplnujuciSubor, typ);
+
+        long curOffset = 0;
+        int velkostBlocku = block.getVelkost();
+        long velkostSuboru = this.getVelkostPreplnujuciSubor();
+
+        while (curOffset <= velkostSuboru - velkostBlocku)
+        {
+            block.prevedZPolaBajtov(this.citajPreplnujuciSubor(curOffset, velkostBlocku));
+            System.out.println("Offset " + curOffset + ":");
+            System.out.println(block + "\n");
+
+            curOffset += velkostBlocku;
+        }
+    }
+
     private void skontrolujOffset(long offset)
     {
         if (offset < 0)

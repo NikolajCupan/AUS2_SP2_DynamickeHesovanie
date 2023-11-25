@@ -94,8 +94,6 @@ public class Block<T extends IData> implements IRecord
                     return false;
                 }
 
-
-
                 // Uchovam si offset daneho Preplnujuceho blocku
                 odlozenyOffset = curBlock.getOffsetPreplnujuciSubor();
 
@@ -153,10 +151,13 @@ public class Block<T extends IData> implements IRecord
             return najdeny;
         }
 
+        Block<T> preplnujuciBlock = (Block<T>)new Block<>(spravcaSuborov.getBlokovaciFaktorPreplnujuciSubor(), vyhladavany.getClass());
+        int velkostPreplnujuciBlock = preplnujuciBlock.getVelkost();
+
         Block<T> curBlock = this;
         while (curBlock.offsetPreplnujuciSubor != -1)
         {
-            byte[] nacitanyBlock = spravcaSuborov.citajPreplnujuciSubor(curBlock.offsetPreplnujuciSubor, curBlock.getVelkost());
+            byte[] nacitanyBlock = spravcaSuborov.citajPreplnujuciSubor(curBlock.offsetPreplnujuciSubor, velkostPreplnujuciBlock);
             curBlock.prevedZPolaBajtov(nacitanyBlock);
 
             najdeny = this.prehladajBlock(vyhladavany, curBlock);

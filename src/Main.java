@@ -1,12 +1,12 @@
 import Hesovanie.DynamickeHesovanie;
-import Objekty.Nehnutelnost;
 import Objekty.Parcela;
 import Objekty.Suradnica;
 import Ostatne.Generator;
+import Testovanie.Tester;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Random;
 
 public class Main
 {
@@ -18,92 +18,104 @@ public class Main
         vymazSubory();
 
         /*
-        Generator generator = new Generator(1, 1, 1, 0, 0, 0, 0, 1, 0);
-
-        DynamickeHesovanie<Parcela> dh = new DynamickeHesovanie<>(10, 10, NAZOV_HS, NAZOV_PS);
-        ArrayList<Parcela> zoznam = new ArrayList<>();
-
-        for (int i = 0; i < 500000; i++)
-        {
-            Parcela parcela = generator.getParcela();
-            dh.vloz(parcela, Parcela.class);
-            zoznam.add(parcela);
-        }
-
-        if (dh.getPocetElementov() != zoznam.size())
-        {
-            throw new RuntimeException("Rozdielna zakladna velkost");
-        }
-
-        Collections.shuffle(zoznam);
-        for (int i = 0; i < 500000; i++)
-        {
-            Parcela zoznamZmazana = zoznam.remove(zoznam.size() - 1);
-            Parcela dhZmazana = dh.vymaz(zoznamZmazana, Parcela.class);
-
-            if (!zoznamZmazana.jeRovnaky(dhZmazana))
-            {
-                throw new RuntimeException("Rozdielne zmazane parcely");
-            }
-
-            if (dh.getPocetElementov() != zoznam.size())
-            {
-                throw new RuntimeException("Rozdielna velkost po mazani");
-            }
-
-            if (i % 10000 == 0)
-            {
-                System.out.println(i);
-            }
-        }
-
-        if (dh.getPocetElementov() != zoznam.size())
-        {
-            throw new RuntimeException("Rozdielna velkost na konci");
-        }
-        */
-
-        Suradnica suradnica = new Suradnica();
-
-        Generator generator = new Generator(1, 1, 1, 0, 0, 100, 100, 1);
-        DynamickeHesovanie<Parcela> dh = new DynamickeHesovanie<>(2, 2, "hlavny", "preplnujuci");
-
-        Parcela p1 = new Parcela(1, "1", suradnica, suradnica);
-        Parcela p2 = new Parcela(2, "2", suradnica, suradnica);
-        Parcela p3 = new Parcela(3, "3", suradnica, suradnica);
-
-        Parcela p4 = new Parcela(4, "4", suradnica, suradnica);
-        Nehnutelnost n1 = new Nehnutelnost(100, 1, "100", suradnica, suradnica);
-        Nehnutelnost n2 = new Nehnutelnost(200, 1, "250", suradnica, suradnica);
-        p4.skusPridatNehnutelnost(n1);
-        p4.skusPridatNehnutelnost(n2);
-
-        Parcela p5 = new Parcela(5, "5", suradnica, suradnica);
-        Parcela p6 = new Parcela(6, "6", suradnica, suradnica);
-        Parcela p7 = new Parcela(7, "7", suradnica, suradnica);
-        Parcela p8 = new Parcela(8, "8", suradnica, suradnica);
+        DynamickeHesovanie<Parcela> dh = new DynamickeHesovanie<>(2, 2, NAZOV_HS, NAZOV_PS);
+        Parcela p1 = new Parcela(1, "1", new Suradnica(), new Suradnica());
+        Parcela p2 = new Parcela(2, "2", new Suradnica(), new Suradnica());
+        Parcela p3 = new Parcela(3, "3", new Suradnica(), new Suradnica());
+        Parcela p4 = new Parcela(4, "4", new Suradnica(), new Suradnica());
+        Parcela p5 = new Parcela(5, "5", new Suradnica(), new Suradnica());
+        Parcela p6 = new Parcela(6, "6", new Suradnica(), new Suradnica());
+        Parcela p7 = new Parcela(7, "7", new Suradnica(), new Suradnica());
+        Parcela p8 = new Parcela(8, "8", new Suradnica(), new Suradnica());
 
         dh.vloz(p1, Parcela.class);
         dh.vloz(p2, Parcela.class);
         dh.vloz(p3, Parcela.class);
         dh.vloz(p4, Parcela.class);
         dh.vloz(p5, Parcela.class);
-        //dh.vloz(p6, Parcela.class);
+        dh.vloz(p6, Parcela.class);
         dh.vloz(p7, Parcela.class);
         dh.vloz(p8, Parcela.class);
 
-        //dh.vymaz(p1, Parcela.class);
-        //dh.vymaz(p2, Parcela.class);
-        //dh.vymaz(p3, Parcela.class);
-        //dh.vymaz(p4, Parcela.class);
-        //dh.vymaz(p5, Parcela.class);
-        //dh.vymaz(p6, Parcela.class);
-        //dh.vymaz(p7, Parcela.class);
-        //dh.vymaz(p8, Parcela.class);
-        dh.vypisHlavnySubor(Parcela.class);
-        dh.vypisStrom(Parcela.class);
+        dh.vypisPreplnujuciSubor(Parcela.class);
+        */
+        Generator generator = new Generator(1, 1, 1, 0, 0, 0, 0, 1, 1);
+        Random random = new Random(2);
 
-        int x = 100;
+        // Vlastne parametre testu
+        final int ZACIATOCNA_VELKOST = 1000;
+        final int POCET_OPERACII = 1000;
+
+        final int PRST_VYHLADAJ = 50;
+        final int PRST_VLOZ = 50;
+
+        final int BF_HS = 111;
+        final int BF_PS = 11;
+
+        ArrayList<Parcela> zoznam = new ArrayList<>();
+        DynamickeHesovanie<Parcela> dh = new DynamickeHesovanie<>(BF_HS, BF_PS, NAZOV_HS, NAZOV_PS);
+
+        for (int i = 0; i < ZACIATOCNA_VELKOST; i++)
+        {
+            Parcela parcela = generator.getParcela();
+            zoznam.add(parcela);
+            dh.vloz(parcela, Parcela.class);
+        }
+
+        if (zoznam.size() != dh.getPocetElementov())
+        {
+            throw new RuntimeException("Prvotna velkost dynamickeho hesovania a zoznamu nie je rovnaka!");
+        }
+
+        for (int i = 0; i < POCET_OPERACII; i++)
+        {
+            int nahoda = randomInt(random, 0, PRST_VYHLADAJ + PRST_VLOZ);
+
+            if (nahoda < PRST_VYHLADAJ)
+            {
+                // Vyhladavanie
+                int index = randomInt(random, 0, zoznam.size() - 1);
+                Parcela parcela = zoznam.get(index);
+                Parcela najdenaDh = dh.vyhladaj(parcela, Parcela.class);
+
+                if (!najdenaDh.jeRovnaky(parcela))
+                {
+                    throw new RuntimeException("Najdene elementy sa nezhoduju!");
+                }
+            }
+            else
+            {
+                // Vkladanie
+                Parcela parcela = generator.getParcela();
+                zoznam.add(parcela);
+                dh.vloz(parcela, Parcela.class);
+
+                if (zoznam.size() != dh.getPocetElementov())
+                {
+                    throw new RuntimeException("Pocet elementov po vkladani nie je rovnaky!");
+                }
+            }
+        }
+
+        if (zoznam.size() != dh.getPocetElementov())
+        {
+            throw new RuntimeException("Pocet elementov po vykonani vsetkych operacii nie je rovnaky!");
+        }
+    }
+
+    private static double randomDouble(Random random, double min, double max)
+    {
+        return min + (max - min) * random.nextDouble();
+    }
+
+    private static int randomInt(Random random, int min, int max)
+    {
+        if (min == max)
+        {
+            return min;
+        }
+
+        return min + random.nextInt(max - min + 1);
     }
 
     public static void vymazSubory()
