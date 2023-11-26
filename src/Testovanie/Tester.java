@@ -90,6 +90,11 @@ public class Tester
 
             if (nahoda < PRST_VYHLADAJ)
             {
+                if (zoznam.size() == 0)
+                {
+                    continue;
+                }
+
                 // Vyhladavanie
                 int index = this.randomInt(0, zoznam.size() - 1);
                 Parcela parcela = zoznam.get(index);
