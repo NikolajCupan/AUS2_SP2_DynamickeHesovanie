@@ -48,6 +48,34 @@ public class Block<T extends IData> implements IRecord
         }
     }
 
+    // Zaznam musi byt vlozeny iba do daneho Blocku,
+    // ak sa tam nezmesti, tak je vyvolana vynimka
+    public void forceVloz(T pridavany)
+    {
+        if (this.pocetPlatnychZaznamov >= this.maxPocetZaznamov)
+        {
+            throw new RuntimeException("V blocku nie je miesto pre dalsi Zaznam!");
+        }
+
+        this.zaznamy.add(pridavany);
+        this.pocetPlatnychZaznamov++;
+    }
+
+    // Pokus o vlozenie zaznamu do daneho Blocku
+    // True -> zaznam bol uspesne vlozeny
+    // False -> zaznam sa vlozit nepodarilo
+    public boolean skusVlozit(T pridavany)
+    {
+        if (this.pocetPlatnychZaznamov >= this.maxPocetZaznamov)
+        {
+            return false;
+        }
+
+        this.zaznamy.add(pridavany);
+        this.pocetPlatnychZaznamov++;
+        return true;
+    }
+
     // Navratova hodnota metody:
     // True -> bol vytvoreny novy Preplnujici block
     // False -> nebol vytvoreny novy Preplnujuci block

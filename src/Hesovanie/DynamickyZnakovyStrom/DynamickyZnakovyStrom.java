@@ -234,18 +234,56 @@ public class DynamickyZnakovyStrom
             return null;
         }
 
+        this.skusStriastVrchol(typ, najdenyExternyVrchol, spravcaSuborov);
         return realneVymazany;
     }
 
-    private<T extends IData> void skusStriastVrchol(ExternyVrchol striasanyVrchol, SpravcaSuborov spravcaSuborov)
+    private<T extends IData> void skusStriastVrchol(Class<T> typ, ExternyVrchol striasanyVrchol, SpravcaSuborov spravcaSuborov)
     {
         boolean moznoStriast = this.moznoStriast(striasanyVrchol, spravcaSuborov);
+        if (!moznoStriast)
+        {
+            return;
+        }
+
+        // Pri striasani vzdy dojde k uvolneniu prave 1 Preplnujuceho blocku
+        striasanyVrchol.strasVrchol(typ, spravcaSuborov);
     }
 
-    // Metoda rozhodne, ci je mozne striasat dany vrchol
+    // Metoda rozhodne, ci je mozne striasat dany Vrchol
     private boolean moznoStriast(ExternyVrchol externyVrchol, SpravcaSuborov spravcaSuborov)
     {
-        return false;
+        if (externyVrchol.getPocetPreplnujucichBlockov() == 0)
+        {
+            // Striasaju sa Preplnujuce blocky, ak ziadny
+            // neexistuje, tak nie je co striast
+            return false;
+        }
+
+        int maxHlavnySubor = spravcaSuborov.getBlokovaciFaktorHlavnySubor();
+        int maxPreplnujuciSubor = spravcaSuborov.getBlokovaciFaktorPreplnujuciSubor();
+
+        int pocetZaznamovVrchol = externyVrchol.getPocetZaznamovBlock();
+        int pocetPreplnujucichBlockovVrchol = externyVrchol.getPocetPreplnujucichBlockov();
+
+        int maxKapacita = maxHlavnySubor + (maxPreplnujuciSubor * pocetPreplnujucichBlockovVrchol);
+        int maxKapacitaBezPreplnujucehoBlocku = maxKapacita - maxPreplnujuciSubor;
+
+        if (pocetZaznamovVrchol > maxKapacitaBezPreplnujucehoBlocku)
+        {
+            // Nie je mozne striast
+            return false;
+        }
+        else if (pocetZaznamovVrchol == maxKapacitaBezPreplnujucehoBlocku)
+        {
+            // Mozno striast
+            return true;
+        }
+        else
+        {
+            // Striasanie malo byt uz vykonane v minulosti
+            throw new RuntimeException("Striasane nebolo vykonane!");
+        }
     }
 
     private<T extends IData> void vymazPrazdneVrcholy(Class<T> typ, ExternyVrchol spracovanyVrchol, Block<T> kumulovanyBlock, SpravcaSuborov spravcaSuborov)

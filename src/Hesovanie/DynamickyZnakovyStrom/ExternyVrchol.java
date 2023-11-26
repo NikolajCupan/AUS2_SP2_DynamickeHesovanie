@@ -4,6 +4,8 @@ import Hesovanie.Block;
 import Hesovanie.SpravcaSuborov;
 import Rozhrania.IData;
 
+import java.util.ArrayList;
+
 public class ExternyVrchol extends Vrchol
 {
     // Udava, na ktorom bajte zacina dany Block
@@ -115,6 +117,111 @@ public class ExternyVrchol extends Vrchol
         return null;
     }
 
+    public<T extends IData> void strasVrchol(Class<T> typ, SpravcaSuborov spravcaSuborov)
+    {
+        Block<T> hlavnyBlock = new Block<>(spravcaSuborov.getBlokovaciFaktorHlavnySubor(), typ);
+        hlavnyBlock.prevedZPolaBajtov(spravcaSuborov.citajHlavnySubor(this.offset, hlavnyBlock.getVelkost()));
+
+        Block<T> curBlock = hlavnyBlock;
+        ArrayList<Block<T>> preplnujuceBlocky = new ArrayList<>();
+
+        while (curBlock.getOffsetPreplnujuciSubor() != -1)
+        {
+            Block<T> preplnujuciBlock = new Block<>(spravcaSuborov.getBlokovaciFaktorPreplnujuciSubor(), typ);
+            preplnujuciBlock.prevedZPolaBajtov(spravcaSuborov.citajPreplnujuciSubor(curBlock.getOffsetPreplnujuciSubor(), preplnujuciBlock.getVelkost()));
+
+            preplnujuceBlocky.add(preplnujuciBlock);
+            curBlock = preplnujuciBlock;
+        }
+
+        if (preplnujuceBlocky.size() == 1)
+        {
+            // Existovat bude iba Hlavny block
+            Block<T> preplnujuciBlock = preplnujuceBlocky.get(0);
+            for (int i = 0; i < preplnujuciBlock.getPocetPlatnychZaznamov(); i++)
+            {
+                hlavnyBlock.forceVloz(preplnujuciBlock.getZaznamy().get(i));
+            }
+
+            spravcaSuborov.uvolniBlockPreplnujuciSubor(hlavnyBlock.getOffsetPreplnujuciSubor(), typ);
+            hlavnyBlock.setOffsetPreplnujuciSubor(-1);
+            spravcaSuborov.ulozHlavnySubor(this.offset, hlavnyBlock.prevedNaPoleBajtov());
+        }
+        else
+        {
+            // Presuvat budem zaznamy z posledneho Preplnujuceho blocku
+            Block<T> poslednyBlock = preplnujuceBlocky.get(preplnujuceBlocky.size() - 1);
+            ArrayList<T> presuvaneZaznamy = poslednyBlock.getZaznamy();
+
+            // Predposledny block sa stane poslednym blockom
+            Block<T> predposlednyBlock = preplnujuceBlocky.get(preplnujuceBlocky.size() - 2);
+
+            // Uvolnim posledny block
+            spravcaSuborov.uvolniBlockPreplnujuciSubor(predposlednyBlock.getOffsetPreplnujuciSubor(), typ);
+
+            predposlednyBlock.setOffsetPreplnujuciSubor(-1);
+            preplnujuceBlocky.remove(preplnujuceBlocky.size() - 1);
+
+            // Postupne budem presuvat Zaznamy z arraylistu do jednotlivych Blockov
+            ArrayList<Block<T>> vsetkyBlocky = preplnujuceBlocky;
+            vsetkyBlocky.add(0, hlavnyBlock);
+
+            int zaznamIndex = 0;
+            for (int i = 0; i < vsetkyBlocky.size(); i++)
+            {
+                boolean spracuvanyModifikovany = false;
+                Block<T> spracuvanyBlock = vsetkyBlocky.get(i);
+
+                while (true)
+                {
+                    if (zaznamIndex >= presuvaneZaznamy.size())
+                    {
+                        // Vsetky zaznamy boli spracovane
+                        break;
+                    }
+
+                    T zaznam = presuvaneZaznamy.get(zaznamIndex);
+                    boolean uspesneVlozene = spracuvanyBlock.skusVlozit(zaznam);
+
+                    if (uspesneVlozene)
+                    {
+                        spracuvanyModifikovany = true;
+                        zaznamIndex++;
+                    }
+                    else
+                    {
+                        // Block je plny
+                        break;
+                    }
+                }
+
+                if (spracuvanyModifikovany || i == vsetkyBlocky.size() - 1)
+                {
+                    // Nutne dany Block ulozit, predposledny Block je nutne ulozit vzdy
+                    if (i == 0)
+                    {
+                        // Doslo k modifikacii Hlavneho blocku
+                        spravcaSuborov.ulozHlavnySubor(this.offset, spracuvanyBlock.prevedNaPoleBajtov());
+                    }
+                    else
+                    {
+                        // Doslo k modifikacii Preplnujuceho blocku
+                        long offsetUkladanehoBlocku = vsetkyBlocky.get(i - 1).getOffsetPreplnujuciSubor();
+                        spravcaSuborov.ulozPreplnujuciSubor(offsetUkladanehoBlocku, spracuvanyBlock.prevedNaPoleBajtov());
+                    }
+                }
+            }
+
+            if (zaznamIndex < presuvaneZaznamy.size())
+            {
+                throw new RuntimeException("Presuvanie Zaznamov pri striasani zlyhalo!");
+            }
+        }
+
+        // Pri striasani vzdy dojde k uvolneniu prave 1 Preplnujuceho blocku
+        this.pocetPreplnujucichBlockov--;
+    }
+
     // Vrati cely Block
     public<T extends IData> Block<T> getBlock(Class<T> typ, SpravcaSuborov spravcaSuborov)
     {
@@ -147,6 +254,11 @@ public class ExternyVrchol extends Vrchol
     public int getPocetZaznamovBlock()
     {
         return this.pocetZaznamovBlock;
+    }
+
+    public int getPocetPreplnujucichBlockov()
+    {
+        return this.pocetPreplnujucichBlockov;
     }
 
     public void setOffset(long offset)
