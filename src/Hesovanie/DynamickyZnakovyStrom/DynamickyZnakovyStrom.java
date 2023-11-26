@@ -226,9 +226,7 @@ public class DynamickyZnakovyStrom
         // Prechadzaj stromom az pokym sa nedostanes na Externy vrchol
         BitSet vymazavanyZaznamHash = vymazavany.getHash();
         ExternyVrchol najdenyExternyVrchol = this.traverzujNaExternyVrchol(this.root, vymazavanyZaznamHash, new int[]{ 0 });
-
-        Block<T> block = najdenyExternyVrchol.getBlock(typ, spravcaSuborov);
-        T realneVymazany = block.vymaz(vymazavany);
+        T realneVymazany = najdenyExternyVrchol.vymaz(vymazavany, typ, spravcaSuborov);
 
         if (realneVymazany == null)
         {
@@ -236,8 +234,18 @@ public class DynamickyZnakovyStrom
             return null;
         }
 
-        this.vymazPrazdneVrcholy(typ, najdenyExternyVrchol, block, spravcaSuborov);
         return realneVymazany;
+    }
+
+    private<T extends IData> void skusStriastVrchol(ExternyVrchol striasanyVrchol, SpravcaSuborov spravcaSuborov)
+    {
+        boolean moznoStriast = this.moznoStriast(striasanyVrchol, spravcaSuborov);
+    }
+
+    // Metoda rozhodne, ci je mozne striasat dany vrchol
+    private boolean moznoStriast(ExternyVrchol externyVrchol, SpravcaSuborov spravcaSuborov)
+    {
+        return false;
     }
 
     private<T extends IData> void vymazPrazdneVrcholy(Class<T> typ, ExternyVrchol spracovanyVrchol, Block<T> kumulovanyBlock, SpravcaSuborov spravcaSuborov)

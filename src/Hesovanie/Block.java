@@ -184,28 +184,93 @@ public class Block<T extends IData> implements IRecord
         return null;
     }
 
-    public T vymaz(T vymazavany)
+    public T vymaz(T vymazavany, SpravcaSuborov spravcaSuborov, boolean[] dealokovanyPreplnujuciBlock)
     {
-        int index = -1;
+        long offsetPrevPreplnujuci = -1;
+        boolean prevBlockPreplnujuci = false;
 
-        for (int i = 0; i < this.pocetPlatnychZaznamov; i++)
+        Block<T> prevBlock = null;
+        Block<T> curBlock = this;
+
+        while (true)
         {
-            if (this.zaznamy.get(i).jeRovnaky(vymazavany))
+            int indexVymazavaneho = -1;
+            for (int i = 0; i < curBlock.pocetPlatnychZaznamov; i++)
             {
-                index = i;
-                break;
+                if (curBlock.zaznamy.get(i).jeRovnaky(vymazavany))
+                {
+                    // Zaznam bol najdeny v curBlock-u
+                    indexVymazavaneho = i;
+                    break;
+                }
+            }
+
+            if (indexVymazavaneho != -1)
+            {
+                Collections.swap(curBlock.zaznamy, indexVymazavaneho, curBlock.pocetPlatnychZaznamov - 1);
+                curBlock.pocetPlatnychZaznamov--;
+                T realneZmazany = curBlock.zaznamy.remove(curBlock.pocetPlatnychZaznamov);
+
+                if (prevBlock != null)
+                {
+                    // Ak prevBlock nie je null, tak to znamena,
+                    // ze Zaznam bol vymazany z Preplnujuceho blocku
+                    if (curBlock.pocetPlatnychZaznamov != 0)
+                    {
+                        // Block nie je prazdny, iba ho ulozim
+                        spravcaSuborov.ulozPreplnujuciSubor(prevBlock.offsetPreplnujuciSubor, curBlock.prevedNaPoleBajtov());
+                    }
+                    else
+                    {
+                        // Preplnujuci block bol vyprazdneny, nie je potrebne,
+                        // aby mal nadalej alokovane miesto v subore
+                        dealokovanyPreplnujuciBlock[0] = true;
+                        long offsetDealokovanyBlock = prevBlock.offsetPreplnujuciSubor;
+
+                        if (curBlock.offsetPreplnujuciSubor != -1)
+                        {
+                            // Dochadza k dealokovaniu blocku uprostred zretazenia,
+                            // pred dealokovciou modifikujem zretazenie
+                            prevBlock.offsetPreplnujuciSubor = curBlock.offsetPreplnujuciSubor;
+                        }
+                        else
+                        {
+                            prevBlock.offsetPreplnujuciSubor = -1;
+                        }
+
+                        spravcaSuborov.uvolniBlockPreplnujuciSubor(offsetDealokovanyBlock, vymazavany.getClass());
+
+                        if (prevBlockPreplnujuci)
+                        {
+                            // Ak je aj predchadzajuci block Preplnujicim blockom,
+                            // je tento nutne ulozit aj ten
+                            spravcaSuborov.ulozPreplnujuciSubor(offsetPrevPreplnujuci, prevBlock.prevedNaPoleBajtov());
+                        }
+                    }
+                }
+
+                return realneZmazany;
+            }
+
+            if (curBlock.offsetPreplnujuciSubor != -1)
+            {
+                if (prevBlock != null)
+                {
+                    prevBlockPreplnujuci = true;
+                    offsetPrevPreplnujuci = prevBlock.getOffsetPreplnujuciSubor();
+                }
+
+                prevBlock = curBlock;
+
+                curBlock = (Block<T>)new Block<>(spravcaSuborov.getBlokovaciFaktorPreplnujuciSubor(), vymazavany.getClass());
+                curBlock.prevedZPolaBajtov(spravcaSuborov.citajPreplnujuciSubor(prevBlock.offsetPreplnujuciSubor, curBlock.getVelkost()));
+            }
+            else
+            {
+                // Zaznam nebol najdeny
+                return null;
             }
         }
-
-        if (index == -1)
-        {
-            // Dany Zaznam sa v Blocku nenachadza
-            return null;
-        }
-
-        Collections.swap(this.zaznamy, index, this.pocetPlatnychZaznamov - 1);
-        this.pocetPlatnychZaznamov--;
-        return this.zaznamy.remove(this.pocetPlatnychZaznamov);
     }
 
     public boolean jeBlockPlny()

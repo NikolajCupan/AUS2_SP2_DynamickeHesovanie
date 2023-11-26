@@ -48,6 +48,7 @@ public class ExternyVrchol extends Vrchol
 
     public<T extends IData> void vloz(T pridavany, Class<T> typ, SpravcaSuborov spravcaSuborov)
     {
+        boolean blockMalOffset = (this.offset != -1);
         this.offset = (this.offset == -1) ? spravcaSuborov.dajVolnyBlockHlavnySubor(typ) : this.offset;
 
         try
@@ -55,8 +56,13 @@ public class ExternyVrchol extends Vrchol
             // Nacitanie Blocku do operacnej pamati
             Block<T> block = new Block<>(spravcaSuborov.getBlokovaciFaktorHlavnySubor(), typ);
 
-            byte[] poleBajtovSubor = spravcaSuborov.citajHlavnySubor(this.offset, block.getVelkost());
-            block.prevedZPolaBajtov(poleBajtovSubor);
+            if (blockMalOffset)
+            {
+                // Citaj data z daneho offsetu iba ak sa tam nachadzaju realne data daneho Blocku,
+                // ak bol prideleny novy offset, tak data necitaj
+                byte[] poleBajtovSubor = spravcaSuborov.citajHlavnySubor(this.offset, block.getVelkost());
+                block.prevedZPolaBajtov(poleBajtovSubor);
+            }
 
             // Aktualizovanie Blocku a ulozenie do Suboru
             boolean vytvorenyNovyPreplnujuciBlock = block.vloz(pridavany, spravcaSuborov);
@@ -73,6 +79,40 @@ public class ExternyVrchol extends Vrchol
         {
             throw new RuntimeException("Chyba pri vkladani do Externeho vrcholu!");
         }
+    }
+
+    public<T extends IData> T vymaz(T vymazavany, Class<T> typ, SpravcaSuborov spravcaSuborov)
+    {
+        if (this.offset == -1)
+        {
+            // Externy vrchol nema prideleny ziadny Block,
+            // urcite nebude mozne vykonat mazanie
+            return null;
+        }
+
+        Block<T> block = new Block<>(spravcaSuborov.getBlokovaciFaktorHlavnySubor(), typ);
+        block.prevedZPolaBajtov(spravcaSuborov.citajHlavnySubor(this.offset, block.getVelkost()));
+
+        // Alokovane pomocou new, aby sa dalo pouzit ako out parameter
+        boolean[] dealokovanyPreplnujuciBlock = new boolean[]{ false };
+        T realneVymazany = block.vymaz(vymazavany, spravcaSuborov, dealokovanyPreplnujuciBlock);
+
+        if (realneVymazany != null)
+        {
+            // Vymazanie bolo uspesne
+            this.pocetZaznamovBlock--;
+            spravcaSuborov.ulozHlavnySubor(this.offset, block.prevedNaPoleBajtov());
+
+            if (dealokovanyPreplnujuciBlock[0])
+            {
+                // Doslo k dealokovaniu Preplnujuceho blocku
+                this.pocetPreplnujucichBlockov--;
+            }
+
+            return realneVymazany;
+        }
+
+        return null;
     }
 
     // Vrati cely Block
