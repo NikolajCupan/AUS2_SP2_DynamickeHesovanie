@@ -49,4 +49,14 @@ public class DynamickeHesovanie<T extends IData>
     {
         return this.dynamickyZnakovyStrom.getPocetElementov();
     }
+
+    public void vymazSubory()
+    {
+        this.spravcaSuborov.vymazSubory();
+    }
+
+    public boolean suboryPrazdne()
+    {
+        return this.spravcaSuborov.suboryPrazdne();
+    }
 }

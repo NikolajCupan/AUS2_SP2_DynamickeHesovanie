@@ -40,8 +40,6 @@ public class Tester
     {
         for (int i = 0; i < opakovania; i++)
         {
-            this.vymazSubory();
-
             int blokovaciFaktorHlavnySubor = this.randomInt(BF_HS_MIN, BF_HS_MAX);
             int blokovaciFaktorPreplnujuciSubor = this.randomInt(BF_PS_MIN, BF_PS_MAX);
 
@@ -66,7 +64,13 @@ public class Tester
         final int PRST_VLOZ = 50;
 
         ArrayList<Parcela> zoznam = new ArrayList<>();
+
         DynamickeHesovanie<Parcela> dh = new DynamickeHesovanie<>(blokovaciFaktorHlavnySubor, blokovaciFaktorPreplnujuciSubor, NAZOV_HS, NAZOV_PS);
+        dh.vymazSubory();
+        if (!dh.suboryPrazdne())
+        {
+            throw new RuntimeException("Subory na zaciatku testu nie su prazdne!");
+        }
 
         for (int i = 0; i < ZACIATOCNA_VELKOST; i++)
         {
@@ -122,7 +126,13 @@ public class Tester
         final int ZACIATOCNA_VELKOST = 10000;
 
         ArrayList<Parcela> zoznam = new ArrayList<>();
+
         DynamickeHesovanie<Parcela> dh = new DynamickeHesovanie<>(blokovaciFaktorHlavnySubor, blokovaciFaktorPreplnujuciSubor, NAZOV_HS, NAZOV_PS);
+        dh.vymazSubory();
+        if (!dh.suboryPrazdne())
+        {
+            throw new RuntimeException("Subory na zaciatku testu nie su prazdne!");
+        }
 
         for (int i = 0; i < ZACIATOCNA_VELKOST; i++)
         {
@@ -188,7 +198,13 @@ public class Tester
         Collections.shuffle(zoznamID);
 
         ArrayList<Dummy> zoznam = new ArrayList<>();
+
         DynamickeHesovanie<Dummy> dh = new DynamickeHesovanie<>(blokovaciFaktorHlavnySubor, blokovaciFaktorPreplnujuciSubor, NAZOV_HS, NAZOV_PS);
+        dh.vymazSubory();
+        if (!dh.suboryPrazdne())
+        {
+            throw new RuntimeException("Subory na zaciatku testu nie su prazdne!");
+        }
 
         for (int i = 0; i < ZACIATOCNA_VELKOST; i++)
         {
@@ -235,22 +251,6 @@ public class Tester
         if (zoznam.size() != dh.getPocetElementov())
         {
             throw new RuntimeException("Pocet elementov v Dynamickom hesovani a Zozname sa nezhoduje!");
-        }
-    }
-
-    private void vymazSubory()
-    {
-        File hlavnySubor = new File(NAZOV_HS);
-        File preplnujuciSubor = new File(NAZOV_PS);
-
-        if (hlavnySubor.exists())
-        {
-            hlavnySubor.delete();
-        }
-
-        if (preplnujuciSubor.exists())
-        {
-            preplnujuciSubor.delete();
         }
     }
 

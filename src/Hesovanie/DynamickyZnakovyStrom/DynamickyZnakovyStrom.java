@@ -235,6 +235,10 @@ public class DynamickyZnakovyStrom
         }
 
         this.skusStriastVrchol(typ, najdenyExternyVrchol, spravcaSuborov);
+
+        // TODO: Refactor mazania prazdnych vrcholov
+        Block<T> block = najdenyExternyVrchol.getBlock(typ, spravcaSuborov);
+        this.vymazPrazdneVrcholy(typ, najdenyExternyVrchol, block, spravcaSuborov);
         return realneVymazany;
     }
 

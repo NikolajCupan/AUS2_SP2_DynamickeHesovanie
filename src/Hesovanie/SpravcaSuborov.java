@@ -418,4 +418,30 @@ public class SpravcaSuborov
     {
         return this.blokovaciFaktorPreplnujuciSubor;
     }
+
+    public void vymazSubory()
+    {
+        try
+        {
+            this.hlavnyPristupovySubor.setLength(0);
+            this.preplnujuciPrustupovySubor.setLength(0);
+
+            this.hlavnySubor.delete();
+            this.preplnujuciSubor.delete();
+        }
+        catch (Exception exception)
+        {
+           throw new RuntimeException("Chyba pri mazani Suborov!");
+        }
+    }
+
+    public boolean suboryPrazdne()
+    {
+        if (this.hlavnySubor.length() != 0 || this.preplnujuciSubor.length() != 0)
+        {
+            return false;
+        }
+
+        return true;
+    }
 }
