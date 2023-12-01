@@ -261,7 +261,8 @@ public class SpravcaSuborov
                 Block<T> blockNaKonciSuboru = new Block<>(blokovaciFaktor, typ);
                 blockNaKonciSuboru.prevedZPolaBajtov(this.citaj(offsetPoslednehoBlocku, blockNaKonciSuboru.getVelkost(), pristupovySubor));
 
-                if (blockNaKonciSuboru.getPocetPlatnychZaznamov() == 0)
+                if (blockNaKonciSuboru.getPocetPlatnychZaznamov() == 0 &&
+                    blockNaKonciSuboru.getOffsetPreplnujuciSubor() == -1)
                 {
                     // Block mozno zmazat
                     long nextOffset = blockNaKonciSuboru.getOffsetNextVolny();
@@ -388,6 +389,37 @@ public class SpravcaSuborov
             System.out.println(block + "\n");
 
             curOffset += velkostBlocku;
+        }
+    }
+
+    public<T extends IData> void vypisZretazenie(Class<T> typ)
+    {
+        System.out.println("-------------------- HLAVNY --------------------");
+        long curOffset = this.offsetPrvyVolnyHlavnySubor;
+        while (curOffset != -1)
+        {
+            Block<T> curBlock = new Block<>(this.blokovaciFaktorHlavnySubor, typ);
+            curBlock.prevedZPolaBajtov(this.citajHlavnySubor(curOffset, curBlock.getVelkost()));
+            System.out.println("Offset: " + curOffset);
+            System.out.println("Next offset: " + curBlock.getOffsetNextVolny());
+            System.out.println("Prev offset: " + curBlock.getOffsetPrevVolny());
+            System.out.println();
+
+            curOffset = curBlock.getOffsetNextVolny();
+        }
+
+        System.out.println("----------------- PREPLNUJUCI -------------------");
+        curOffset = this.offsetPrvyVolnyPreplnujuciSubor;
+        while (curOffset != -1)
+        {
+            Block<T> curBlock = new Block<>(this.blokovaciFaktorPreplnujuciSubor, typ);
+            curBlock.prevedZPolaBajtov(this.citajPreplnujuciSubor(curOffset, curBlock.getVelkost()));
+            System.out.println("Offset: " + curOffset);
+            System.out.println("Next offset: " + curBlock.getOffsetNextVolny());
+            System.out.println("Prev offset: " + curBlock.getOffsetPrevVolny());
+            System.out.println();
+
+            curOffset = curBlock.getOffsetNextVolny();
         }
     }
 

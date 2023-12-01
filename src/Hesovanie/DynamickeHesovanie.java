@@ -12,6 +12,11 @@ public class DynamickeHesovanie<T extends IData>
 
     public DynamickeHesovanie(int blokovaciFaktorHlavnySubor, int blokovaciFaktorPreplnujuciSubor, String nazovHlavnySubor, String nazovPreplnujuciSubor, Class<T> typ)
     {
+        if (blokovaciFaktorHlavnySubor <= 0 || blokovaciFaktorPreplnujuciSubor <= 0)
+        {
+            throw new RuntimeException("Blokovaci faktor musi byt kladne cele cislo!");
+        }
+
         this.digitalnyZnakovyStrom = new DigitalnyZnakovyStrom();
         this.spravcaSuborov = new SpravcaSuborov(blokovaciFaktorHlavnySubor, blokovaciFaktorPreplnujuciSubor,
                                                  nazovHlavnySubor, nazovPreplnujuciSubor);
@@ -42,6 +47,11 @@ public class DynamickeHesovanie<T extends IData>
     public void vypisPreplnujuciSubor()
     {
         this.spravcaSuborov.vypisPreplnujuciSubor(this.typ);
+    }
+
+    public void vypisZretazenie()
+    {
+        this.spravcaSuborov.vypisZretazenie(this.typ);
     }
 
     public void vypisStrom()

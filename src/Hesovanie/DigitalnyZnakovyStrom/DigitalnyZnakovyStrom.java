@@ -243,7 +243,15 @@ public class DigitalnyZnakovyStrom
         // Moze dojst k uvolneniu 1 alebo 0 Preplnujucich blockov
         this.skusStriastVrchol(typ, najdenyExternyVrchol, spravcaSuborov);
 
-        if (najdenyExternyVrchol.equals(this.root))
+        if (najdenyExternyVrchol.getPocetZaznamovBlocky() == 0 &&
+            najdenyExternyVrchol.getPocetPreplnujucichBlockov() == 0)
+        {
+            spravcaSuborov.uvolniBlockHlavnySubor(najdenyExternyVrchol.getOffset(), typ);
+            najdenyExternyVrchol.setOffset(-1);
+        }
+
+        if (najdenyExternyVrchol.equals(this.root) &&
+            najdenyExternyVrchol.getOffset() != -1)
         {
             this.skusDealokovatKoren(typ, spravcaSuborov);
         }
@@ -278,11 +286,17 @@ public class DigitalnyZnakovyStrom
 
         // Oba Blocky si nacitam do operacnej pamati
         Block<T> prvy = new Block<>(spravcaSuborov.getBlokovaciFaktorHlavnySubor(), typ);
-        prvy.prevedZPolaBajtov(spravcaSuborov.citajHlavnySubor(externyVrchol.getOffset(), prvy.getVelkost()));
+        if (externyVrchol.getOffset() != -1)
+        {
+            prvy.prevedZPolaBajtov(spravcaSuborov.citajHlavnySubor(externyVrchol.getOffset(), prvy.getVelkost()));
+        }
 
         ExternyVrchol surodenec = (ExternyVrchol)externyVrchol.getSurodenec();
         Block<T> druhy = new Block<>(spravcaSuborov.getBlokovaciFaktorHlavnySubor(), typ);
-        druhy.prevedZPolaBajtov(spravcaSuborov.citajHlavnySubor(surodenec.getOffset(), prvy.getVelkost()));
+        if (surodenec.getOffset() != -1)
+        {
+            druhy.prevedZPolaBajtov(spravcaSuborov.citajHlavnySubor(surodenec.getOffset(), prvy.getVelkost()));
+        }
 
         // Zaznamy z oboch Blockov presuniem do noveho Blocku
         Block<T> spojeny = new Block<>(spravcaSuborov.getBlokovaciFaktorHlavnySubor(), typ);
@@ -296,9 +310,16 @@ public class DigitalnyZnakovyStrom
             spojeny.forceVloz(zaznam);
         }
 
-        // Uvolnim povodne Blocku
-        spravcaSuborov.uvolniBlockHlavnySubor(externyVrchol.getOffset(), typ);
-        spravcaSuborov.uvolniBlockHlavnySubor(surodenec.getOffset(), typ);
+        // Uvolnim povodne Blocky
+        if (externyVrchol.getOffset() != -1)
+        {
+            spravcaSuborov.uvolniBlockHlavnySubor(externyVrchol.getOffset(), typ);
+        }
+
+        if (surodenec.getOffset() != -1)
+        {
+            spravcaSuborov.uvolniBlockHlavnySubor(surodenec.getOffset(), typ);
+        }
 
         // Za urcitych podmienok je mozne rusit aj dalsie Vrcholy
         ExternyVrchol novyExternyVrchol = externyVrchol;

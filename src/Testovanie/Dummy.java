@@ -1,5 +1,6 @@
 package Testovanie;
 
+import Ostatne.Helper;
 import Ostatne.Konstanty;
 import Rozhrania.IData;
 import Rozhrania.IRecord;
@@ -12,12 +13,14 @@ import java.util.BitSet;
 
 public class Dummy implements IData
 {
-    public int ID;
+    private static final int MAX_DLZKA_ID = 10;
+
+    public String ID;
     public int pocetBitovHash;
 
     public Dummy(int ID, int pocetBitovHash)
     {
-        this.ID = ID;
+        this.ID = String.valueOf(ID);
         this.pocetBitovHash = pocetBitovHash;
     }
 
@@ -32,14 +35,14 @@ public class Dummy implements IData
             return false;
         }
 
-        return this.ID == dummy.ID;
+        return this.ID.equals(dummy.ID);
     }
 
     @Override
     public BitSet getHash()
     {
         BitSet bitSet = new BitSet();
-        long hash = (this.ID * 2654435761L) % (1L << this.pocetBitovHash);
+        long hash = (Integer.parseInt(this.ID) * 2654435761L) % (1L << this.pocetBitovHash);
 
         for (int i = 0; i < this.pocetBitovHash; i++)
         {
@@ -65,8 +68,10 @@ public class Dummy implements IData
     {
         int velkost = 0;
 
-        // ID - int
-        velkost += Konstanty.VELKOST_INT;
+        // Velkost ID
+        velkost += Konstanty.VELKOST_BAJT;
+        // ID - String max 8 bitov
+        velkost += MAX_DLZKA_ID * Konstanty.VELKOST_BAJT;
 
         // Pocet bitov hash - int
         velkost += Konstanty.VELKOST_INT;
@@ -82,7 +87,10 @@ public class Dummy implements IData
 
         try
         {
-            dataOutputStream.writeInt(this.ID);
+            dataOutputStream.writeByte(this.ID.length());
+            String rozsireneID = Helper.rozsirString(this.ID, MAX_DLZKA_ID);
+            dataOutputStream.writeBytes(rozsireneID);
+
             dataOutputStream.writeInt(this.pocetBitovHash);
 
             return byteOutputStream.toByteArray();
@@ -106,12 +114,25 @@ public class Dummy implements IData
 
         try
         {
-            this.ID = dataInputStream.readInt();
+            byte dlzkaID = dataInputStream.readByte();
+            this.ID = Helper.nacitajString(dataInputStream, dlzkaID, MAX_DLZKA_ID);
             this.pocetBitovHash = dataInputStream.readInt();
         }
         catch (Exception ex)
         {
             throw new IllegalStateException("Konverzia pola bajtov na Dummy sa nepodarila!");
         }
+    }
+
+    @Override
+    public String toString()
+    {
+        String string = "";
+        string += "\tDummy:\n";
+        string += "\t- ID: " + this.ID + "\n";
+        string += "\t- pocet bitov hash: " + this.pocetBitovHash + "\n";
+        string += "\t- hash: " + Helper.hashToString(this.getHash(), this.pocetBitovHash) + "\n";
+
+        return string;
     }
 }
