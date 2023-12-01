@@ -54,7 +54,7 @@ public class Block<T extends IData> implements IRecord
     {
         if (this.pocetPlatnychZaznamov >= this.maxPocetZaznamov)
         {
-            throw new RuntimeException("V blocku nie je miesto pre dalsi Zaznam!");
+            throw new RuntimeException("V Blocku nie je miesto pre dalsi Zaznam!");
         }
 
         this.zaznamy.add(pridavany);
@@ -153,7 +153,7 @@ public class Block<T extends IData> implements IRecord
                     return true;
                 }
 
-                throw new RuntimeException("Novo vytvoreny preplnujuci subor je plny!");
+                throw new RuntimeException("Novo vytvoreny preplnujuci Block je plny!");
             }
         }
     }
@@ -270,7 +270,7 @@ public class Block<T extends IData> implements IRecord
 
                         if (prevBlockPreplnujuci)
                         {
-                            // Ak je aj predchadzajuci block Preplnujicim blockom,
+                            // Ak je aj predchadzajuci block Preplnujucim blockom,
                             // je tento nutne ulozit aj ten
                             spravcaSuborov.ulozPreplnujuciSubor(offsetPrevPreplnujuci, prevBlock.prevedNaPoleBajtov());
                         }

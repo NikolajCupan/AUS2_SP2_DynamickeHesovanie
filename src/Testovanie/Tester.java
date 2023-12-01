@@ -65,7 +65,7 @@ public class Tester
 
         ArrayList<Parcela> zoznam = new ArrayList<>();
 
-        DynamickeHesovanie<Parcela> dh = new DynamickeHesovanie<>(blokovaciFaktorHlavnySubor, blokovaciFaktorPreplnujuciSubor, NAZOV_HS, NAZOV_PS);
+        DynamickeHesovanie<Parcela> dh = new DynamickeHesovanie<>(blokovaciFaktorHlavnySubor, blokovaciFaktorPreplnujuciSubor, NAZOV_HS, NAZOV_PS, Parcela.class);
         dh.vymazSubory();
         if (!dh.suboryPrazdne())
         {
@@ -76,7 +76,7 @@ public class Tester
         {
             Parcela parcela = generator.getParcela();
             zoznam.add(parcela);
-            dh.vloz(parcela, Parcela.class);
+            dh.vloz(parcela);
         }
 
         if (zoznam.size() != dh.getPocetElementov())
@@ -98,7 +98,7 @@ public class Tester
                 // Vyhladavanie
                 int index = this.randomInt(0, zoznam.size() - 1);
                 Parcela parcela = zoznam.get(index);
-                Parcela najdenaDh = dh.vyhladaj(parcela, Parcela.class);
+                Parcela najdenaDh = dh.vyhladaj(parcela);
 
                 if (!najdenaDh.jeRovnaky(parcela))
                 {
@@ -110,7 +110,7 @@ public class Tester
                 // Vkladanie
                 Parcela parcela = generator.getParcela();
                 zoznam.add(parcela);
-                dh.vloz(parcela, Parcela.class);
+                dh.vloz(parcela);
 
                 if (zoznam.size() != dh.getPocetElementov())
                 {
@@ -132,7 +132,7 @@ public class Tester
 
         ArrayList<Parcela> zoznam = new ArrayList<>();
 
-        DynamickeHesovanie<Parcela> dh = new DynamickeHesovanie<>(blokovaciFaktorHlavnySubor, blokovaciFaktorPreplnujuciSubor, NAZOV_HS, NAZOV_PS);
+        DynamickeHesovanie<Parcela> dh = new DynamickeHesovanie<>(blokovaciFaktorHlavnySubor, blokovaciFaktorPreplnujuciSubor, NAZOV_HS, NAZOV_PS, Parcela.class);
         dh.vymazSubory();
         if (!dh.suboryPrazdne())
         {
@@ -155,7 +155,7 @@ public class Tester
 
         for (Parcela parcela : zoznam)
         {
-            dh.vloz(parcela, Parcela.class);
+            dh.vloz(parcela);
             curPocet++;
 
             if (curPocet != dh.getPocetElementov())
@@ -172,7 +172,7 @@ public class Tester
         Collections.shuffle(zoznam);
         for (Parcela parcela : zoznam)
         {
-            Parcela najdenaDh = dh.vyhladaj(parcela, Parcela.class);
+            Parcela najdenaDh = dh.vyhladaj(parcela);
 
             if (!parcela.jeRovnaky(najdenaDh))
             {
@@ -204,7 +204,7 @@ public class Tester
 
         ArrayList<Dummy> zoznam = new ArrayList<>();
 
-        DynamickeHesovanie<Dummy> dh = new DynamickeHesovanie<>(blokovaciFaktorHlavnySubor, blokovaciFaktorPreplnujuciSubor, NAZOV_HS, NAZOV_PS);
+        DynamickeHesovanie<Dummy> dh = new DynamickeHesovanie<>(blokovaciFaktorHlavnySubor, blokovaciFaktorPreplnujuciSubor, NAZOV_HS, NAZOV_PS, Dummy.class);
         dh.vymazSubory();
         if (!dh.suboryPrazdne())
         {
@@ -228,7 +228,7 @@ public class Tester
 
         for (Dummy dummy : zoznam)
         {
-            dh.vloz(dummy, Dummy.class);
+            dh.vloz(dummy);
             curPocet++;
 
             if (curPocet != dh.getPocetElementov())
@@ -245,7 +245,7 @@ public class Tester
         Collections.shuffle(zoznam);
         for (Dummy dummy : zoznam)
         {
-            Dummy najdenaDh = dh.vyhladaj(dummy, Dummy.class);
+            Dummy najdenaDh = dh.vyhladaj(dummy);
 
             if (!dummy.jeRovnaky(najdenaDh))
             {

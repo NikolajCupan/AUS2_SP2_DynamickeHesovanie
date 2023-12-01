@@ -216,6 +216,12 @@ public class DigitalnyZnakovyStrom
         BitSet vyhladavanyZaznamHash = vyhladavany.getHash();
         ExternyVrchol najdenyExternyVrchol = this.traverzujNaExternyVrchol(this.root, vyhladavanyZaznamHash, new int[]{ 0 });
 
+        if (najdenyExternyVrchol.getOffset() == -1)
+        {
+            // Externy vrchol nema prideleny offset, je prazdny
+            return null;
+        }
+
         // Nacitaj Block a prehladaj ho
         Block<T> najdenyBlock = najdenyExternyVrchol.getBlock(typ, spravcaSuborov);
         return najdenyBlock.vyhladaj(vyhladavany, spravcaSuborov);
@@ -234,12 +240,165 @@ public class DigitalnyZnakovyStrom
             return null;
         }
 
+        // Moze dojst k uvolneniu 1 alebo 0 Preplnujucich blockov
         this.skusStriastVrchol(typ, najdenyExternyVrchol, spravcaSuborov);
 
-        // TODO: Refactor mazania prazdnych vrcholov
-        Block<T> block = najdenyExternyVrchol.getBlock(typ, spravcaSuborov);
-        this.vymazPrazdneVrcholy(typ, najdenyExternyVrchol, block, spravcaSuborov);
+        if (najdenyExternyVrchol.equals(this.root))
+        {
+            this.skusDealokovatKoren(typ, spravcaSuborov);
+        }
+        else
+        {
+            this.skusSpojitVrcholy(typ, najdenyExternyVrchol, spravcaSuborov);
+        }
+
         return realneVymazany;
+    }
+
+    private<T extends IData> void skusDealokovatKoren(Class<T> typ, SpravcaSuborov spravcaSuborov)
+    {
+        ExternyVrchol koren = (ExternyVrchol)this.root;
+
+        if (koren.getPocetZaznamovBlock() == 0)
+        {
+            // Koren bol vyprazdneny, tym padom moze byt dealokovany
+            spravcaSuborov.uvolniBlockHlavnySubor(koren.getOffset(), typ);
+        }
+
+        this.root = new ExternyVrchol();
+    }
+
+    private<T extends IData> void skusSpojitVrcholy(Class<T> typ, ExternyVrchol externyVrchol, SpravcaSuborov spravcaSuborov)
+    {
+        // Na zaciatku si skontrolujem, ci je vobec
+        // nejake spajanie mozne vykonat
+        if (!this.moznoSpojitVrcholy(externyVrchol, spravcaSuborov))
+        {
+            return;
+        }
+
+        // Oba Blocky si nacitam do operacnej pamati
+        Block<T> prvy = new Block<>(spravcaSuborov.getBlokovaciFaktorHlavnySubor(), typ);
+        prvy.prevedZPolaBajtov(spravcaSuborov.citajHlavnySubor(externyVrchol.getOffset(), prvy.getVelkost()));
+
+        ExternyVrchol surodenec = (ExternyVrchol)externyVrchol.getSurodenec();
+        Block<T> druhy = new Block<>(spravcaSuborov.getBlokovaciFaktorHlavnySubor(), typ);
+        druhy.prevedZPolaBajtov(spravcaSuborov.citajHlavnySubor(surodenec.getOffset(), prvy.getVelkost()));
+
+        // Zaznamy z oboch Blockov presuniem do noveho Blocku
+        Block<T> spojeny = new Block<>(spravcaSuborov.getBlokovaciFaktorHlavnySubor(), typ);
+        for (T zaznam : prvy.getZaznamy())
+        {
+            spojeny.forceVloz(zaznam);
+        }
+
+        for (T zaznam : druhy.getZaznamy())
+        {
+            spojeny.forceVloz(zaznam);
+        }
+
+        // Uvolnim povodne Blocku
+        spravcaSuborov.uvolniBlockHlavnySubor(externyVrchol.getOffset(), typ);
+        spravcaSuborov.uvolniBlockHlavnySubor(surodenec.getOffset(), typ);
+
+        // Za urcitych podmienok je mozne rusit aj dalsie Vrcholy
+        ExternyVrchol novyExternyVrchol = externyVrchol;
+        while (true)
+        {
+            novyExternyVrchol = this.odpojInternyVrchol(novyExternyVrchol.getOtec());
+
+            if (novyExternyVrchol.getStatus() == Status.KOREN)
+            {
+                // Dostal som sa az na koren, ako offset pouzijem
+                // offset Externeho vrcholu, nakolko tento som nedealokoval
+                novyExternyVrchol.vlozBlock(spojeny, typ, spravcaSuborov, -1);
+
+                // Nie je mozne dalej pokracovat, Block, ktory vznikol
+                // spajanim bol ulozeny do korena
+                break;
+            }
+
+            Vrchol surodenecNoveho = novyExternyVrchol.getSurodenec();
+            if (surodenecNoveho instanceof ExternyVrchol surodenecNovehoExterny &&
+                surodenecNovehoExterny.getPocetZaznamovBlock() == 0)
+            {
+                // V tomto pripade je mozne spajanie vykonavat aj dalej
+                continue;
+            }
+            else
+            {
+                // Nie je mozne vykonat dalsie spajanie Vrcholov, ako offset pouzijem
+                // offset Externeho vrcholu, nakolko tento som nedealokoval
+                novyExternyVrchol.vlozBlock(spojeny, typ, spravcaSuborov, -1);
+                break;
+            }
+        }
+    }
+
+    private ExternyVrchol odpojInternyVrchol(InternyVrchol odpajanyVrchol)
+    {
+        ExternyVrchol novyExternyVrchol = new ExternyVrchol();
+
+        InternyVrchol otecOdpajanehoVrcholu = odpajanyVrchol.getOtec();
+        if (otecOdpajanehoVrcholu == null)
+        {
+            // Odpajany Vrchol je korenom stromu
+            this.root = novyExternyVrchol;
+        }
+        else
+        {
+            novyExternyVrchol.setOtec(otecOdpajanehoVrcholu);
+
+            if (odpajanyVrchol.getStatus() == Status.LAVY_SYN)
+            {
+                otecOdpajanehoVrcholu.setLavySyn(novyExternyVrchol);
+            }
+            else
+            {
+                otecOdpajanehoVrcholu.setPravySyn(novyExternyVrchol);
+            }
+        }
+
+        return novyExternyVrchol;
+    }
+
+    // Metoda rozhodne, ci je mozne spojit 2 Externe vrcholy
+    // v strome do 1 Externeho vrcholu
+    private boolean moznoSpojitVrcholy(ExternyVrchol externyVrchol, SpravcaSuborov spravcaSuborov)
+    {
+        Vrchol surodenec = externyVrchol.getSurodenec();
+        if (surodenec == null || surodenec instanceof InternyVrchol)
+        {
+            // Ak surodenec je koren alebo Interny vrchol,
+            // tak spajanie urcite nie je mozne vykonat
+            return false;
+        }
+
+        ExternyVrchol externyVrcholSurodenec = (ExternyVrchol)surodenec;
+        if (externyVrchol.getPocetPreplnujucichBlockov() != 0 ||
+            externyVrcholSurodenec.getPocetPreplnujucichBlockov() != 0)
+        {
+            // Ak niektory z Vrcholov ma prideleny Preplnujuci block,
+            // tak spajanie urcite nie je mozne vykonat
+            return false;
+        }
+
+        int pocetSpolu = externyVrchol.getPocetZaznamovBlock() + externyVrcholSurodenec.getPocetZaznamovBlock();
+        if (pocetSpolu > spravcaSuborov.getBlokovaciFaktorHlavnySubor())
+        {
+            // Zaznamy oboch Vrcholov sa nezmestia do jedineho Vrcholu
+            return false;
+        }
+        else if (pocetSpolu == spravcaSuborov.getBlokovaciFaktorHlavnySubor())
+        {
+            // Spojenie mozno vykonat
+            return true;
+        }
+        else
+        {
+            // Spajanie malo byt vykonane uz v minulosti
+            throw new RuntimeException("Spajanie nebolo vykonane!");
+        }
     }
 
     private<T extends IData> void skusStriastVrchol(Class<T> typ, ExternyVrchol striasanyVrchol, SpravcaSuborov spravcaSuborov)
@@ -285,123 +444,8 @@ public class DigitalnyZnakovyStrom
         }
         else
         {
-            // Striasanie malo byt uz vykonane v minulosti
+            // Striasanie malo byt vykonane uz v minulosti
             throw new RuntimeException("Striasane nebolo vykonane!");
-        }
-    }
-
-    private<T extends IData> void vymazPrazdneVrcholy(Class<T> typ, ExternyVrchol spracovanyVrchol, Block<T> kumulovanyBlock, SpravcaSuborov spravcaSuborov)
-    {
-        ExternyVrchol curSpracuvanyVrchol = spracovanyVrchol;
-
-        if (curSpracuvanyVrchol.getStatus() == Status.KOREN)
-        {
-            this.mazaneZKorena(spravcaSuborov, kumulovanyBlock, typ);
-            return;
-        }
-
-        while (true)
-        {
-            int pocetKumulovanyBlock = kumulovanyBlock.getPocetPlatnychZaznamov();
-
-            if (curSpracuvanyVrchol.getStatus() == Status.KOREN)
-            {
-                // Dostali sme sa az na koren
-                break;
-            }
-
-            if (curSpracuvanyVrchol.getSurodenec() instanceof InternyVrchol)
-            {
-                // Ak surodenec je Internym vrcholom, tak urcite nie je mozne vykonat mazanie Vrcholov
-                break;
-            }
-
-            ExternyVrchol surodenec = (ExternyVrchol)curSpracuvanyVrchol.getSurodenec();
-            int spoluElementov = surodenec.getPocetZaznamovBlock() + pocetKumulovanyBlock;
-
-            if (spoluElementov > spravcaSuborov.getBlokovaciFaktorHlavnySubor())
-            {
-                // Vrcholy nemozno zlucit, nakolko sa Zaznamy nezmestia do jedineho Blocku
-                break;
-            }
-
-            // Zluc zaznamy do kumulovaneho Blocku
-            Block<T> surodenecBlock = surodenec.getBlock(typ, spravcaSuborov);
-            if (surodenecBlock != null)
-            {
-                for (T zaznam : surodenecBlock.getZaznamy())
-                {
-                    kumulovanyBlock.vloz(zaznam, spravcaSuborov);
-                }
-            }
-
-            curSpracuvanyVrchol = this.odpojInternyVrchol(curSpracuvanyVrchol.getOtec(), spravcaSuborov, typ);
-        }
-
-        if (kumulovanyBlock.getPocetPlatnychZaznamov() != 0)
-        {
-            curSpracuvanyVrchol.vlozBlock(kumulovanyBlock, typ, spravcaSuborov, -1);
-        }
-        else
-        {
-            spravcaSuborov.uvolniBlockHlavnySubor(curSpracuvanyVrchol.getOffset(), typ);
-            curSpracuvanyVrchol.setOffset(-1);
-            curSpracuvanyVrchol.setPocetZaznamovBlock(0);
-        }
-    }
-
-    private<T extends IData> void mazaneZKorena(SpravcaSuborov spravcaSuborov, Block<T> aktualizovanyBlock, Class<T> typ)
-    {
-        ExternyVrchol korenExterny = (ExternyVrchol)this.root;
-
-        if (aktualizovanyBlock.getPocetPlatnychZaznamov() == 0)
-        {
-            spravcaSuborov.uvolniBlockHlavnySubor(korenExterny.getOffset(), typ);
-            this.root = new ExternyVrchol();
-        }
-        else
-        {
-            korenExterny.vlozBlock(aktualizovanyBlock, typ, spravcaSuborov, korenExterny.getOffset());
-        }
-    }
-
-    private<T extends IData> ExternyVrchol odpojInternyVrchol(InternyVrchol odpajany, SpravcaSuborov spravcaSuborov, Class<T> typ)
-    {
-        this.uvolniBlocky(odpajany, spravcaSuborov, typ);
-
-        InternyVrchol otecOdpajaneho = odpajany.getOtec();
-        ExternyVrchol novyExternyVrchol = new ExternyVrchol();
-        novyExternyVrchol.setOtec(otecOdpajaneho);
-
-        if (odpajany.getStatus() == Status.LAVY_SYN)
-        {
-            otecOdpajaneho.setLavySyn(novyExternyVrchol);
-        }
-        else if (odpajany.getStatus() == Status.PRAVY_SYN)
-        {
-            otecOdpajaneho.setPravySyn(novyExternyVrchol);
-        }
-        else if (odpajany.getStatus() == Status.KOREN)
-        {
-            this.root = novyExternyVrchol;
-        }
-
-        return novyExternyVrchol;
-    }
-
-    private<T extends IData> void uvolniBlocky(InternyVrchol odpajany, SpravcaSuborov spravcaSuborov, Class<T> typ)
-    {
-        ExternyVrchol lavySyn = (ExternyVrchol)odpajany.getLavySyn();
-        ExternyVrchol pravySyn = (ExternyVrchol)odpajany.getPravySyn();
-
-        if (lavySyn.getOffset() != -1)
-        {
-            spravcaSuborov.uvolniBlockHlavnySubor(lavySyn.getOffset(), typ);
-        }
-
-        if (pravySyn.getOffset() != -1)
-        {
-            spravcaSuborov.uvolniBlockHlavnySubor(pravySyn.getOffset(), typ);
         }
     }
 

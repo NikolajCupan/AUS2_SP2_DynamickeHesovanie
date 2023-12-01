@@ -8,41 +8,45 @@ public class DynamickeHesovanie<T extends IData>
     private final DigitalnyZnakovyStrom digitalnyZnakovyStrom;
     private final SpravcaSuborov spravcaSuborov;
 
-    public DynamickeHesovanie(int blokovaciFaktorHlavnySubor, int blokovaciFaktorPreplnujuciSubor, String nazovHlavnySubor, String nazovPreplnujuciSubor)
+    private final Class<T> typ;
+
+    public DynamickeHesovanie(int blokovaciFaktorHlavnySubor, int blokovaciFaktorPreplnujuciSubor, String nazovHlavnySubor, String nazovPreplnujuciSubor, Class<T> typ)
     {
         this.digitalnyZnakovyStrom = new DigitalnyZnakovyStrom();
         this.spravcaSuborov = new SpravcaSuborov(blokovaciFaktorHlavnySubor, blokovaciFaktorPreplnujuciSubor,
                                                  nazovHlavnySubor, nazovPreplnujuciSubor);
+
+        this.typ = typ;
     }
 
-    public void vloz(T pridavany, Class<T> typ)
+    public void vloz(T pridavany)
     {
-        this.digitalnyZnakovyStrom.vloz(pridavany, typ, this.spravcaSuborov);
+        this.digitalnyZnakovyStrom.vloz(pridavany, this.typ, this.spravcaSuborov);
     }
 
-    public T vyhladaj(T vyhladavany, Class<T> typ)
+    public T vyhladaj(T vyhladavany)
     {
-        return this.digitalnyZnakovyStrom.vyhladaj(vyhladavany, typ, this.spravcaSuborov);
+        return this.digitalnyZnakovyStrom.vyhladaj(vyhladavany, this.typ, this.spravcaSuborov);
     }
 
-    public T vymaz(T vymazavany, Class<T> typ)
+    public T vymaz(T vymazavany)
     {
-        return this.digitalnyZnakovyStrom.vymaz(vymazavany, typ, this.spravcaSuborov);
+        return this.digitalnyZnakovyStrom.vymaz(vymazavany, this.typ, this.spravcaSuborov);
     }
 
-    public void vypisHlavnySubor(Class<T> typ)
+    public void vypisHlavnySubor()
     {
-        this.spravcaSuborov.vypisHlavnySubor(typ);
+        this.spravcaSuborov.vypisHlavnySubor(this.typ);
     }
 
-    public void vypisPreplnujuciSubor(Class<T> typ)
+    public void vypisPreplnujuciSubor()
     {
-        this.spravcaSuborov.vypisPreplnujuciSubor(typ);
+        this.spravcaSuborov.vypisPreplnujuciSubor(this.typ);
     }
 
-    public void vypisStrom(Class<T> typ)
+    public void vypisStrom()
     {
-        this.digitalnyZnakovyStrom.vypisStrom(this.spravcaSuborov, typ);
+        this.digitalnyZnakovyStrom.vypisStrom(this.spravcaSuborov, this.typ);
     }
 
     public int getPocetElementov()
