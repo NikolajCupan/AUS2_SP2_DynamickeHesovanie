@@ -40,6 +40,12 @@ public class Parcela extends Polygon implements IData
         this.parcelaID = dummyParcela.getParcelaID();
     }
 
+    // Pre ucely vyhladavania v Aplikacii
+    public Parcela(int parcelaID)
+    {
+        this.parcelaID = parcelaID;
+    }
+
     // Pre ucely inicializacie z pola bajtov
     public Parcela() {}
 
@@ -72,7 +78,7 @@ public class Parcela extends Polygon implements IData
             throw new RuntimeException("Na parcele nelezi dana nehnutelnost!");
         }
 
-        this.nehnutelnostiID.remove(nehnutelnost.getNehnutelnostID());
+        this.nehnutelnostiID.remove(Integer.valueOf(nehnutelnost.getNehnutelnostID()));
     }
 
     public int getParcelaID()

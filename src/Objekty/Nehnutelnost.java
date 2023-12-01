@@ -45,6 +45,12 @@ public class Nehnutelnost extends Polygon implements IData
         this.nehnutelnostID = dummyNehnutelnost.getNehnutelnostID();
     }
 
+    // Pre ucely vyhladavania v Aplikacii
+    public Nehnutelnost(int nehnutelnostID)
+    {
+        this.nehnutelnostID = nehnutelnostID;
+    }
+
     // Pre ucely inicializacie z pola bajtov
     public Nehnutelnost() {}
 
@@ -77,7 +83,7 @@ public class Nehnutelnost extends Polygon implements IData
             throw new RuntimeException("Nehnutelnost nelezi na danej parcele!");
         }
 
-        this.parcelyID.remove(parcela.getParcelaID());
+        this.parcelyID.remove(Integer.valueOf(parcela.getParcelaID()));
     }
 
     public int getNehnutelnostID()

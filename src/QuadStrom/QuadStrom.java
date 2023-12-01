@@ -245,7 +245,7 @@ public class QuadStrom<T extends IPolygon> implements Iterable<Quad<T>>
 
             for (T element : curQuad.getData())
             {
-                if (element.leziVnutri(x, y) && element.equals(vymazavany))
+                if (element.leziVnutri(x, y) && element.jeRovnakyPolygon(vymazavany))
                 {
                     curQuad.getData().remove(element);
                     this.vymazPrazdneQuady(cesta);

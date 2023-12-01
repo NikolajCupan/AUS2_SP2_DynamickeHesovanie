@@ -82,4 +82,10 @@ public class Polygon implements IPolygon
     {
         return this.surVpravoHore.getY();
     }
+
+    @Override
+    public boolean jeRovnakyPolygon(IPolygon zaznam)
+    {
+        throw new RuntimeException("Polygon nejde porovnat!");
+    }
 }

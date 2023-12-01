@@ -9,4 +9,5 @@ public interface IPolygon
     double getVlavoDoleY();
     double getVpravoHoreX();
     double getVpravoHoreY();
+    boolean jeRovnakyPolygon(IPolygon polygon);
 }

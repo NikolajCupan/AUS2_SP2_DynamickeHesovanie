@@ -53,9 +53,21 @@ public class Aplikacia
         this.dhNehnutelnosti.vymazSubory();
     }
 
+    public Parcela vyhladajParcelu(int parcelaID)
+    {
+        Parcela parcela = new Parcela(parcelaID);
+        return this.dhParcely.vyhladaj(parcela);
+    }
+
+    public Nehnutelnost vyhladajNehnutelnost(int nehnutelnostID)
+    {
+        Nehnutelnost nehnutelnost = new Nehnutelnost(nehnutelnostID);
+        return this.dhNehnutelnosti.vyhladaj(nehnutelnost);
+    }
+
     public boolean vlozParcelu(String popis, double vlavoDoleX, double vlavoDoleY, double vpravoHoreX, double vpravoHoreY)
     {
-        this.skontrolujVstupySuradnice(vlavoDoleX, vlavoDoleY, vpravoHoreX, vpravoHoreY);
+        this.skontrolujVstupy(vlavoDoleX, vlavoDoleY, vpravoHoreX, vpravoHoreY);
 
         // Vstupy su korektne
         Parcela novaParcela = new Parcela(this.curParcelaID, popis, new Suradnica(vlavoDoleX, vlavoDoleY), new Suradnica(vpravoHoreX, vpravoHoreY));
@@ -108,7 +120,7 @@ public class Aplikacia
 
     public boolean vlozNehnutelnost(int supisneCislo, String popis, double vlavoDoleX, double vlavoDoleY, double vpravoHoreX, double vpravoHoreY)
     {
-        this.skontrolujVstupySuradnice(vlavoDoleX, vlavoDoleY, vpravoHoreX, vpravoHoreY);
+        this.skontrolujVstupy(vlavoDoleX, vlavoDoleY, vpravoHoreX, vpravoHoreY);
 
         // Vstupy su korektne
         Nehnutelnost novaNehnutelnost = new Nehnutelnost(this.curNehnutelnostID, supisneCislo, popis, new Suradnica(vlavoDoleX, vlavoDoleY), new Suradnica(vpravoHoreX, vpravoHoreY));
@@ -159,8 +171,40 @@ public class Aplikacia
         return true;
     }
 
+    public Parcela vymazParcelu(int parcelaID)
+    {
+        Parcela parcela = new Parcela(parcelaID);
+        Parcela realneVymazana = this.dhParcely.vymaz(parcela);
+
+        if (realneVymazana == null)
+        {
+            return null;
+        }
+
+        DummyParcela dummyParcela = new DummyParcela(realneVymazana);
+        this.qsParcely.vymaz((realneVymazana.getVlavoDoleX() + realneVymazana.getVpravoHoreX()) / 2,
+                             (realneVymazana.getVlavoDoleY() + realneVymazana.getVpravoHoreY()) / 2,
+                                dummyParcela);
+
+        // Dalej je nutne upravit referencie
+        for (Integer nehnutelnostID : realneVymazana.getNehnutelnostiID())
+        {
+            Nehnutelnost nehnutelnost = this.dhNehnutelnosti.vymaz(new Nehnutelnost(nehnutelnostID));
+            nehnutelnost.skusOdobratParcelu(realneVymazana);
+            this.dhNehnutelnosti.vloz(nehnutelnost);
+        }
+
+        return realneVymazana;
+    }
+
+    public Nehnutelnost vymazNehnutelnost(int nehnutelnostID)
+    {
+        // TODO: implementovat
+        return null;
+    }
+
     // V pripade ak su vstupy neplatne, je vyhodena vynimka
-    private void skontrolujVstupySuradnice(double vlavoDoleX, double vlavoDoleY, double vpravoHoreX, double vpravoHoreY)
+    private void skontrolujVstupy(double vlavoDoleX, double vlavoDoleY, double vpravoHoreX, double vpravoHoreY)
     {
         if (vlavoDoleX >= vpravoHoreX || vlavoDoleY >= vpravoHoreY)
         {
