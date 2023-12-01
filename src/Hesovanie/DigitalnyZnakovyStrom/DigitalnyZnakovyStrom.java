@@ -36,7 +36,7 @@ public class DigitalnyZnakovyStrom
             else if (curVrchol instanceof ExternyVrchol externyVrchol)
             {
                 // Externy vrchol nema ziadnych synov
-                pocet += externyVrchol.getPocetZaznamovBlock();
+                pocet += externyVrchol.getPocetZaznamovBlocky();
             }
         }
 
@@ -101,7 +101,7 @@ public class DigitalnyZnakovyStrom
                 break;
             }
 
-            if (externyVrchol.getPocetZaznamovBlock() < spravcaSuborov.getBlokovaciFaktorHlavnySubor() &&
+            if (externyVrchol.getPocetZaznamovBlocky() < spravcaSuborov.getBlokovaciFaktorHlavnySubor() &&
                 presuvanyBlock == null)
             {
                 // V Blocku je miesto pre pridavany Zaznam
@@ -259,13 +259,12 @@ public class DigitalnyZnakovyStrom
     {
         ExternyVrchol koren = (ExternyVrchol)this.root;
 
-        if (koren.getPocetZaznamovBlock() == 0)
+        if (koren.getPocetZaznamovBlocky() == 0)
         {
             // Koren bol vyprazdneny, tym padom moze byt dealokovany
             spravcaSuborov.uvolniBlockHlavnySubor(koren.getOffset(), typ);
+            this.root = new ExternyVrchol();
         }
-
-        this.root = new ExternyVrchol();
     }
 
     private<T extends IData> void skusSpojitVrcholy(Class<T> typ, ExternyVrchol externyVrchol, SpravcaSuborov spravcaSuborov)
@@ -320,7 +319,7 @@ public class DigitalnyZnakovyStrom
 
             Vrchol surodenecNoveho = novyExternyVrchol.getSurodenec();
             if (surodenecNoveho instanceof ExternyVrchol surodenecNovehoExterny &&
-                surodenecNovehoExterny.getPocetZaznamovBlock() == 0)
+                surodenecNovehoExterny.getPocetZaznamovBlocky() == 0)
             {
                 // V tomto pripade je mozne spajanie vykonavat aj dalej
                 continue;
@@ -383,7 +382,7 @@ public class DigitalnyZnakovyStrom
             return false;
         }
 
-        int pocetSpolu = externyVrchol.getPocetZaznamovBlock() + externyVrcholSurodenec.getPocetZaznamovBlock();
+        int pocetSpolu = externyVrchol.getPocetZaznamovBlocky() + externyVrcholSurodenec.getPocetZaznamovBlocky();
         if (pocetSpolu > spravcaSuborov.getBlokovaciFaktorHlavnySubor())
         {
             // Zaznamy oboch Vrcholov sa nezmestia do jedineho Vrcholu
@@ -426,7 +425,7 @@ public class DigitalnyZnakovyStrom
         int maxHlavnySubor = spravcaSuborov.getBlokovaciFaktorHlavnySubor();
         int maxPreplnujuciSubor = spravcaSuborov.getBlokovaciFaktorPreplnujuciSubor();
 
-        int pocetZaznamovVrchol = externyVrchol.getPocetZaznamovBlock();
+        int pocetZaznamovVrchol = externyVrchol.getPocetZaznamovBlocky();
         int pocetPreplnujucichBlockovVrchol = externyVrchol.getPocetPreplnujucichBlockov();
 
         int maxKapacita = maxHlavnySubor + (maxPreplnujuciSubor * pocetPreplnujucichBlockovVrchol);

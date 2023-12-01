@@ -12,13 +12,13 @@ public class ExternyVrchol extends Vrchol
     private long offset;
 
     // Vratane Zaznamov v Preplnujucich blockoch
-    private int pocetZaznamovBlock;
+    private int pocetZaznamovBlocky;
     private int pocetPreplnujucichBlockov;
 
     public ExternyVrchol()
     {
         this.offset = -1;
-        this.pocetZaznamovBlock = 0;
+        this.pocetZaznamovBlocky = 0;
         this.pocetPreplnujucichBlockov = 0;
 
         this.otec = null;
@@ -36,7 +36,7 @@ public class ExternyVrchol extends Vrchol
             this.offset = (this.offset == -1) ? spravcaSuborov.dajVolnyBlockHlavnySubor(typ) : this.offset;
         }
 
-        this.pocetZaznamovBlock = pridavanyBlock.getPocetPlatnychZaznamov();
+        this.pocetZaznamovBlocky = pridavanyBlock.getPocetPlatnychZaznamov();
 
         try
         {
@@ -75,7 +75,7 @@ public class ExternyVrchol extends Vrchol
 
             spravcaSuborov.ulozHlavnySubor(this.offset, block.prevedNaPoleBajtov());
 
-            this.pocetZaznamovBlock++;
+            this.pocetZaznamovBlocky++;
         }
         catch (Exception ex)
         {
@@ -102,7 +102,7 @@ public class ExternyVrchol extends Vrchol
         if (realneVymazany != null)
         {
             // Vymazanie bolo uspesne
-            this.pocetZaznamovBlock--;
+            this.pocetZaznamovBlocky--;
             spravcaSuborov.ulozHlavnySubor(this.offset, block.prevedNaPoleBajtov());
 
             if (dealokovanyPreplnujuciBlock[0])
@@ -251,9 +251,9 @@ public class ExternyVrchol extends Vrchol
         return this.offset;
     }
 
-    public int getPocetZaznamovBlock()
+    public int getPocetZaznamovBlocky()
     {
-        return this.pocetZaznamovBlock;
+        return this.pocetZaznamovBlocky;
     }
 
     public int getPocetPreplnujucichBlockov()
@@ -266,16 +266,16 @@ public class ExternyVrchol extends Vrchol
         this.offset = offset;
     }
 
-    public void setPocetZaznamovBlock(int pocetZaznamovBlock)
+    public void setPocetZaznamovBlocky(int pocetZaznamovBlocky)
     {
-        this.pocetZaznamovBlock = pocetZaznamovBlock;
+        this.pocetZaznamovBlocky = pocetZaznamovBlocky;
     }
 
     public<T extends IData> String naString(SpravcaSuborov spravcaSuborov, Class<T> typ)
     {
         String string = "Externy vrchol:\n";
         string += "- offset: " + this.offset + "\n";
-        string += "- pocet zaznamov block: " + this.pocetZaznamovBlock + "\n";
+        string += "- pocet zaznamov block: " + this.pocetZaznamovBlocky + "\n";
         string += "- pocet preplnujucich blockov: " + this.pocetPreplnujucichBlockov + "\n";
 
         if (this.offset != -1)
