@@ -451,6 +451,19 @@ public class SpravcaSuborov
         return this.blokovaciFaktorPreplnujuciSubor;
     }
 
+    public void zavriSubory()
+    {
+        try
+        {
+            this.hlavnyPristupovySubor.close();
+            this.preplnujuciPrustupovySubor.close();
+        }
+        catch (Exception exception)
+        {
+            throw new RuntimeException("Chyba pri zatvarani Suborov!");
+        }
+    }
+
     public void vymazSubory()
     {
         try

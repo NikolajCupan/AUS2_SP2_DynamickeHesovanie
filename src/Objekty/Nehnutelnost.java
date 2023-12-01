@@ -1,5 +1,6 @@
 package Objekty;
 
+import QuadStrom.Objekty.DummyNehnutelnost;
 import Rozhrania.IData;
 import Rozhrania.IRecord;
 import Ostatne.Helper;
@@ -38,12 +39,17 @@ public class Nehnutelnost extends Polygon implements IData
         this.parcelyID = new ArrayList<>();
     }
 
+    public Nehnutelnost(DummyNehnutelnost dummyNehnutelnost)
+    {
+        this.nastavSuradnice(dummyNehnutelnost.surVlavoDole, dummyNehnutelnost.surVpravoHore);
+        this.nehnutelnostID = dummyNehnutelnost.getNehnutelnostID();
+    }
+
     // Pre ucely inicializacie z pola bajtov
     public Nehnutelnost() {}
 
     // Metoda sa pokusi pridat ID parcely do zoznamu ID parciel, na ktorych lezi nehnutelnost,
-    // ak pridanie zlyha (nehnutelnost nelezi na danej parcele), vyhodi sa vynimka, v pripade
-    // ak bol dosiahnuty maximalny pocet referencii, nova referencia nie je pridana
+    // ak pridanie zlyha (nehnutelnost nelezi na danej parcele alebo je zoznam plny), vyhodi sa vynimka
     public void skusPridatParcelu(Parcela parcela)
     {
         if (!this.prekryva(parcela))
@@ -55,6 +61,10 @@ public class Nehnutelnost extends Polygon implements IData
         {
             // Pridaj iba v pripade ak nie je presiahnuty limit
             this.parcelyID.add(parcela.getParcelaID());
+        }
+        else
+        {
+            throw new RuntimeException("Zoznam referencii je plny!");
         }
     }
 
@@ -281,5 +291,10 @@ public class Nehnutelnost extends Polygon implements IData
         }
 
         return false;
+    }
+
+    public static int getMaxPocetReferencii()
+    {
+        return MAX_POCET_REFERENCII;
     }
 }

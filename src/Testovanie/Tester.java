@@ -13,11 +13,11 @@ import java.util.Random;
 public class Tester
 {
     // Dynamicke hesovanie
-    private static final int BF_HS_MIN = 100;
-    private static final int BF_HS_MAX = 1000;
+    private static final int BF_HS_MIN = 10;
+    private static final int BF_HS_MAX = 100;
 
     private static final int BF_PS_MIN = 10;
-    private static final int BF_PS_MAX = 1000;
+    private static final int BF_PS_MAX = 100;
 
     // Subory
     private static final String NAZOV_HS = "hlavny";
@@ -49,16 +49,16 @@ public class Tester
             System.out.println("Spusta sa replikacia cislo: " + i + ", BF_HS: " + blokovaciFaktorHlavnySubor + ", BF_PS: " + blokovaciFaktorPreplnujuciSubor+ ", seed: " + seedReplikacia);
 
             this.testZakladneOperacie01(blokovaciFaktorHlavnySubor, blokovaciFaktorPreplnujuciSubor, generator);
-            //this.testZakladneOperacie02(blokovaciFaktorHlavnySubor, blokovaciFaktorPreplnujuciSubor);
-            //this.testZakladneOperacie03(blokovaciFaktorHlavnySubor, blokovaciFaktorPreplnujuciSubor);
-            //this.testZakladneOperacie04(blokovaciFaktorHlavnySubor, blokovaciFaktorPreplnujuciSubor);
+            this.testZakladneOperacie02(blokovaciFaktorHlavnySubor, blokovaciFaktorPreplnujuciSubor);
+            this.testZakladneOperacie03(blokovaciFaktorHlavnySubor, blokovaciFaktorPreplnujuciSubor);
+            this.testZakladneOperacie04(blokovaciFaktorHlavnySubor, blokovaciFaktorPreplnujuciSubor);
         }
     }
 
     private void testZakladneOperacie01(int blokovaciFaktorHlavnySubor, int blokovaciFaktorPreplnujuciSubor, Generator generator)
     {
         // Vlastne parametre testu
-        final int ZACIATOCNA_VELKOST = 0;
+        final int ZACIATOCNA_VELKOST = 10000;
         final int POCET_OPERACII = 10000;
 
         final int PRST_VYHLADAJ = 30;
@@ -217,7 +217,7 @@ public class Tester
     private void testZakladneOperacie03(int blokovaciFaktorHlavnySubor, int blokovaciFaktorPreplnujuciSubor)
     {
         // Vlastne parametre testu
-        final int ZACIATOCNA_VELKOST = 10000;
+        final int ZACIATOCNA_VELKOST = 1000;
         final int MIN_POCET_BITOV_HASH = 0;
         final int MAX_POCET_BITOV_HASH = 100;
 
@@ -292,8 +292,8 @@ public class Tester
     private void testZakladneOperacie04(int blokovaciFaktorHlavnySubor, int blokovaciFaktorPreplnujuciSubor)
     {
         // Vlastne parametre testu
-        final int ZACIATOCNA_VELKOST = 30000;
-        final int MIN_POCET_BITOV_HASH = 10;
+        final int ZACIATOCNA_VELKOST = 1000;
+        final int MIN_POCET_BITOV_HASH = 0;
         final int MAX_POCET_BITOV_HASH = 20;
 
         int pocetBitovHash = this.randomInt(MIN_POCET_BITOV_HASH, MAX_POCET_BITOV_HASH);

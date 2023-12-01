@@ -24,9 +24,19 @@ public class DynamickeHesovanie<T extends IData>
         this.typ = typ;
     }
 
-    public void vloz(T pridavany)
+    // Navratova hodnota metody:
+    // True -> pridavany prvok bol uspesne vlozeny
+    // False -> pridavany prvok uz v strukture existuje, preto nebol vlozeny
+    public boolean vloz(T pridavany)
     {
+        T najdeny = this.digitalnyZnakovyStrom.vyhladaj(pridavany, this.typ, this.spravcaSuborov);
+        if (najdeny != null)
+        {
+            return false;
+        }
+
         this.digitalnyZnakovyStrom.vloz(pridavany, this.typ, this.spravcaSuborov);
+        return true;
     }
 
     public T vyhladaj(T vyhladavany)
@@ -62,6 +72,11 @@ public class DynamickeHesovanie<T extends IData>
     public int getPocetElementov()
     {
         return this.digitalnyZnakovyStrom.getPocetElementov();
+    }
+
+    public void zavriSubory()
+    {
+        this.spravcaSuborov.zavriSubory();
     }
 
     public void vymazSubory()
