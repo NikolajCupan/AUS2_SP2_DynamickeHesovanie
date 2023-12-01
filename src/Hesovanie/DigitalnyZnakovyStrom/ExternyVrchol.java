@@ -1,4 +1,4 @@
-package Hesovanie.DynamickyZnakovyStrom;
+package Hesovanie.DigitalnyZnakovyStrom;
 
 import Hesovanie.Block;
 import Hesovanie.SpravcaSuborov;

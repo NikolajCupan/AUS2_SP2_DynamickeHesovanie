@@ -1,6 +1,5 @@
-package Hesovanie.DynamickyZnakovyStrom;
+package Hesovanie.DigitalnyZnakovyStrom;
 
-import Objekty.Parcela;
 import Ostatne.Status;
 
 public abstract class Vrchol

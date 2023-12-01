@@ -1,33 +1,33 @@
 package Hesovanie;
 
-import Hesovanie.DynamickyZnakovyStrom.DynamickyZnakovyStrom;
+import Hesovanie.DigitalnyZnakovyStrom.DigitalnyZnakovyStrom;
 import Rozhrania.IData;
 
 public class DynamickeHesovanie<T extends IData>
 {
-    private final DynamickyZnakovyStrom dynamickyZnakovyStrom;
+    private final DigitalnyZnakovyStrom digitalnyZnakovyStrom;
     private final SpravcaSuborov spravcaSuborov;
 
     public DynamickeHesovanie(int blokovaciFaktorHlavnySubor, int blokovaciFaktorPreplnujuciSubor, String nazovHlavnySubor, String nazovPreplnujuciSubor)
     {
-        this.dynamickyZnakovyStrom = new DynamickyZnakovyStrom();
+        this.digitalnyZnakovyStrom = new DigitalnyZnakovyStrom();
         this.spravcaSuborov = new SpravcaSuborov(blokovaciFaktorHlavnySubor, blokovaciFaktorPreplnujuciSubor,
                                                  nazovHlavnySubor, nazovPreplnujuciSubor);
     }
 
     public void vloz(T pridavany, Class<T> typ)
     {
-        this.dynamickyZnakovyStrom.vloz(pridavany, typ, this.spravcaSuborov);
+        this.digitalnyZnakovyStrom.vloz(pridavany, typ, this.spravcaSuborov);
     }
 
     public T vyhladaj(T vyhladavany, Class<T> typ)
     {
-        return this.dynamickyZnakovyStrom.vyhladaj(vyhladavany, typ, this.spravcaSuborov);
+        return this.digitalnyZnakovyStrom.vyhladaj(vyhladavany, typ, this.spravcaSuborov);
     }
 
     public T vymaz(T vymazavany, Class<T> typ)
     {
-        return this.dynamickyZnakovyStrom.vymaz(vymazavany, typ, this.spravcaSuborov);
+        return this.digitalnyZnakovyStrom.vymaz(vymazavany, typ, this.spravcaSuborov);
     }
 
     public void vypisHlavnySubor(Class<T> typ)
@@ -42,12 +42,12 @@ public class DynamickeHesovanie<T extends IData>
 
     public void vypisStrom(Class<T> typ)
     {
-        this.dynamickyZnakovyStrom.vypisStrom(this.spravcaSuborov, typ);
+        this.digitalnyZnakovyStrom.vypisStrom(this.spravcaSuborov, typ);
     }
 
     public int getPocetElementov()
     {
-        return this.dynamickyZnakovyStrom.getPocetElementov();
+        return this.digitalnyZnakovyStrom.getPocetElementov();
     }
 
     public void vymazSubory()

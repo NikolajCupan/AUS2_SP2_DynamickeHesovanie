@@ -1,4 +1,4 @@
-package Hesovanie.DynamickyZnakovyStrom;
+package Hesovanie.DigitalnyZnakovyStrom;
 
 import Hesovanie.Block;
 import Hesovanie.SpravcaSuborov;
@@ -8,11 +8,11 @@ import Rozhrania.IData;
 import java.util.BitSet;
 import java.util.Stack;
 
-public class DynamickyZnakovyStrom
+public class DigitalnyZnakovyStrom
 {
     private Vrchol root;
 
-    public DynamickyZnakovyStrom()
+    public DigitalnyZnakovyStrom()
     {
         this.root = new ExternyVrchol();
     }

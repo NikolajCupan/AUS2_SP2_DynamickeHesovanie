@@ -1,4 +1,4 @@
-package Hesovanie.DynamickyZnakovyStrom;
+package Hesovanie.DigitalnyZnakovyStrom;
 
 public class InternyVrchol extends Vrchol
 {
