@@ -76,6 +76,16 @@ public class DynamickeHesovanie<T extends IData>
         this.digitalnyZnakovyStrom.vypisStrom(this.spravcaSuborov, this.typ);
     }
 
+    public SpravcaSuborov getSpravcaSuborov()
+    {
+        return this.spravcaSuborov;
+    }
+
+    public DigitalnyZnakovyStrom getDigitalnyZnakovyStrom()
+    {
+        return this.digitalnyZnakovyStrom;
+    }
+
     public int getPocetElementov()
     {
         return this.digitalnyZnakovyStrom.getPocetElementov();

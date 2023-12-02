@@ -451,6 +451,16 @@ public class SpravcaSuborov
         return this.blokovaciFaktorPreplnujuciSubor;
     }
 
+    public long getOffsetPrvyVolnyHlavnySubor()
+    {
+        return this.offsetPrvyVolnyHlavnySubor;
+    }
+
+    public long getOffsetPrvyVolnyPreplnujuciSubor()
+    {
+        return this.offsetPrvyVolnyPreplnujuciSubor;
+    }
+
     public void zavriSubory()
     {
         try

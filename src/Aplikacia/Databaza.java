@@ -8,6 +8,8 @@ import QuadStrom.Objekty.DummyNehnutelnost;
 import QuadStrom.Objekty.DummyParcela;
 import QuadStrom.QuadStrom;
 
+import java.io.File;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 
 public class Databaza
@@ -22,6 +24,22 @@ public class Databaza
     private int curParcelaID;
     private int curNehnutelnostID;
 
+    // Nazvy pouzitych suborov
+    private static final String NAZOV_PARCELY_HS_DH = "PARCELY_HLAVNY";
+    private static final String NAZOV_PARCELY_PS_DH = "PARCELY_PREPLNUJUCI";
+
+    private static final String NAZOV_NEHNUTELNOSTI_HS_DH = "NEHNUTELNOSTI_HLAVNY";
+    private static final String NAZOV_NEHNUTELNOSTI_PS_DH = "NEHNUTELNOSTI_PREPLNUJUCI";
+
+    private static final String NAZOV_PARCELY_QS = "PARCELY_QS";
+    private static final String NAZOV_NEHNUTELNOSTI_QS = "NEHNUTELNOSTI_QS";
+
+    private static final String NAZOV_PARCELY_SPRAVCA_SUBOROV = "PARCELY_SPRAVCA_SUBOROV";
+    private static final String NAZOV_NEHNUTELNOSTI_SPRAVCA_SUBOROV = "NEHNUTELNOSTI_SPRAVCA_SUBOROV";
+
+    private static final String NAZOV_PARCELY_DZS = "PARCELY_DZS";
+    private static final String NAZOV_NEHNUTELNOSTI_DZS = "NEHNUTELNOSTI_DZS";
+
     public Databaza()
     {
         this.dhParcely = null;
@@ -35,22 +53,96 @@ public class Databaza
     }
 
     // V pripade ak sa zacina s prazdnymi subormi
-    public void inicializuj(int blokovaciFaktorHlavnySubor, int blokovaciFaktorPreplnujuciSubor, String nazovHlavnySubor, String nazovPreplnujuciSubor,
-                            double vlavoDoleX, double vlavoDoleY, double vpravoHoreX, double vpravoHoreY, int maxUroven)
+    public void resetuj(int blokovaciFaktorHlavnySubor, int blokovaciFaktorPreplnujuciSubor,
+                        double vlavoDoleX, double vlavoDoleY, double vpravoHoreX, double vpravoHoreY, int maxUroven)
     {
+        // Velkost vsetkych suborov nastavim na 0 bajtov
+        String[] nazvySuborov  = new String[]{ NAZOV_PARCELY_HS_DH, NAZOV_PARCELY_PS_DH, NAZOV_NEHNUTELNOSTI_HS_DH, NAZOV_NEHNUTELNOSTI_PS_DH,
+                                               NAZOV_PARCELY_QS, NAZOV_NEHNUTELNOSTI_QS, NAZOV_PARCELY_SPRAVCA_SUBOROV, NAZOV_NEHNUTELNOSTI_SPRAVCA_SUBOROV,
+                                               NAZOV_PARCELY_DZS, NAZOV_NEHNUTELNOSTI_DZS };
+        this.resetujSubory(nazvySuborov);
+
         this.dhParcely = new DynamickeHesovanie<>(blokovaciFaktorHlavnySubor, blokovaciFaktorPreplnujuciSubor,
-                                  "PARCELY_" + nazovHlavnySubor, "PARCELY_" + nazovPreplnujuciSubor, Parcela.class);
+                                                  NAZOV_PARCELY_HS_DH, NAZOV_PARCELY_PS_DH, Parcela.class);
         this.dhNehnutelnosti = new DynamickeHesovanie<>(blokovaciFaktorHlavnySubor, blokovaciFaktorPreplnujuciSubor,
-                                        "NEHNUTELNOSTI_" + nazovHlavnySubor, "NEHNUTELNOSTI_" + nazovPreplnujuciSubor, Nehnutelnost.class);
+                                                        NAZOV_NEHNUTELNOSTI_HS_DH, NAZOV_NEHNUTELNOSTI_PS_DH, Nehnutelnost.class);
 
         this.qsParcely = new QuadStrom<DummyParcela>(vlavoDoleX, vlavoDoleY, vpravoHoreX, vpravoHoreY, maxUroven);
         this.qsNehnutelnosti = new QuadStrom<DummyNehnutelnost>(vlavoDoleX, vlavoDoleY, vpravoHoreX, vpravoHoreY, maxUroven);
+
+        this.skontrolujSubory(nazvySuborov);
     }
 
-    public void resetuj()
+    // Skontroluje, ci vsetky subory existuju a su prazdne
+    private void skontrolujSubory(String[] nazvySuborov)
     {
-        this.dhParcely.vymazSubory();
-        this.dhNehnutelnosti.vymazSubory();
+        for (String nazovSuboru : nazvySuborov)
+        {
+            try
+            {
+                File subor = new File(nazovSuboru);
+                if (!subor.exists() || subor.isDirectory())
+                {
+                    throw new RuntimeException("Subor " + nazovSuboru + " neexistuje!");
+                }
+
+                if (subor.length() != 0)
+                {
+                    throw new RuntimeException("Subor " + nazovSuboru + " nie je prazdny!");
+                }
+            }
+            catch (Exception exception)
+            {
+                throw new RuntimeException("Chyba pri testovani suborov!");
+            }
+        }
+    }
+
+    // Vsetky subory budu existovat a budu mat velkost 0 bajtov
+    private void resetujSubory(String[] nazvySuborov)
+    {
+        for (String nazovSuboru : nazvySuborov)
+        {
+            try
+            {
+                File subor = new File(nazovSuboru);
+                subor.createNewFile();
+
+                PrintWriter zapisovac = new PrintWriter(subor);
+                zapisovac.print("");
+                zapisovac.close();
+            }
+            catch (Exception exception)
+            {
+                throw new RuntimeException("Chyba pri resetovani suborov!");
+            }
+        }
+    }
+
+    // Ukoncenie aplikacie a ulozenie vsetkych potrebnych dat do suborov
+    public boolean ukonciAplikaciu()
+    {
+        // Zapis informacie tykajuce sa quad stromov do suborov
+        if (!Zapisovac.ulozQuadStromy(this.qsParcely, this.qsNehnutelnosti, NAZOV_PARCELY_QS, NAZOV_NEHNUTELNOSTI_QS))
+        {
+            return false;
+        }
+
+        // Zapis informacie tykajuce sa spravcov suborov do suborov
+        if (!Zapisovac.ulozSpravcovSuborov(this.dhParcely.getSpravcaSuborov(), this.dhNehnutelnosti.getSpravcaSuborov(),
+                                           NAZOV_PARCELY_SPRAVCA_SUBOROV, NAZOV_NEHNUTELNOSTI_SPRAVCA_SUBOROV))
+        {
+            return false;
+        }
+
+        // Zapis informacie tykajuce sa digitalnych znakovych stromov do suborov
+        if (!Zapisovac.ulozDigitalneZnakovStromy(this.dhParcely.getDigitalnyZnakovyStrom(), this.dhNehnutelnosti.getDigitalnyZnakovyStrom(),
+                                                 NAZOV_PARCELY_DZS, NAZOV_NEHNUTELNOSTI_DZS))
+        {
+            return false;
+        }
+
+        return true;
     }
 
     // Aktualizacia parcely vratane zmeny suradnic

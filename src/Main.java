@@ -10,9 +10,8 @@ public class Main
         if (REZIM == 'G')
         {
             Databaza databaza = new Databaza();
-            databaza.inicializuj(10, 10, "hlavny", "preplnujuci",
-                                  0, 0, 100, 100, 10);
-            databaza.resetuj();
+            databaza.resetuj(10, 10,
+                             0, 0, 100, 100, 10);
 
             /* Vsetko tu */
 
@@ -26,7 +25,8 @@ public class Main
 
             /* Vsetko tu */
 
-            databaza.resetuj();
+            boolean oka = databaza.ukonciAplikaciu();
+            int x = 100;
         }
         else if (REZIM == 'T')
         {
