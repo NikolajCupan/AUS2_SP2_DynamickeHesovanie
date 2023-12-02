@@ -1,6 +1,4 @@
-import Aplikacia.Aplikacia;
-import Objekty.Nehnutelnost;
-import Objekty.Parcela;
+import Aplikacia.Databaza;
 import Testovanie.Tester;
 
 public class Main
@@ -11,25 +9,24 @@ public class Main
     {
         if (REZIM == 'G')
         {
-            Aplikacia aplikacia = new Aplikacia();
-            aplikacia.inicializuj(10, 10, "hlavny", "preplnujuci",
+            Databaza databaza = new Databaza();
+            databaza.inicializuj(10, 10, "hlavny", "preplnujuci",
                                   0, 0, 100, 100, 10);
-            aplikacia.resetuj();
+            databaza.resetuj();
 
-            aplikacia.vlozNehnutelnost(1, "neh1", 0, 0, 50, 50);
-            boolean ok1 = aplikacia.vlozParcelu("par1", 0, 0, 10, 10);
-            boolean ok2 = aplikacia.vlozParcelu("par2", 0, 0, 20, 20);
-            boolean ok3 = aplikacia.vlozParcelu("par3", 0, 0, 30, 30);
-            boolean ok4 = aplikacia.vlozParcelu("par4", 0, 0, 35, 35);
-            boolean ok5 = aplikacia.vlozParcelu("par5", 0, 0, 40, 40);
-            boolean ok6 = aplikacia.vlozParcelu("par6", 0, 0, 50, 50);
-            boolean ok7 = aplikacia.vlozParcelu("par7", 30, 30, 50, 50);
+            /* Vsetko tu */
 
-            Nehnutelnost pred = aplikacia.vyhladajNehnutelnost(1);
-            Parcela v4 = aplikacia.vymazParcelu(4);
-            Nehnutelnost po = aplikacia.vyhladajNehnutelnost(1);
+            boolean okn1 = databaza.vlozNehnutelnost(1, "neh1", 0, 0, 50, 50, -1, false);
+            boolean okn2 = databaza.vlozNehnutelnost(2, "neh2", 60, 60, 100, 100, -1, false);
+            boolean okn3 = databaza.vlozNehnutelnost(3, "neh3", 0, 60, 40, 100, -1, false);
 
-            aplikacia.resetuj();
+            boolean okp1 = databaza.vlozParcelu("par1", 45, 45, 100, 100, -1, false);
+            boolean okp2 = databaza.vlozParcelu("par2", 0, 0, 20, 20, -1, false);
+            boolean okp3 = databaza.vlozParcelu("par3", 40, 40, 50, 50, -1, false);
+
+            /* Vsetko tu */
+
+            databaza.resetuj();
         }
         else if (REZIM == 'T')
         {

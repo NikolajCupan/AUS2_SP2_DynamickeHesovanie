@@ -101,6 +101,11 @@ public class Parcela extends Polygon implements IData
         this.popis = popis.substring(0, Math.min(popis.length(), Konstanty.MAX_DLZKA_POPIS_PARCELA));
     }
 
+    public void setSuradnice(Suradnica suradnica1, Suradnica suradnica2)
+    {
+        this.nastavSuradnice(suradnica1, suradnica2);
+    }
+
     @Override
     public String toString()
     {

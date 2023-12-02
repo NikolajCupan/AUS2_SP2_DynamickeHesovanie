@@ -10,7 +10,7 @@ import QuadStrom.QuadStrom;
 
 import java.util.ArrayList;
 
-public class Aplikacia
+public class Databaza
 {
     private DynamickeHesovanie<Parcela> dhParcely;
     private DynamickeHesovanie<Nehnutelnost> dhNehnutelnosti;
@@ -22,7 +22,7 @@ public class Aplikacia
     private int curParcelaID;
     private int curNehnutelnostID;
 
-    public Aplikacia()
+    public Databaza()
     {
         this.dhParcely = null;
         this.dhNehnutelnosti = null;
@@ -53,6 +53,130 @@ public class Aplikacia
         this.dhNehnutelnosti.vymazSubory();
     }
 
+    // Aktualizacia parcely vratane zmeny suradnic
+    public boolean aktualizujParcelu(int parcelaID, String novyPopis,
+                                     double noveVlavoDoleX, double noveVlavoDoleY, double noveVpravoHoreX, double noveVpravoHoreY)
+    {
+        this.skontrolujVstupy(noveVlavoDoleX, noveVlavoDoleY, noveVpravoHoreX, noveVpravoHoreY);
+
+        // Vstupy su korektne
+        Parcela vymazanaDatabaza = this.vymazParcelu(parcelaID);
+        if (vymazanaDatabaza == null)
+        {
+            // Dana parcela sa v databaze nenachadza
+            return false;
+        }
+
+        // Vlozenie aktualizovanej parcely naspat do databazy
+        if (!this.vlozParcelu(novyPopis, noveVlavoDoleX, noveVlavoDoleY, noveVpravoHoreX, noveVpravoHoreY,
+                              vymazanaDatabaza.getParcelaID(), true))
+        {
+            // Vlozenie zlyhalo, pravdepodobne sa aktualizovane suradnice
+            // prekryvaju s prilis velkym poctom nehnutelnosti
+
+            // Do databazy je vlozena originalna parcela
+            if (!this.vlozParcelu(vymazanaDatabaza.getPopis(), vymazanaDatabaza.getVlavoDoleX(), vymazanaDatabaza.getVlavoDoleY(),
+                                  vymazanaDatabaza.getVpravoHoreX(), vymazanaDatabaza.getVpravoHoreY(),
+                                  vymazanaDatabaza.getParcelaID(), true))
+            {
+                throw new RuntimeException("Originalna parcela nebola vlozena!");
+            }
+
+            return false;
+        }
+
+        // Aktualizovanie bolo uspesne vykonane
+        return true;
+    }
+
+    // Aktualizacia nehnutelnosti vratane zmeny suradnic
+    public boolean aktualizujNehnutelnost(int nehnutelnostID, int noveSupisneCislo, String novyPopis,
+                                          double noveVlavoDoleX, double noveVlavoDoleY, double noveVpravoHoreX, double noveVpravoHoreY)
+    {
+        this.skontrolujVstupy(noveVlavoDoleX, noveVlavoDoleY, noveVpravoHoreX, noveVpravoHoreY);
+
+        // Vstupy su korektne
+        Nehnutelnost vymazanaDatabaza = this.vymazNehnutelnost(nehnutelnostID);
+        if (vymazanaDatabaza == null)
+        {
+            // Dana nehnutelnost sa v databaze nenachadza
+            return false;
+        }
+
+        // Vlozenie aktualizovanej nehnutelnosti naspat do databazy
+        if (!this.vlozNehnutelnost(noveSupisneCislo, novyPopis, noveVlavoDoleX, noveVlavoDoleY, noveVpravoHoreX, noveVpravoHoreY,
+                                   vymazanaDatabaza.getNehnutelnostID(), true))
+        {
+            // Vlozenie zlyhalo, pravdepodobne sa aktualizovane suradnice
+            // prekryvaju s prilis velkym poctom parciel
+
+            // Do databazy je vlozena originalna nehnutelnost
+            if (!this.vlozNehnutelnost(vymazanaDatabaza.getSupisneCislo(), vymazanaDatabaza.getPopis(),
+                                       vymazanaDatabaza.getVlavoDoleX(), vymazanaDatabaza.getVlavoDoleY(),
+                                       vymazanaDatabaza.getVpravoHoreX(), vymazanaDatabaza.getVpravoHoreY(),
+                                       vymazanaDatabaza.getNehnutelnostID(), true))
+            {
+                throw new RuntimeException("Originalna nehnutelnost nebola vlozena!");
+            }
+
+            return false;
+        }
+
+        // Aktualizovanie bolo uspesne vykonane
+        return true;
+    }
+
+    // Aktualizacia parcely bez zmeny suradnic
+    public boolean aktualizujParcelu(int parcelaID, String novyPopis)
+    {
+        Parcela parcela = new Parcela(parcelaID);
+        Parcela realneNajdena = this.dhParcely.vyhladaj(parcela);
+
+        if (realneNajdena == null)
+        {
+            // Dana parcela neexistuje, tym padom nemoze byt aktualizovana
+            return false;
+        }
+        else
+        {
+            // Parcela existuje a moze byt aktualizovana
+
+            // Samotna aktualizacia
+            realneNajdena.setPopis(novyPopis);
+
+            // Ulozenie stavu
+            this.dhParcely.aktualizuj(realneNajdena);
+
+            return true;
+        }
+    }
+
+    // Aktualizacia nehnutelnosti bez zmeny suradnic
+    public boolean aktualizujNehnutelnost(int nehnutelnostID, int noveSupisneCislo, String novyPopis)
+    {
+        Nehnutelnost nehnutelnost = new Nehnutelnost(nehnutelnostID);
+        Nehnutelnost realneNajdena = this.dhNehnutelnosti.vyhladaj(nehnutelnost);
+
+        if (realneNajdena == null)
+        {
+            // Dana nehnutelnost neexistuje, tym padom nemoze byt aktualizovana
+            return false;
+        }
+        else
+        {
+            // Nehnutelnost existuje a moze byt aktualizovana
+
+            // Samotna aktualizacia
+            realneNajdena.setSupisneCislo(noveSupisneCislo);
+            realneNajdena.setPopis(novyPopis);
+
+            // Ulozenie stavu
+            this.dhNehnutelnosti.aktualizuj(realneNajdena);
+
+            return true;
+        }
+    }
+
     public Parcela vyhladajParcelu(int parcelaID)
     {
         Parcela parcela = new Parcela(parcelaID);
@@ -65,12 +189,14 @@ public class Aplikacia
         return this.dhNehnutelnosti.vyhladaj(nehnutelnost);
     }
 
-    public boolean vlozParcelu(String popis, double vlavoDoleX, double vlavoDoleY, double vpravoHoreX, double vpravoHoreY)
+    public boolean vlozParcelu(String popis, double vlavoDoleX, double vlavoDoleY, double vpravoHoreX, double vpravoHoreY,
+                               int forcedParcelaID, boolean forceParcelaID)
     {
         this.skontrolujVstupy(vlavoDoleX, vlavoDoleY, vpravoHoreX, vpravoHoreY);
+        int pouziteParcelaID = forceParcelaID ? forcedParcelaID : this.curParcelaID++;
 
         // Vstupy su korektne
-        Parcela novaParcela = new Parcela(this.curParcelaID, popis, new Suradnica(vlavoDoleX, vlavoDoleY), new Suradnica(vpravoHoreX, vpravoHoreY));
+        Parcela novaParcela = new Parcela(pouziteParcelaID, popis, new Suradnica(vlavoDoleX, vlavoDoleY), new Suradnica(vpravoHoreX, vpravoHoreY));
         ArrayList<DummyNehnutelnost> novaParcelaPrekryv = this.qsNehnutelnosti.vyhladaj(vlavoDoleX, vlavoDoleY, vpravoHoreX, vpravoHoreY);
 
         if (novaParcelaPrekryv.size() > Parcela.getMaxPocetReferencii())
@@ -95,7 +221,7 @@ public class Aplikacia
         }
 
         // Pridanie je mozne uskutocnit
-        this.qsParcely.vloz(new DummyParcela(this.curParcelaID, new Suradnica(vlavoDoleX, vlavoDoleY), new Suradnica(vpravoHoreX, vpravoHoreY)));
+        this.qsParcely.vloz(new DummyParcela(pouziteParcelaID, new Suradnica(vlavoDoleX, vlavoDoleY), new Suradnica(vpravoHoreX, vpravoHoreY)));
 
         // Napln zoznam referencii
         for (DummyNehnutelnost dummyNehnutelnost : novaParcelaPrekryv)
@@ -114,16 +240,17 @@ public class Aplikacia
             this.dhNehnutelnosti.aktualizuj(nehnutelnost);
         }
 
-        this.curParcelaID++;
         return true;
     }
 
-    public boolean vlozNehnutelnost(int supisneCislo, String popis, double vlavoDoleX, double vlavoDoleY, double vpravoHoreX, double vpravoHoreY)
+    public boolean vlozNehnutelnost(int supisneCislo, String popis, double vlavoDoleX, double vlavoDoleY, double vpravoHoreX, double vpravoHoreY,
+                                    int forcedNehnutelnostID, boolean forceNehnutelnostID)
     {
         this.skontrolujVstupy(vlavoDoleX, vlavoDoleY, vpravoHoreX, vpravoHoreY);
+        int pouziteNehnutelnostID = forceNehnutelnostID ? forcedNehnutelnostID : this.curNehnutelnostID++;
 
         // Vstupy su korektne
-        Nehnutelnost novaNehnutelnost = new Nehnutelnost(this.curNehnutelnostID, supisneCislo, popis, new Suradnica(vlavoDoleX, vlavoDoleY), new Suradnica(vpravoHoreX, vpravoHoreY));
+        Nehnutelnost novaNehnutelnost = new Nehnutelnost(pouziteNehnutelnostID, supisneCislo, popis, new Suradnica(vlavoDoleX, vlavoDoleY), new Suradnica(vpravoHoreX, vpravoHoreY));
         ArrayList<DummyParcela> novaNehnutelnostPrekryv = this.qsParcely.vyhladaj(vlavoDoleX, vlavoDoleY, vpravoHoreX, vpravoHoreY);
 
         if (novaNehnutelnostPrekryv.size() > Nehnutelnost.getMaxPocetReferencii())
@@ -148,7 +275,7 @@ public class Aplikacia
         }
 
         // Pridanie je mozne uskutocnit
-        this.qsNehnutelnosti.vloz(new DummyNehnutelnost(this.curNehnutelnostID, new Suradnica(vlavoDoleX, vlavoDoleY), new Suradnica(vpravoHoreX, vpravoHoreY)));
+        this.qsNehnutelnosti.vloz(new DummyNehnutelnost(pouziteNehnutelnostID, new Suradnica(vlavoDoleX, vlavoDoleY), new Suradnica(vpravoHoreX, vpravoHoreY)));
 
         // Napln zoznam referencii
         for (DummyParcela dummyParcela : novaNehnutelnostPrekryv)
@@ -167,7 +294,6 @@ public class Aplikacia
             this.dhParcely.aktualizuj(parcela);
         }
 
-        this.curNehnutelnostID++;
         return true;
     }
 
@@ -231,6 +357,24 @@ public class Aplikacia
         }
 
         return realneVymazana;
+    }
+
+    // Skontroluje, ci pocet elementov v jednotlivych QS a DH sa zhoduju
+    public boolean stavKorektny()
+    {
+        int pocetDhParcely = this.dhParcely.getPocetElementov();
+        int pocetQsParcely = this.qsParcely.getPocetElementov();
+
+        int pocetDhNehnutelnosti = this.dhNehnutelnosti.getPocetElementov();
+        int pocetQsNehnutelnosti = this.qsNehnutelnosti.getPocetElementov();
+
+        if (pocetDhParcely != pocetQsParcely ||
+            pocetDhNehnutelnosti != pocetQsNehnutelnosti)
+        {
+            return false;
+        }
+
+        return true;
     }
 
     // V pripade ak su vstupy neplatne, je vyhodena vynimka
