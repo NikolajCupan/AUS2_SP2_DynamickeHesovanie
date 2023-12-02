@@ -12,6 +12,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 public class Databaza
@@ -27,6 +28,8 @@ public class Databaza
     private int curNehnutelnostID;
 
     // Nazvy pouzitych suborov
+    private static final String NAZOV_DATABAZA = "DATABAZA";
+
     private static final String NAZOV_PARCELY_HS_DH = "PARCELY_HLAVNY";
     private static final String NAZOV_PARCELY_PS_DH = "PARCELY_PREPLNUJUCI";
 
@@ -120,6 +123,23 @@ public class Databaza
     // Ukoncenie aplikacie a ulozenie vsetkych potrebnych dat do suborov
     public boolean ukonciAplikaciu()
     {
+        // Zapis informacie tykajuce sa databazy do suboru
+        try
+        {
+            PrintWriter zapisovac = new PrintWriter(NAZOV_DATABAZA, StandardCharsets.UTF_8);
+
+            zapisovac.println(this.curParcelaID);
+            zapisovac.println(this.curNehnutelnostID);
+
+            zapisovac.close();
+
+            // Vsetky data boli uspesne zapisane do suboru
+        }
+        catch (Exception ex)
+        {
+            return false;
+        }
+
         // Zapis informacie tykajuce sa quad stromov do suborov
         if (!Zapisovac.ulozQuadStromy(this.qsParcely, this.qsNehnutelnosti, NAZOV_PARCELY_QS, NAZOV_NEHNUTELNOSTI_QS))
         {
@@ -139,6 +159,23 @@ public class Databaza
     // Obnovenie predchadzajuceho stavu aplikacie zo suborov
     public boolean obnovAplikaciu()
     {
+        // Nacitaj hlavne informacie databazy
+        try
+        {
+            FileReader fCitac = new FileReader(NAZOV_DATABAZA);
+            BufferedReader bCitac = new BufferedReader(fCitac);
+
+            this.curParcelaID = Integer.parseInt(bCitac.readLine());
+            this.curNehnutelnostID = Integer.parseInt(bCitac.readLine());
+
+            bCitac.close();
+            fCitac.close();
+        }
+        catch (Exception ex)
+        {
+            return false;
+        }
+
         // Nacitaj hlavne informacie parcely
         try
         {
