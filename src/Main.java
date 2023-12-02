@@ -10,10 +10,11 @@ public class Main
         if (REZIM == 'G')
         {
             Databaza databaza = new Databaza();
+            databaza.obnovAplikaciu();
+
+            /*
             databaza.resetuj(10, 10,
                              0, 0, 100, 100, 10);
-
-            /* Vsetko tu */
 
             boolean okn1 = databaza.vlozNehnutelnost(1, "neh1", 0, 0, 50, 50, -1, false);
             boolean okn2 = databaza.vlozNehnutelnost(2, "neh2", 60, 60, 100, 100, -1, false);
@@ -23,9 +24,9 @@ public class Main
             boolean okp2 = databaza.vlozParcelu("par2", 0, 0, 20, 20, -1, false);
             boolean okp3 = databaza.vlozParcelu("par3", 40, 40, 50, 50, -1, false);
 
-            /* Vsetko tu */
 
             boolean oka = databaza.ukonciAplikaciu();
+            */
             int x = 100;
         }
         else if (REZIM == 'T')

@@ -8,7 +8,9 @@ import QuadStrom.Objekty.DummyNehnutelnost;
 import QuadStrom.Objekty.DummyParcela;
 import QuadStrom.QuadStrom;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
@@ -37,9 +39,6 @@ public class Databaza
     private static final String NAZOV_PARCELY_SPRAVCA_SUBOROV = "PARCELY_SPRAVCA_SUBOROV";
     private static final String NAZOV_NEHNUTELNOSTI_SPRAVCA_SUBOROV = "NEHNUTELNOSTI_SPRAVCA_SUBOROV";
 
-    private static final String NAZOV_PARCELY_DZS = "PARCELY_DZS";
-    private static final String NAZOV_NEHNUTELNOSTI_DZS = "NEHNUTELNOSTI_DZS";
-
     public Databaza()
     {
         this.dhParcely = null;
@@ -58,8 +57,7 @@ public class Databaza
     {
         // Velkost vsetkych suborov nastavim na 0 bajtov
         String[] nazvySuborov  = new String[]{ NAZOV_PARCELY_HS_DH, NAZOV_PARCELY_PS_DH, NAZOV_NEHNUTELNOSTI_HS_DH, NAZOV_NEHNUTELNOSTI_PS_DH,
-                                               NAZOV_PARCELY_QS, NAZOV_NEHNUTELNOSTI_QS, NAZOV_PARCELY_SPRAVCA_SUBOROV, NAZOV_NEHNUTELNOSTI_SPRAVCA_SUBOROV,
-                                               NAZOV_PARCELY_DZS, NAZOV_NEHNUTELNOSTI_DZS };
+                                               NAZOV_PARCELY_QS, NAZOV_NEHNUTELNOSTI_QS, NAZOV_PARCELY_SPRAVCA_SUBOROV, NAZOV_NEHNUTELNOSTI_SPRAVCA_SUBOROV };
         this.resetujSubory(nazvySuborov);
 
         this.dhParcely = new DynamickeHesovanie<>(blokovaciFaktorHlavnySubor, blokovaciFaktorPreplnujuciSubor,
@@ -135,9 +133,62 @@ public class Databaza
             return false;
         }
 
-        // Zapis informacie tykajuce sa digitalnych znakovych stromov do suborov
-        if (!Zapisovac.ulozDigitalneZnakovStromy(this.dhParcely.getDigitalnyZnakovyStrom(), this.dhNehnutelnosti.getDigitalnyZnakovyStrom(),
-                                                 NAZOV_PARCELY_DZS, NAZOV_NEHNUTELNOSTI_DZS))
+        return true;
+    }
+
+    // Obnovenie predchadzajuceho stavu aplikacie zo suborov
+    public boolean obnovAplikaciu()
+    {
+        // Nacitaj hlavne informacie parcely
+        try
+        {
+            FileReader fCitac = new FileReader(NAZOV_PARCELY_SPRAVCA_SUBOROV);
+            BufferedReader bCitac = new BufferedReader(fCitac);
+
+            int blokovaciFaktorHlavnySubor = Integer.parseInt(bCitac.readLine());
+            int blokovaciFaktorPreplnujuciSubor = Integer.parseInt(bCitac.readLine());
+            int getOffsetPrvyVolnyHlavnySubor = Integer.parseInt(bCitac.readLine());
+            int getOffsetPrvyVolnyPreplnujuciSubor = Integer.parseInt(bCitac.readLine());
+
+            this.dhParcely = new DynamickeHesovanie<>(blokovaciFaktorHlavnySubor, blokovaciFaktorPreplnujuciSubor,
+                                                      NAZOV_PARCELY_HS_DH, NAZOV_PARCELY_PS_DH, Parcela.class);
+            this.dhParcely.inicializujOffsety(getOffsetPrvyVolnyHlavnySubor, getOffsetPrvyVolnyPreplnujuciSubor);
+
+            bCitac.close();
+            fCitac.close();
+        }
+        catch (Exception ex)
+        {
+            return false;
+        }
+
+        // Nacitaj hlavne informacie nehnutelnosti
+        try
+        {
+            FileReader fCitac = new FileReader(NAZOV_NEHNUTELNOSTI_SPRAVCA_SUBOROV);
+            BufferedReader bCitac = new BufferedReader(fCitac);
+
+            int blokovaciFaktorHlavnySubor = Integer.parseInt(bCitac.readLine());
+            int blokovaciFaktorPreplnujuciSubor = Integer.parseInt(bCitac.readLine());
+            int getOffsetPrvyVolnyHlavnySubor = Integer.parseInt(bCitac.readLine());
+            int getOffsetPrvyVolnyPreplnujuciSubor = Integer.parseInt(bCitac.readLine());
+
+            this.dhNehnutelnosti = new DynamickeHesovanie<>(blokovaciFaktorHlavnySubor, blokovaciFaktorPreplnujuciSubor,
+                                                            NAZOV_NEHNUTELNOSTI_HS_DH, NAZOV_NEHNUTELNOSTI_PS_DH, Nehnutelnost.class);
+            this.dhNehnutelnosti.inicializujOffsety(getOffsetPrvyVolnyHlavnySubor, getOffsetPrvyVolnyPreplnujuciSubor);
+
+            bCitac.close();
+            fCitac.close();
+        }
+        catch (Exception ex)
+        {
+            return false;
+        }
+
+        // Nacitaj informacie tykajuce sa quad stromov zo suborov
+        this.qsParcely = new QuadStrom<DummyParcela>(0, 0, 0, 0, 0);
+        this.qsNehnutelnosti = new QuadStrom<DummyNehnutelnost>(0, 0, 0, 0, 0);
+        if (!Nacitavac.nacitajQuadStromy(this.qsParcely, this.qsNehnutelnosti, NAZOV_PARCELY_QS, NAZOV_NEHNUTELNOSTI_QS))
         {
             return false;
         }

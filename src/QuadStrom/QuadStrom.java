@@ -644,6 +644,11 @@ public class QuadStrom<T extends IPolygon> implements Iterable<Quad<T>>
         return PRILIS_PLNE;
     }
 
+    public void setSuradnice(Suradnica suradnica1, Suradnica suradnica2)
+    {
+        this.rootQuad.nastavSuradnice(suradnica1, suradnica2);
+    }
+
     public Iterator<Quad<T>> iterator()
     {
         return new QSIterator();

@@ -1,6 +1,5 @@
 package Aplikacia;
 
-import Hesovanie.DigitalnyZnakovyStrom.DigitalnyZnakovyStrom;
 import Hesovanie.SpravcaSuborov;
 import QuadStrom.Objekty.DummyNehnutelnost;
 import QuadStrom.Objekty.DummyParcela;
@@ -92,37 +91,6 @@ public class Zapisovac
 
             zapisovac.println(spravcaSuborov.getOffsetPrvyVolnyHlavnySubor());
             zapisovac.println(spravcaSuborov.getOffsetPrvyVolnyPreplnujuciSubor());
-
-            zapisovac.close();
-
-            // Vsetky data boli uspesne zapisane do suboru
-            return true;
-        }
-        catch (Exception ex)
-        {
-            return false;
-        }
-    }
-
-    public static boolean ulozDigitalneZnakovStromy(DigitalnyZnakovyStrom dzsParcely, DigitalnyZnakovyStrom dzsNehnutelnosti,
-                                                    String nazovSuboruParcely, String nazovSuboruNehnutelnosti)
-    {
-        if (!zapisDigitalnyZnakovyStromDoSuboru(nazovSuboruParcely, dzsParcely) ||
-            !zapisDigitalnyZnakovyStromDoSuboru(nazovSuboruNehnutelnosti, dzsNehnutelnosti))
-        {
-            return false;
-        }
-
-        return true;
-    }
-
-    private static boolean zapisDigitalnyZnakovyStromDoSuboru(String nazovSuboru, DigitalnyZnakovyStrom digitalnyZnakovyStrom)
-    {
-        try
-        {
-            PrintWriter zapisovac = new PrintWriter(nazovSuboru, StandardCharsets.UTF_8);
-
-            // TODO
 
             zapisovac.close();
 

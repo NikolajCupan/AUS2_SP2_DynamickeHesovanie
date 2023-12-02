@@ -56,6 +56,11 @@ public class DynamickeHesovanie<T extends IData>
         return this.digitalnyZnakovyStrom.vymaz(vymazavany, this.typ, this.spravcaSuborov);
     }
 
+    public void inicializujOffsety(int offsetPrvyVolnyHlavnySubor, int offsetPrvyVolnyPreplnujuciSubor)
+    {
+        this.spravcaSuborov.inicializujOffsety(offsetPrvyVolnyHlavnySubor, offsetPrvyVolnyPreplnujuciSubor);
+    }
+
     public void vypisHlavnySubor()
     {
         this.spravcaSuborov.vypisHlavnySubor(this.typ);
@@ -79,11 +84,6 @@ public class DynamickeHesovanie<T extends IData>
     public SpravcaSuborov getSpravcaSuborov()
     {
         return this.spravcaSuborov;
-    }
-
-    public DigitalnyZnakovyStrom getDigitalnyZnakovyStrom()
-    {
-        return this.digitalnyZnakovyStrom;
     }
 
     public int getPocetElementov()

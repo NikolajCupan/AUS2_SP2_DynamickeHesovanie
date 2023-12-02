@@ -499,4 +499,10 @@ public class SpravcaSuborov
 
         return true;
     }
+
+    public void inicializujOffsety(int offsetPrvyVolnyHlavnySubor, int offsetPrvyVolnyPreplnujuciSubor)
+    {
+        this.offsetPrvyVolnyHlavnySubor = offsetPrvyVolnyHlavnySubor;
+        this.offsetPrvyVolnyPreplnujuciSubor = offsetPrvyVolnyPreplnujuciSubor;
+    }
 }
