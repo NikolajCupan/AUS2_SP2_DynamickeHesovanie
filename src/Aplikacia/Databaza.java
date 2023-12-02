@@ -56,21 +56,22 @@ public class Databaza
     }
 
     // V pripade ak sa zacina s prazdnymi subormi
-    public void resetuj(int blokovaciFaktorHlavnySubor, int blokovaciFaktorPreplnujuciSubor,
-                        double vlavoDoleX, double vlavoDoleY, double vpravoHoreX, double vpravoHoreY, int maxUroven)
+    public void resetuj(int blokovaciFaktorHlavnySuborParcely, int blokovaciFaktorPreplnujuciSuborParcely, int blokovaciFaktorHlavnySuborNehnutelnosti, int blokovaciFaktorPreplnujuciSuborNehnutelnosti,
+                        double vlavoDoleX, double vlavoDoleY, double vpravoHoreX, double vpravoHoreY, int maxUrovenParcely, int maxUroveNehnutelnosti)
     {
         // Velkost vsetkych suborov nastavim na 0 bajtov
         String[] nazvySuborov  = new String[]{ NAZOV_PARCELY_HS_DH, NAZOV_PARCELY_PS_DH, NAZOV_NEHNUTELNOSTI_HS_DH, NAZOV_NEHNUTELNOSTI_PS_DH,
-                                               NAZOV_PARCELY_QS, NAZOV_NEHNUTELNOSTI_QS, NAZOV_PARCELY_SPRAVCA_SUBOROV, NAZOV_NEHNUTELNOSTI_SPRAVCA_SUBOROV };
+                                               NAZOV_PARCELY_QS, NAZOV_NEHNUTELNOSTI_QS, NAZOV_PARCELY_SPRAVCA_SUBOROV, NAZOV_NEHNUTELNOSTI_SPRAVCA_SUBOROV,
+                                               NAZOV_PARCELY_DZS, NAZOV_NEHNUTELNOSTI_DZS, NAZOV_DATABAZA };
         this.resetujSubory(nazvySuborov);
 
-        this.dhParcely = new DynamickeHesovanie<>(blokovaciFaktorHlavnySubor, blokovaciFaktorPreplnujuciSubor,
+        this.dhParcely = new DynamickeHesovanie<>(blokovaciFaktorHlavnySuborParcely, blokovaciFaktorPreplnujuciSuborParcely,
                                                   NAZOV_PARCELY_HS_DH, NAZOV_PARCELY_PS_DH, Parcela.class);
-        this.dhNehnutelnosti = new DynamickeHesovanie<>(blokovaciFaktorHlavnySubor, blokovaciFaktorPreplnujuciSubor,
+        this.dhNehnutelnosti = new DynamickeHesovanie<>(blokovaciFaktorHlavnySuborNehnutelnosti, blokovaciFaktorPreplnujuciSuborNehnutelnosti,
                                                         NAZOV_NEHNUTELNOSTI_HS_DH, NAZOV_NEHNUTELNOSTI_PS_DH, Nehnutelnost.class);
 
-        this.qsParcely = new QuadStrom<DummyParcela>(vlavoDoleX, vlavoDoleY, vpravoHoreX, vpravoHoreY, maxUroven);
-        this.qsNehnutelnosti = new QuadStrom<DummyNehnutelnost>(vlavoDoleX, vlavoDoleY, vpravoHoreX, vpravoHoreY, maxUroven);
+        this.qsParcely = new QuadStrom<DummyParcela>(vlavoDoleX, vlavoDoleY, vpravoHoreX, vpravoHoreY, maxUrovenParcely);
+        this.qsNehnutelnosti = new QuadStrom<DummyNehnutelnost>(vlavoDoleX, vlavoDoleY, vpravoHoreX, vpravoHoreY, maxUroveNehnutelnosti);
 
         this.skontrolujSubory(nazvySuborov);
     }
@@ -98,6 +99,23 @@ public class Databaza
                 throw new RuntimeException("Chyba pri testovani suborov!");
             }
         }
+    }
+
+    public void zacniZnova()
+    {
+        this.dhParcely = null;
+        this.dhNehnutelnosti = null;
+
+        this.qsParcely = null;
+        this.qsNehnutelnosti = null;
+
+        this.curParcelaID = 1;
+        this.curNehnutelnostID = 1;
+
+        String[] nazvySuborov  = new String[]{ NAZOV_PARCELY_HS_DH, NAZOV_PARCELY_PS_DH, NAZOV_NEHNUTELNOSTI_HS_DH, NAZOV_NEHNUTELNOSTI_PS_DH,
+                                               NAZOV_PARCELY_QS, NAZOV_NEHNUTELNOSTI_QS, NAZOV_PARCELY_SPRAVCA_SUBOROV, NAZOV_NEHNUTELNOSTI_SPRAVCA_SUBOROV,
+                                               NAZOV_PARCELY_DZS, NAZOV_NEHNUTELNOSTI_DZS, NAZOV_DATABAZA };
+        this.resetujSubory(nazvySuborov);
     }
 
     // Vsetky subory budu existovat a budu mat velkost 0 bajtov
@@ -633,5 +651,25 @@ public class Databaza
         {
             throw new RuntimeException("Vkladany element je prilis velky!");
         }
+    }
+
+    public DynamickeHesovanie<Parcela> getDhParcely()
+    {
+        return this.dhParcely;
+    }
+
+    public DynamickeHesovanie<Nehnutelnost> getDhNehnutelnosti()
+    {
+        return this.dhNehnutelnosti;
+    }
+
+    public QuadStrom<DummyParcela> getQsParcely()
+    {
+        return this.qsParcely;
+    }
+
+    public QuadStrom<DummyNehnutelnost> getQsNehnutelnosti()
+    {
+        return this.qsNehnutelnosti;
     }
 }
