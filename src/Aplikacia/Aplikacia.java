@@ -73,7 +73,7 @@ public class Aplikacia
         Parcela novaParcela = new Parcela(this.curParcelaID, popis, new Suradnica(vlavoDoleX, vlavoDoleY), new Suradnica(vpravoHoreX, vpravoHoreY));
         ArrayList<DummyNehnutelnost> novaParcelaPrekryv = this.qsNehnutelnosti.vyhladaj(vlavoDoleX, vlavoDoleY, vpravoHoreX, vpravoHoreY);
 
-        if (novaParcelaPrekryv.size() >= Parcela.getMaxPocetReferencii())
+        if (novaParcelaPrekryv.size() > Parcela.getMaxPocetReferencii())
         {
             // Parcelu nemozno pridat, nakolko sa prekryva
             // s prilis velkym poctom nehnutelnosti
@@ -126,7 +126,7 @@ public class Aplikacia
         Nehnutelnost novaNehnutelnost = new Nehnutelnost(this.curNehnutelnostID, supisneCislo, popis, new Suradnica(vlavoDoleX, vlavoDoleY), new Suradnica(vpravoHoreX, vpravoHoreY));
         ArrayList<DummyParcela> novaNehnutelnostPrekryv = this.qsParcely.vyhladaj(vlavoDoleX, vlavoDoleY, vpravoHoreX, vpravoHoreY);
 
-        if (novaNehnutelnostPrekryv.size() >= Nehnutelnost.getMaxPocetReferencii())
+        if (novaNehnutelnostPrekryv.size() > Nehnutelnost.getMaxPocetReferencii())
         {
             // Nehnutelnost nemozno pridat, nakolko sa prekryva
             // s prilis velkym poctom parciel
