@@ -5,7 +5,7 @@ import Rozhrania.IData;
 
 public class DynamickeHesovanie<T extends IData>
 {
-    private final DigitalnyZnakovyStrom digitalnyZnakovyStrom;
+    private DigitalnyZnakovyStrom digitalnyZnakovyStrom;
     private final SpravcaSuborov spravcaSuborov;
 
     private final Class<T> typ;
@@ -86,9 +86,19 @@ public class DynamickeHesovanie<T extends IData>
         return this.spravcaSuborov;
     }
 
+    public DigitalnyZnakovyStrom getDigitalnyZnakovyStrom()
+    {
+        return this.digitalnyZnakovyStrom;
+    }
+
     public int getPocetElementov()
     {
         return this.digitalnyZnakovyStrom.getPocetElementov();
+    }
+
+    public void setDigitalnyZnakovyStrom(DigitalnyZnakovyStrom digitalnyZnakovyStrom)
+    {
+        this.digitalnyZnakovyStrom = digitalnyZnakovyStrom;
     }
 
     public void zavriSubory()

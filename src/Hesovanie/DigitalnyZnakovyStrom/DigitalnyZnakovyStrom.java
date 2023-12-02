@@ -5,10 +5,11 @@ import Hesovanie.SpravcaSuborov;
 import Ostatne.Status;
 import Rozhrania.IData;
 
+import java.io.Serializable;
 import java.util.BitSet;
 import java.util.Stack;
 
-public class DigitalnyZnakovyStrom
+public class DigitalnyZnakovyStrom implements Serializable
 {
     private Vrchol root;
 

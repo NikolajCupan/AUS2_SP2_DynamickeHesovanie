@@ -1,5 +1,6 @@
 package Aplikacia;
 
+import Hesovanie.DigitalnyZnakovyStrom.DigitalnyZnakovyStrom;
 import Hesovanie.DynamickeHesovanie;
 import Objekty.Nehnutelnost;
 import Objekty.Parcela;
@@ -8,10 +9,7 @@ import QuadStrom.Objekty.DummyNehnutelnost;
 import QuadStrom.Objekty.DummyParcela;
 import QuadStrom.QuadStrom;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
@@ -41,6 +39,9 @@ public class Databaza
 
     private static final String NAZOV_PARCELY_SPRAVCA_SUBOROV = "PARCELY_SPRAVCA_SUBOROV";
     private static final String NAZOV_NEHNUTELNOSTI_SPRAVCA_SUBOROV = "NEHNUTELNOSTI_SPRAVCA_SUBOROV";
+
+    private static final String NAZOV_PARCELY_DZS = "PARCELY_DZS";
+    private static final String NAZOV_NEHNUTELNOSTI_DZS = "NEHNUTELNOSTI_DZS";
 
     public Databaza()
     {
@@ -153,6 +154,37 @@ public class Databaza
             return false;
         }
 
+        // Zapis informacie tykajuce sa digitalnych znakovych stromov
+        try
+        {
+            FileOutputStream fileOutputStream = new FileOutputStream(NAZOV_PARCELY_DZS);
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+            objectOutputStream.writeObject(this.dhParcely.getDigitalnyZnakovyStrom());
+
+            objectOutputStream.flush();
+            objectOutputStream.close();
+            fileOutputStream.close();
+        }
+        catch (Exception exception)
+        {
+            return false;
+        }
+
+        try
+        {
+            FileOutputStream fileOutputStream = new FileOutputStream(NAZOV_NEHNUTELNOSTI_DZS);
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+            objectOutputStream.writeObject(this.dhNehnutelnosti.getDigitalnyZnakovyStrom());
+
+            objectOutputStream.flush();
+            objectOutputStream.close();
+            fileOutputStream.close();
+        }
+        catch (Exception exception)
+        {
+            return false;
+        }
+
         return true;
     }
 
@@ -226,6 +258,35 @@ public class Databaza
         this.qsParcely = new QuadStrom<DummyParcela>(0, 0, 0, 0, 0);
         this.qsNehnutelnosti = new QuadStrom<DummyNehnutelnost>(0, 0, 0, 0, 0);
         if (!Nacitavac.nacitajQuadStromy(this.qsParcely, this.qsNehnutelnosti, NAZOV_PARCELY_QS, NAZOV_NEHNUTELNOSTI_QS))
+        {
+            return false;
+        }
+
+        // Nacitaj infomacie tykajuce sa digitalnych znakovych stromov
+        try
+        {
+            FileInputStream fileInputStream = new FileInputStream(NAZOV_PARCELY_DZS);
+            ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+            this.dhParcely.setDigitalnyZnakovyStrom((DigitalnyZnakovyStrom)objectInputStream.readObject());
+
+            objectInputStream.close();
+            fileInputStream.close();
+        }
+        catch (Exception exception)
+        {
+            return false;
+        }
+
+        try
+        {
+            FileInputStream fileInputStream = new FileInputStream(NAZOV_NEHNUTELNOSTI_DZS);
+            ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+            this.dhNehnutelnosti.setDigitalnyZnakovyStrom((DigitalnyZnakovyStrom)objectInputStream.readObject());
+
+            objectInputStream.close();
+            fileInputStream.close();
+        }
+        catch (Exception exception)
         {
             return false;
         }

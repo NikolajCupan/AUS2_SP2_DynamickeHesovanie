@@ -4,9 +4,10 @@ import Hesovanie.Block;
 import Hesovanie.SpravcaSuborov;
 import Rozhrania.IData;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class ExternyVrchol extends Vrchol
+public class ExternyVrchol extends Vrchol implements Serializable
 {
     // Udava, na ktorom bajte zacina dany Block
     private long offset;
