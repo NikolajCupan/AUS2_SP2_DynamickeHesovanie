@@ -24,6 +24,13 @@ public class DynamickeHesovanie<T extends IData>
         this.typ = typ;
     }
 
+    // Metoda najde Zaznam pomocou primarneho kluca,
+    // a aktualizuje ho (nahradi ho parametrom aktualizovany)
+    public boolean aktualizuj(T aktualizovany)
+    {
+        return this.digitalnyZnakovyStrom.aktualizuj(aktualizovany, this.typ, this.spravcaSuborov);
+    }
+
     // Navratova hodnota metody:
     // True -> pridavany prvok bol uspesne vlozeny
     // False -> pridavany prvok uz v strukture existuje, preto nebol vlozeny

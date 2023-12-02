@@ -109,9 +109,9 @@ public class Aplikacia
         // parcela prekryva (je nutne nastavit novu referenciu)
         for (DummyNehnutelnost dummyNehnutelnost : novaParcelaPrekryv)
         {
-            Nehnutelnost nehnutelnost = this.dhNehnutelnosti.vymaz(new Nehnutelnost(dummyNehnutelnost));
+            Nehnutelnost nehnutelnost = this.dhNehnutelnosti.vyhladaj(new Nehnutelnost(dummyNehnutelnost));
             nehnutelnost.skusPridatParcelu(novaParcela);
-            this.dhNehnutelnosti.vloz(nehnutelnost);
+            this.dhNehnutelnosti.aktualizuj(nehnutelnost);
         }
 
         this.curParcelaID++;
@@ -162,9 +162,9 @@ public class Aplikacia
         // nehnutelnost prekryva (je nutne nastavit novu referenciu)
         for (DummyParcela dummyParcela : novaNehnutelnostPrekryv)
         {
-            Parcela parcela = this.dhParcely.vymaz(new Parcela(dummyParcela));
+            Parcela parcela = this.dhParcely.vyhladaj(new Parcela(dummyParcela));
             parcela.skusPridatNehnutelnost(novaNehnutelnost);
-            this.dhParcely.vloz(parcela);
+            this.dhParcely.aktualizuj(parcela);
         }
 
         this.curNehnutelnostID++;
@@ -182,16 +182,21 @@ public class Aplikacia
         }
 
         DummyParcela dummyParcela = new DummyParcela(realneVymazana);
-        this.qsParcely.vymaz((realneVymazana.getVlavoDoleX() + realneVymazana.getVpravoHoreX()) / 2,
-                             (realneVymazana.getVlavoDoleY() + realneVymazana.getVpravoHoreY()) / 2,
-                                dummyParcela);
+        DummyParcela realneVymazanaDummy = this.qsParcely.vymaz((realneVymazana.getVlavoDoleX() + realneVymazana.getVpravoHoreX()) / 2,
+                                                                (realneVymazana.getVlavoDoleY() + realneVymazana.getVpravoHoreY()) / 2,
+                                                                   dummyParcela);
+
+        if (realneVymazanaDummy == null)
+        {
+            throw new RuntimeException("Nastala chyba pri vymazavani parcely z Quad stromu!");
+        }
 
         // Dalej je nutne upravit referencie
         for (Integer nehnutelnostID : realneVymazana.getNehnutelnostiID())
         {
-            Nehnutelnost nehnutelnost = this.dhNehnutelnosti.vymaz(new Nehnutelnost(nehnutelnostID));
+            Nehnutelnost nehnutelnost = this.dhNehnutelnosti.vyhladaj(new Nehnutelnost(nehnutelnostID));
             nehnutelnost.skusOdobratParcelu(realneVymazana);
-            this.dhNehnutelnosti.vloz(nehnutelnost);
+            this.dhNehnutelnosti.aktualizuj(nehnutelnost);
         }
 
         return realneVymazana;
@@ -199,8 +204,33 @@ public class Aplikacia
 
     public Nehnutelnost vymazNehnutelnost(int nehnutelnostID)
     {
-        // TODO: implementovat
-        return null;
+        Nehnutelnost nehnutelnost = new Nehnutelnost(nehnutelnostID);
+        Nehnutelnost realneVymazana = this.dhNehnutelnosti.vymaz(nehnutelnost);
+
+        if (realneVymazana == null)
+        {
+            return null;
+        }
+
+        DummyNehnutelnost dummyNehnutelnost = new DummyNehnutelnost(realneVymazana);
+        DummyNehnutelnost realneVymazanaDummy = this.qsNehnutelnosti.vymaz((realneVymazana.getVlavoDoleX() + realneVymazana.getVpravoHoreX()) / 2,
+                                                                           (realneVymazana.getVlavoDoleY() + realneVymazana.getVpravoHoreY()) / 2,
+                                                                              dummyNehnutelnost);
+
+        if (realneVymazanaDummy == null)
+        {
+            throw new RuntimeException("Nastala chyba pri vymazavani nehnutelnosti z Quad stromu!");
+        }
+
+        // Dalej je nutne upravit referencie
+        for (Integer parcelyID : realneVymazana.getParcelyID())
+        {
+            Parcela parcela = this.dhParcely.vyhladaj(new Parcela(parcelyID));
+            parcela.skusOdobratNehnutelnost(realneVymazana);
+            this.dhParcely.aktualizuj(parcela);
+        }
+
+        return realneVymazana;
     }
 
     // V pripade ak su vstupy neplatne, je vyhodena vynimka

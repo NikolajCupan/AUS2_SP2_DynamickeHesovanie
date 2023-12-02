@@ -48,6 +48,62 @@ public class Block<T extends IData> implements IRecord
         }
     }
 
+    // Navratova hodnota metody:
+    // True -> aktualizovanie bolo uspesne
+    // False -> nedoslo k aktualizacii
+    public boolean aktualizuj(T aktualizovany, SpravcaSuborov spravcaSuborov, long vlastnyOffset)
+    {
+        Block<T> curBlock = this;
+        long offsetAktualizovaneho = vlastnyOffset;
+        boolean aktualizovanyPreplnujuci = false;
+
+        while (true)
+        {
+            int index = -1;
+            for (int i = 0; i < curBlock.pocetPlatnychZaznamov; i++)
+            {
+                if (curBlock.zaznamy.get(i).jeRovnaky(aktualizovany))
+                {
+                    index = i;
+                    break;
+                }
+            }
+
+            if (index != -1)
+            {
+                // Zaznam bol najdeny a moze byt aktualizovany
+                curBlock.zaznamy.set(index, aktualizovany);
+
+                // Zmenu je nutne ulozit do suboru
+                if (aktualizovanyPreplnujuci)
+                {
+                    spravcaSuborov.ulozPreplnujuciSubor(offsetAktualizovaneho, curBlock.prevedNaPoleBajtov());
+                }
+                else
+                {
+                    spravcaSuborov.ulozHlavnySubor(offsetAktualizovaneho, curBlock.prevedNaPoleBajtov());
+                }
+
+                return true;
+            }
+            else
+            {
+                // Cely proces je nutne opakovat
+                if (curBlock.offsetPreplnujuciSubor == -1)
+                {
+                    // Zaznam nebol najdeny, nebolo mozne vykonat atualizaciu
+                    return false;
+                }
+
+                aktualizovanyPreplnujuci = true;
+                offsetAktualizovaneho = curBlock.offsetPreplnujuciSubor;
+
+                curBlock = (Block<T>)new Block<>(spravcaSuborov.getBlokovaciFaktorPreplnujuciSubor(), aktualizovany.getClass());
+                curBlock.prevedZPolaBajtov(spravcaSuborov.citajPreplnujuciSubor(offsetAktualizovaneho, curBlock.getVelkost()));
+            }
+        }
+    }
+
     // Zaznam musi byt vlozeny iba do daneho Blocku,
     // ak sa tam nezmesti, tak je vyvolana vynimka
     public void forceVloz(T pridavany)

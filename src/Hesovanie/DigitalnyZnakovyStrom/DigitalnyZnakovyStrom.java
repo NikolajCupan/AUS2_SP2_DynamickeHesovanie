@@ -43,6 +43,27 @@ public class DigitalnyZnakovyStrom
         return pocet;
     }
 
+    public<T extends IData> boolean aktualizuj(T aktualizovany, Class<T> typ, SpravcaSuborov spravcaSuborov)
+    {
+        // Traverzuj stromom, pokym sa nedostanes na Externy vrchol
+        BitSet pridavanyZaznamHash = aktualizovany.getHash();
+        Vrchol zaciatocnyVrchol = this.root;
+
+        // Vytvorene pomocou new, aby bolo mozne pouzit ako output parameter
+        int[] curBitHash = new int[]{ 0 };
+
+        ExternyVrchol externyVrchol = this.traverzujNaExternyVrchol(zaciatocnyVrchol, pridavanyZaznamHash, curBitHash);
+        Block<T> najdenyBlock = externyVrchol.getBlock(typ, spravcaSuborov);
+
+        if (najdenyBlock != null)
+        {
+            return najdenyBlock.aktualizuj(aktualizovany, spravcaSuborov, externyVrchol.getOffset());
+        }
+
+        // Ak Block neexistuje, tak k aktualizacii urcite nedoslo
+        return false;
+    }
+
     public<T extends IData> void vloz(T pridavany, Class<T> typ, SpravcaSuborov spravcaSuborov)
     {
         // Traverzuj stromom, pokym sa nedostanes na Externy vrchol
