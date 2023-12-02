@@ -1,5 +1,8 @@
 package GUI;
 import Aplikacia.Prezenter;
+import GUI.Pridanie.Generovanie;
+import GUI.Pridanie.PridanieNehnutelnost;
+import GUI.Pridanie.PridanieParcela;
 
 import javax.swing.*;
 
@@ -36,6 +39,24 @@ public class GUI extends JFrame
                 GUI.this.prezenter.uloz();
             }
         });
+    }
+
+    public void zobrazOknoGenerovanie()
+    {
+        Generovanie generovanie = new Generovanie(this.prezenter, this);
+        this.zmenObsah(generovanie.getJPanel());
+    }
+
+    public void zobrazOknoPridanieParcela()
+    {
+        PridanieParcela pridanieParcela = new PridanieParcela(this.prezenter, this);
+        this.zmenObsah(pridanieParcela.getJPanel());
+    }
+
+    public void zobrazOknoPridanieNehnutelnost()
+    {
+        PridanieNehnutelnost pridanieNehnutelnost = new PridanieNehnutelnost(this.prezenter, this);
+        this.zmenObsah(pridanieNehnutelnost.getJPanel());
     }
 
     public void zobrazInicializacneOkno()

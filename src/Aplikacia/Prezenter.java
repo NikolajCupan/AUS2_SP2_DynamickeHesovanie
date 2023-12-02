@@ -37,6 +37,16 @@ public class Prezenter
                               vlavoDoleX, vlavoDoleY, vpravoHoreX, vpravoHoreY, maxUrovenParcely, maxUrovenNehnutelnosti);
     }
 
+    public boolean skusVlozitParcelu(String popis, double vlavoDoleX, double vlavoDoleY, double vpravoHoreX, double vpravoHoreY)
+    {
+        return this.databaza.vlozParcelu(popis, vlavoDoleX, vlavoDoleY, vpravoHoreX, vpravoHoreY, -1, false);
+    }
+
+    public boolean skusVlozitNehnutelnost(int supisneCislo, String popis, double vlavoDoleX, double vlavoDoleY, double vpravoHoreX, double vpravoHoreY)
+    {
+        return this.databaza.vlozNehnutelnost(supisneCislo, popis, vlavoDoleX, vlavoDoleY, vpravoHoreX, vpravoHoreY, -1, false);
+    }
+
     public void resetuj()
     {
         this.databaza.zacniZnova();

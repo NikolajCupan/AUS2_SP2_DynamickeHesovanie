@@ -20,6 +20,13 @@ public class HlavneOkno extends JPanel
     private JLabel text_maxUrovenParcely;
     private JLabel text_maxUrovenNehnutelnosti;
     private JButton button_resetuj;
+    private JLabel text_pocetDhParcely;
+    private JLabel text_pocetQsParcely;
+    private JLabel text_pocetQsNehnutelnosti;
+    private JLabel text_pocetDhNehnutelnosti;
+    private JButton button_oknoGenerovanie;
+    private JButton button_oknoPridanieParcela;
+    private JButton button_oknoPridanieNehnutelnost;
 
     public HlavneOkno(Prezenter prezenter, GUI gui)
     {
@@ -37,10 +44,20 @@ public class HlavneOkno extends JPanel
         this.text_maxUrovenParcely.setText("Max úroveň (hĺbka) QS parciel: " + prezenter.getQsParcely().getMaxUroven());
         this.text_maxUrovenNehnutelnosti.setText("Max úroveň (hĺbka) QS nehnuteľností: " + prezenter.getQsNehnutelnosti().getMaxUroven());
 
+        this.text_pocetDhParcely.setText("Počet elementov DH parcely: " + prezenter.getDhParcely().getPocetElementov());
+        this.text_pocetQsParcely.setText("Počet elementov QS parcely: " + prezenter.getQsParcely().getPocetElementov());
+
+        this.text_pocetDhNehnutelnosti.setText("Počet elementov DH nehnuteľnosti: " + prezenter.getDhNehnutelnosti().getPocetElementov());
+        this.text_pocetQsNehnutelnosti.setText("Počet elementov QS nehnuteľnosti: " + prezenter.getQsNehnutelnosti().getPocetElementov());
+
         this.button_resetuj.addActionListener(e -> {
             prezenter.resetuj();
             gui.zobrazInicializacneOkno();
         });
+
+        this.button_oknoGenerovanie.addActionListener(e -> gui.zobrazOknoGenerovanie());
+        this.button_oknoPridanieParcela.addActionListener(e -> gui.zobrazOknoPridanieParcela());
+        this.button_oknoPridanieNehnutelnost.addActionListener(e -> gui.zobrazOknoPridanieNehnutelnost());
     }
 
     public JPanel getJPanel()

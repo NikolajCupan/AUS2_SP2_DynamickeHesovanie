@@ -23,7 +23,6 @@ public class InicializacneOkno extends JPanel
 
     public InicializacneOkno(Prezenter prezenter, GUI gui)
     {
-        // TODO
         this.button_potvrd.addActionListener(e -> {
             try
             {
