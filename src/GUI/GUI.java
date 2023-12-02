@@ -41,6 +41,12 @@ public class GUI extends JFrame
         });
     }
 
+    public void zobrazOknoVyhladanie()
+    {
+        Vyhladanie vyhladanie = new Vyhladanie(this.prezenter, this);
+        this.zmenObsah(vyhladanie.getJPanel());
+    }
+
     public void zobrazOknoGenerovanie()
     {
         Generovanie generovanie = new Generovanie(this.prezenter, this);

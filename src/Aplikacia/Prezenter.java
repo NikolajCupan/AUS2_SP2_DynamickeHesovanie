@@ -6,6 +6,7 @@ import Objekty.Parcela;
 import QuadStrom.Objekty.DummyNehnutelnost;
 import QuadStrom.Objekty.DummyParcela;
 import QuadStrom.QuadStrom;
+import Rozhrania.IData;
 
 public class Prezenter
 {
@@ -45,6 +46,49 @@ public class Prezenter
     public boolean skusVlozitNehnutelnost(int supisneCislo, String popis, double vlavoDoleX, double vlavoDoleY, double vpravoHoreX, double vpravoHoreY)
     {
         return this.databaza.vlozNehnutelnost(supisneCislo, popis, vlavoDoleX, vlavoDoleY, vpravoHoreX, vpravoHoreY, -1, false);
+    }
+
+    public<T extends IData> String vyhladaj(int ID, Class<T> typ)
+    {
+        String vysledok = "";
+        if (typ.equals(Parcela.class))
+        {
+            Parcela najdena = this.databaza.vyhladajParcelu(ID);
+            if (najdena == null)
+            {
+                vysledok = "Parcela s daným identifikačným číslom neexistuje!";
+                return vysledok;
+            }
+
+            vysledok += najdena.toString();
+            vysledok += "\n\nNehnuteľnosti, s ktorými sa prekrýva:\n\n";
+
+            for (Integer nehnutelnostID : najdena.getNehnutelnostiID())
+            {
+                Nehnutelnost nehnutelnost = this.databaza.vyhladajNehnutelnost(nehnutelnostID);
+                vysledok += nehnutelnost.toString() + "\n";
+            }
+        }
+        else
+        {
+            Nehnutelnost najdena = this.databaza.vyhladajNehnutelnost(ID);
+            if (najdena == null)
+            {
+                vysledok = "Nehnuteľnosť s daným identifikačným číslom neexistuje!";
+                return vysledok;
+            }
+
+            vysledok += najdena.toString();
+            vysledok += "\n\nParcely, s ktorými sa prekrýva:\n\n";
+
+            for (Integer parcelaID : najdena.getParcelyID())
+            {
+                Parcela parcela = this.databaza.vyhladajParcelu(parcelaID);
+                vysledok += parcela.toString() + "\n";
+            }
+        }
+
+        return vysledok;
     }
 
     public void resetuj()

@@ -125,9 +125,24 @@ public class Nehnutelnost extends Polygon implements IData
     public String toString()
     {
         DecimalFormat formatovac = new DecimalFormat("#.##");
-        return "Nehnuteľnost (ID " + this.nehnutelnostID + "): " + this.supisneCislo +
-                " {" + formatovac.format(this.getVlavoDoleX()) + ", " + formatovac.format(this.getVlavoDoleY()) +
-                "}, {" + formatovac.format(this.getVpravoHoreX()) + ", " + formatovac.format(this.getVpravoHoreY()) + "}";
+        String string = "";
+        string += "Nehnuteľnosť:\n";
+        string += "- identifikačné číslo: " + this.nehnutelnostID + "\n";
+        string += "- súpisné číslo: " + this.supisneCislo + "\n";
+        string += "- popis: " + this.popis + "\n";
+        string += "- súradnice: {" + formatovac.format(this.getVlavoDoleX()) + ", " + formatovac.format(this.getVlavoDoleY()) + "},"
+                  + " {" + formatovac.format(this.getVpravoHoreX()) + ", " + formatovac.format(this.getVpravoHoreY()) + "}\n";
+
+        string += "- identifikačné čísla parciel, s ktorými sa prekrýva: ";
+        for (Integer parcelaID : this.parcelyID)
+        {
+            string += "[" + parcelaID + "] ";
+        }
+        string += "\n";
+
+        string += "- hash: " + Helper.hashToString(this.getHash(), POCET_BITOV_HASH) + "\n";
+
+        return string;
     }
 
     @Override
