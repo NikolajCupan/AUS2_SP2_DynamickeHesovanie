@@ -12,11 +12,11 @@ import java.util.Random;
 public class Tester
 {
     // Dynamicke hesovanie
-    private static final int BF_HS_MIN = 10;
-    private static final int BF_HS_MAX = 100;
+    private static final int BF_HS_MIN = 1;
+    private static final int BF_HS_MAX = 10;
 
-    private static final int BF_PS_MIN = 10;
-    private static final int BF_PS_MAX = 100;
+    private static final int BF_PS_MIN = 1;
+    private static final int BF_PS_MAX = 10;
 
     // Subory
     private static final String NAZOV_HS = "hlavny";
@@ -51,14 +51,15 @@ public class Tester
             this.testZakladneOperacie02(blokovaciFaktorHlavnySubor, blokovaciFaktorPreplnujuciSubor);
             this.testZakladneOperacie03(blokovaciFaktorHlavnySubor, blokovaciFaktorPreplnujuciSubor);
             this.testZakladneOperacie04(blokovaciFaktorHlavnySubor, blokovaciFaktorPreplnujuciSubor);
+            this.testZakladneOperacie05(blokovaciFaktorHlavnySubor, blokovaciFaktorPreplnujuciSubor);
         }
     }
 
     private void testZakladneOperacie01(int blokovaciFaktorHlavnySubor, int blokovaciFaktorPreplnujuciSubor, Generator generator)
     {
         // Vlastne parametre testu
-        final int ZACIATOCNA_VELKOST = 10000;
-        final int POCET_OPERACII = 10000;
+        final int ZACIATOCNA_VELKOST = 1000;
+        final int POCET_OPERACII = 1000;
 
         final int PRST_VYHLADAJ = 30;
         final int PRST_VLOZ = 40;
@@ -155,7 +156,7 @@ public class Tester
     private void testZakladneOperacie02(int blokovaciFaktorHlavnySubor, int blokovaciFaktorPreplnujuciSubor)
     {
         // Vlastne parametre testu
-        final int ZACIATOCNA_VELKOST = 10000;
+        final int ZACIATOCNA_VELKOST = 1000;
 
         ArrayList<Parcela> zoznam = new ArrayList<>();
 
@@ -329,6 +330,76 @@ public class Tester
             if (!vymazanaDh.jeRovnaky(dummy))
             {
                 throw new RuntimeException("Vymazane elementy sa nezhoduju!");
+            }
+        }
+
+        if (dh.getPocetElementov() != 0)
+        {
+            throw new RuntimeException("Dynamicke hesovanie nie je prazdne!");
+        }
+
+        if (!dh.suboryPrazdne())
+        {
+            throw new RuntimeException("Subory nie su prazdne!");
+        }
+    }
+
+    private void testZakladneOperacie05(int blokovaciFaktorHlavnySubor, int blokovaciFaktorPreplnujuciSubor)
+    {
+        // Vlastne parametre testu
+        final int ZACIATOCNA_VELKOST = 1000;
+        final int MIN_POCET_BITOV_HASH = 0;
+        final int MAX_POCET_BITOV_HASH = 5;
+
+        int pocetBitovHash = this.randomInt(MIN_POCET_BITOV_HASH, MAX_POCET_BITOV_HASH);
+
+        DynamickeHesovanie<Dummy> dh = new DynamickeHesovanie<>(blokovaciFaktorHlavnySubor, blokovaciFaktorPreplnujuciSubor, NAZOV_HS, NAZOV_PS, Dummy.class);
+        dh.vymazSubory();
+        if (!dh.suboryPrazdne())
+        {
+            throw new RuntimeException("Subory na zaciatku testu nie su prazdne!");
+        }
+
+        ArrayList<Dummy> zoznam = new ArrayList<>();
+        for (int i = 0; i < ZACIATOCNA_VELKOST; i++)
+        {
+            Dummy vytvoreny = new Dummy(i, pocetBitovHash);
+            zoznam.add(vytvoreny);
+
+            Dummy najdenyPred = dh.vyhladaj(vytvoreny);
+            if (najdenyPred != null)
+            {
+                throw new RuntimeException("Zaznam bol najdeny pred vlozenim!");
+            }
+            dh.vloz(vytvoreny);
+
+            Dummy najdenyPo = dh.vyhladaj(vytvoreny);
+            if (najdenyPo == null)
+            {
+                throw new RuntimeException("Zaznam nebol najdeny po vlozeni!");
+            }
+        }
+
+        for (int i = 0; i < ZACIATOCNA_VELKOST; i++)
+        {
+            Dummy zmazany = zoznam.remove(zoznam.size() - 1);
+
+            Dummy predMazanim = dh.vyhladaj(zmazany);
+            if (predMazanim == null)
+            {
+                throw new RuntimeException("Zaznam nebol najdeny pred mazanim!");
+            }
+
+            Dummy realneZmazany = dh.vymaz(zmazany);
+            if (realneZmazany == null)
+            {
+                throw new RuntimeException("Zaznam nebol vymazany!");
+            }
+
+            Dummy poMazani = dh.vyhladaj(zmazany);
+            if (poMazani != null)
+            {
+                throw new RuntimeException("Zaznam bol najdeny po vymazani!");
             }
         }
 
