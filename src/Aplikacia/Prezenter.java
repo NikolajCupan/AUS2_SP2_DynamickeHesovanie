@@ -48,7 +48,51 @@ public class Prezenter
         return this.databaza.vlozNehnutelnost(supisneCislo, popis, vlavoDoleX, vlavoDoleY, vpravoHoreX, vpravoHoreY, -1, false);
     }
 
-    public<T extends IData> String vyhladaj(int ID, Class<T> typ)
+    public boolean skusVymazatParcelu(int parcelaID)
+    {
+        Parcela realnaVymazana = this.databaza.vymazParcelu(parcelaID);
+        if (realnaVymazana == null)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    public boolean skusVymazatNehnutelnost(int nehnutelnostID)
+    {
+        Nehnutelnost realnaVymazana = this.databaza.vymazNehnutelnost(nehnutelnostID);
+        if (realnaVymazana == null)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    public boolean aktualizujParcelu(int parcelaID, String novyPopis)
+    {
+        return this.databaza.aktualizujParcelu(parcelaID, novyPopis);
+    }
+
+    public boolean aktualizujParcelu(int parcelaID, String novyPopis,
+                                     double noveVlavoDoleX, double noveVlavoDoleY, double noveVpravoHoreX, double noveVpravoHoreY)
+    {
+        return this.databaza.aktualizujParcelu(parcelaID, novyPopis,
+                                               noveVlavoDoleX, noveVlavoDoleY, noveVpravoHoreX, noveVpravoHoreY);
+    }
+
+    public Parcela vyhladajParcelu(int parcelaID)
+    {
+        return this.databaza.vyhladajParcelu(parcelaID);
+    }
+
+    public Nehnutelnost vyhladajNehnutelnost(int nehnutelnostID)
+    {
+        return this.databaza.vyhladajNehnutelnost(nehnutelnostID);
+    }
+
+    public<T extends IData> String vyhladajToString(int ID, Class<T> typ)
     {
         String vysledok = "";
         if (typ.equals(Parcela.class))

@@ -1,5 +1,7 @@
 package GUI;
 import Aplikacia.Prezenter;
+import GUI.Editovanie.EditovanieNehnutelnost;
+import GUI.Editovanie.EditovanieParcela;
 import GUI.Pridanie.Generovanie;
 import GUI.Pridanie.PridanieNehnutelnost;
 import GUI.Pridanie.PridanieParcela;
@@ -42,12 +44,20 @@ public class GUI extends JFrame
                 {
                     JOptionPane.showMessageDialog(GUI.this, "Súbory boli úspešné uložené!");
                 }
-                else
-                {
-                    JOptionPane.showMessageDialog(GUI.this, "Pri ukladaní súborov nastala chyba!");
-                }
             }
         });
+    }
+
+    public void zobrazOknoEditovanieParcela(int parcelaID)
+    {
+        EditovanieParcela editovanieParcela = new EditovanieParcela(this.prezenter, this, parcelaID);
+        this.zmenObsah(editovanieParcela.getJPanel());
+    }
+
+    public void zobrazOknoEditovanieNehnutelnost(int nehnutelnostID)
+    {
+        EditovanieNehnutelnost editovanieNehnutelnost = new EditovanieNehnutelnost(this.prezenter, this, nehnutelnostID);
+        this.zmenObsah(editovanieNehnutelnost.getJPanel());
     }
 
     public void zobrazOknoVyhladanie()
