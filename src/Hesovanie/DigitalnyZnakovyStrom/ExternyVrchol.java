@@ -4,10 +4,9 @@ import Hesovanie.Block;
 import Hesovanie.SpravcaSuborov;
 import Rozhrania.IData;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
-public class ExternyVrchol extends Vrchol implements Serializable
+public class ExternyVrchol extends Vrchol
 {
     // Udava, na ktorom bajte zacina dany Block
     private long offset;
@@ -22,6 +21,17 @@ public class ExternyVrchol extends Vrchol implements Serializable
         this.pocetZaznamovBlocky = 0;
         this.pocetPreplnujucichBlockov = 0;
 
+        this.otec = null;
+    }
+
+    // Pre ucely nacitania zo suboru
+    public ExternyVrchol(int offset, int pocetZaznamovBlocky, int pocetPreplnujucichBlockov)
+    {
+        this.offset = offset;
+        this.pocetZaznamovBlocky = pocetZaznamovBlocky;
+        this.pocetPreplnujucichBlockov = pocetPreplnujucichBlockov;
+
+        // Nutne nastavit neskor
         this.otec = null;
     }
 

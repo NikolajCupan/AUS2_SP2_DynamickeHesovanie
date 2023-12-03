@@ -36,7 +36,16 @@ public class GUI extends JFrame
             @Override
             public void windowClosing(java.awt.event.WindowEvent windowEvent)
             {
-                GUI.this.prezenter.uloz();
+                boolean ulozene = GUI.this.prezenter.uloz();
+
+                if (ulozene)
+                {
+                    JOptionPane.showMessageDialog(GUI.this, "Súbory boli úspešné uložené!");
+                }
+                else
+                {
+                    JOptionPane.showMessageDialog(GUI.this, "Pri ukladaní súborov nastala chyba!");
+                }
             }
         });
     }

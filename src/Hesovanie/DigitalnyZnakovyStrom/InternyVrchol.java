@@ -1,8 +1,6 @@
 package Hesovanie.DigitalnyZnakovyStrom;
 
-import java.io.Serializable;
-
-public class InternyVrchol extends Vrchol implements Serializable
+public class InternyVrchol extends Vrchol
 {
     private Vrchol lavySyn;
     private Vrchol pravySyn;

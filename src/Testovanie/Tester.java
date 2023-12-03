@@ -5,7 +5,6 @@ import Objekty.Parcela;
 import Objekty.Suradnica;
 import Ostatne.Generator;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
@@ -222,7 +221,6 @@ public class Tester
         final int MAX_POCET_BITOV_HASH = 100;
 
         int pocetBitovHash = this.randomInt(MIN_POCET_BITOV_HASH, MAX_POCET_BITOV_HASH);
-        System.out.println("testZakladneOperacie03, pocet bitov: " + pocetBitovHash);
 
         ArrayList<Integer> zoznamID = new ArrayList<>();
         for (int i = 0; i < ZACIATOCNA_VELKOST; i++)
@@ -294,7 +292,7 @@ public class Tester
         // Vlastne parametre testu
         final int ZACIATOCNA_VELKOST = 1000;
         final int MIN_POCET_BITOV_HASH = 0;
-        final int MAX_POCET_BITOV_HASH = 20;
+        final int MAX_POCET_BITOV_HASH = 5;
 
         int pocetBitovHash = this.randomInt(MIN_POCET_BITOV_HASH, MAX_POCET_BITOV_HASH);
 

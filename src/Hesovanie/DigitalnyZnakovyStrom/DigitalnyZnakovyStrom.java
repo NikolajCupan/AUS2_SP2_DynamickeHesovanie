@@ -5,11 +5,15 @@ import Hesovanie.SpravcaSuborov;
 import Ostatne.Status;
 import Rozhrania.IData;
 
-import java.io.Serializable;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Stack;
 
-public class DigitalnyZnakovyStrom implements Serializable
+public class DigitalnyZnakovyStrom
 {
     private Vrchol root;
 
@@ -509,6 +513,164 @@ public class DigitalnyZnakovyStrom implements Serializable
             {
                 System.out.println(((ExternyVrchol)curVrchol).naString(spravcaSuborov, typ) + "\n");
             }
+        }
+    }
+
+    public boolean zapisDoSuboru(String nazovSuboru)
+    {
+        try
+        {
+            PrintWriter zapisovac = new PrintWriter(nazovSuboru, StandardCharsets.UTF_8);
+
+            // Rekurzivny sposob zapisovania, zacinam od korena
+            this.zapisVrchol(zapisovac, this.root);
+
+            zapisovac.close();
+
+            // Vsetky data boli uspesne zapisane do suboru
+            return true;
+        }
+        catch (Exception ex)
+        {
+            return false;
+        }
+    }
+
+    private void zapisVrchol(PrintWriter zapisovac, Vrchol vrchol)
+    {
+        if (vrchol == null)
+        {
+            // Kvoli jednoznacnosti tvaru stromu je nevyhnutne explicitne
+            // vyjadrit, ze dany vrchol je null
+            zapisovac.println("NULL");
+        }
+        else
+        {
+            if (vrchol instanceof InternyVrchol)
+            {
+                zapisovac.println("INTERNY");
+            }
+            else if (vrchol instanceof ExternyVrchol externyVrchol)
+            {
+                zapisovac.println(externyVrchol.getOffset() + ";" + externyVrchol.getPocetZaznamovBlocky() +
+                                  ";" + externyVrchol.getPocetPreplnujucichBlockov());
+            }
+
+            if (vrchol instanceof InternyVrchol internyVrchol)
+            {
+                // Rekurzivne spracujem laveho a praveho syna
+                zapisVrchol(zapisovac, internyVrchol.getLavySyn());
+                zapisVrchol(zapisovac, internyVrchol.getPravySyn());
+            }
+            else if (vrchol instanceof ExternyVrchol)
+            {
+                // Externy vrchol nema ziadnych synov
+                zapisVrchol(zapisovac, null);
+                zapisVrchol(zapisovac, null);
+            }
+        }
+    }
+
+    private int curRiadok = 0;
+    public boolean nacitajZoSuboru(String nazovSuboru)
+    {
+        try
+        {
+            FileReader fCitac = new FileReader(nazovSuboru);
+            BufferedReader bCitac = new BufferedReader(fCitac);
+
+            // Vsetky riadky si nacitam do pola,
+            // pre jednoduchsie spracovanie
+            ArrayList<String> riadky = new ArrayList<>();
+            while (true)
+            {
+                String riadok = bCitac.readLine();
+                if (riadok == null)
+                {
+                    // Dostali sme sa az na koniec suboru
+                    break;
+                }
+                else
+                {
+                    riadky.add(riadok);
+                }
+            }
+
+            this.root = this.nacitajVrchol(riadky);
+            this.curRiadok = 0;
+
+            // Dalej je nutne nastavit referencie na otcov
+            this.nastavReferencie(this.root);
+
+            bCitac.close();
+            fCitac.close();
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            return false;
+        }
+    }
+
+    private Vrchol nacitajVrchol(ArrayList<String> riadky)
+    {
+        String riadok = riadky.get(this.curRiadok);
+        this.curRiadok++;
+
+        if (riadok.equals("NULL"))
+        {
+            // Syn daneho vrcholu bude nastaveny na null
+            return null;
+        }
+
+        Vrchol nacitanyVrchol;
+        if (riadok.equals("INTERNY"))
+        {
+            nacitanyVrchol = new InternyVrchol();
+        }
+        else
+        {
+            String[] prvky = riadok.split(";", 3);
+            int offset = Integer.parseInt(prvky[0]);
+            int pocetZaznamovBlocky = Integer.parseInt(prvky[1]);
+            int pocetPreplnujucichBlockov = Integer.parseInt(prvky[2]);
+
+            nacitanyVrchol = new ExternyVrchol(offset, pocetZaznamovBlocky, pocetPreplnujucichBlockov);
+        }
+
+        if (nacitanyVrchol instanceof InternyVrchol internyVrchol)
+        {
+            internyVrchol.setLavySyn(this.nacitajVrchol(riadky));
+            internyVrchol.setPravySyn(this.nacitajVrchol(riadky));
+        }
+        else
+        {
+            // Nutne explicitne metodu zavolat 2-krat,
+            // jedna sa o spracovanie null hodnot
+            this.nacitajVrchol(riadky);
+            this.nacitajVrchol(riadky);
+        }
+
+        return nacitanyVrchol;
+    }
+
+    private void nastavReferencie(Vrchol vrchol)
+    {
+        if (vrchol instanceof ExternyVrchol)
+        {
+            // Externy vrchol nema synov, cize nie je nutne nastavit ziadne referencie
+        }
+        else if (vrchol instanceof InternyVrchol internyVrchol)
+        {
+            Vrchol lavySyn = internyVrchol.getLavySyn();
+            lavySyn.setOtec(internyVrchol);
+
+            Vrchol pravySyn = internyVrchol.getPravySyn();
+            pravySyn.setOtec(internyVrchol);
+
+            this.nastavReferencie(lavySyn);
+            this.nastavReferencie(pravySyn);
         }
     }
 }

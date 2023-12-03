@@ -2,9 +2,7 @@ package Hesovanie.DigitalnyZnakovyStrom;
 
 import Ostatne.Status;
 
-import java.io.Serializable;
-
-public abstract class Vrchol implements Serializable
+public abstract class Vrchol
 {
     protected InternyVrchol otec;
 

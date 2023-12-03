@@ -173,32 +173,8 @@ public class Databaza
         }
 
         // Zapis informacie tykajuce sa digitalnych znakovych stromov
-        try
-        {
-            FileOutputStream fileOutputStream = new FileOutputStream(NAZOV_PARCELY_DZS);
-            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
-            objectOutputStream.writeObject(this.dhParcely.getDigitalnyZnakovyStrom());
-
-            objectOutputStream.flush();
-            objectOutputStream.close();
-            fileOutputStream.close();
-        }
-        catch (Exception exception)
-        {
-            return false;
-        }
-
-        try
-        {
-            FileOutputStream fileOutputStream = new FileOutputStream(NAZOV_NEHNUTELNOSTI_DZS);
-            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
-            objectOutputStream.writeObject(this.dhNehnutelnosti.getDigitalnyZnakovyStrom());
-
-            objectOutputStream.flush();
-            objectOutputStream.close();
-            fileOutputStream.close();
-        }
-        catch (Exception exception)
+        if (!this.dhParcely.getDigitalnyZnakovyStrom().zapisDoSuboru(NAZOV_PARCELY_DZS) ||
+            !this.dhNehnutelnosti.getDigitalnyZnakovyStrom().zapisDoSuboru(NAZOV_NEHNUTELNOSTI_DZS))
         {
             return false;
         }
@@ -281,32 +257,10 @@ public class Databaza
         }
 
         // Nacitaj infomacie tykajuce sa digitalnych znakovych stromov
-        try
+        if (!this.dhParcely.getDigitalnyZnakovyStrom().nacitajZoSuboru(NAZOV_PARCELY_DZS) ||
+            !this.dhNehnutelnosti.getDigitalnyZnakovyStrom().nacitajZoSuboru(NAZOV_NEHNUTELNOSTI_DZS))
         {
-            FileInputStream fileInputStream = new FileInputStream(NAZOV_PARCELY_DZS);
-            ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
-            this.dhParcely.setDigitalnyZnakovyStrom((DigitalnyZnakovyStrom)objectInputStream.readObject());
-
-            objectInputStream.close();
-            fileInputStream.close();
-        }
-        catch (Exception exception)
-        {
-            return false;
-        }
-
-        try
-        {
-            FileInputStream fileInputStream = new FileInputStream(NAZOV_NEHNUTELNOSTI_DZS);
-            ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
-            this.dhNehnutelnosti.setDigitalnyZnakovyStrom((DigitalnyZnakovyStrom)objectInputStream.readObject());
-
-            objectInputStream.close();
-            fileInputStream.close();
-        }
-        catch (Exception exception)
-        {
-            return false;
+           return false;
         }
 
         return true;

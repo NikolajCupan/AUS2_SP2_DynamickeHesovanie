@@ -96,9 +96,9 @@ public class Prezenter
         this.databaza.zacniZnova();
     }
 
-    public void uloz()
+    public boolean uloz()
     {
-        this.databaza.ukonciAplikaciu();
+        return this.databaza.ukonciAplikaciu();
     }
 
     public DynamickeHesovanie<Parcela> getDhParcely()
