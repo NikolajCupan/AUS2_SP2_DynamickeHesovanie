@@ -82,6 +82,18 @@ public class Prezenter
                                                noveVlavoDoleX, noveVlavoDoleY, noveVpravoHoreX, noveVpravoHoreY);
     }
 
+    public boolean aktualizujNehnutelnost(int nehnutelnostID, int noveSupisneCislo, String novyPopis)
+    {
+        return this.databaza.aktualizujNehnutelnost(nehnutelnostID, noveSupisneCislo, novyPopis);
+    }
+
+    public boolean aktualizujNehnutelnost(int nehnutelnostID, int noveSupisneCislo, String novyPopis,
+                                          double noveVlavoDoleX, double noveVlavoDoleY, double noveVpravoHoreX, double noveVpravoHoreY)
+    {
+        return this.databaza.aktualizujNehnutelnost(nehnutelnostID, noveSupisneCislo, novyPopis,
+                                                    noveVlavoDoleX, noveVlavoDoleY, noveVpravoHoreX, noveVpravoHoreY);
+    }
+
     public Parcela vyhladajParcelu(int parcelaID)
     {
         return this.databaza.vyhladajParcelu(parcelaID);

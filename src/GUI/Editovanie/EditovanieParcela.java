@@ -28,8 +28,8 @@ public class EditovanieParcela extends JPanel
 
         this.text_parcelaID.setText("Identifikačné číslo parcely: " + parcela.getParcelaID());
         this.input_popis.setText(parcela.getPopis());
-        this.input_vlavoDoleX.setText ("" + parcela.getVlavoDoleX());
-        this.input_vlavoDoleY.setText ("" + parcela.getVlavoDoleY());
+        this.input_vlavoDoleX.setText("" + parcela.getVlavoDoleX());
+        this.input_vlavoDoleY.setText("" + parcela.getVlavoDoleY());
         this.input_vpravoHoreX.setText("" + parcela.getVpravoHoreX());
         this.input_vpravoHoreY.setText("" + parcela.getVpravoHoreY());
 
@@ -38,7 +38,7 @@ public class EditovanieParcela extends JPanel
         this.button_potvrd.addActionListener(e -> {
             try
             {
-                String novyPopis = input_popis.getText();
+                String novyPopis = this.input_popis.getText();
 
                 double noveVlavoDoleX = Double.parseDouble(this.input_vlavoDoleX.getText());
                 double noveVlavoDoleY = Double.parseDouble(this.input_vlavoDoleY.getText());
