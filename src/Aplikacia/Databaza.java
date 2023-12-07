@@ -402,6 +402,28 @@ public class Databaza
         return this.dhNehnutelnosti.vyhladaj(nehnutelnost);
     }
 
+    public ArrayList<DummyParcela> vyhladajDummyParcely(double x, double y)
+    {
+        return this.qsParcely.vyhladaj(x, y);
+    }
+
+    public ArrayList<DummyNehnutelnost> vyhladajDummyNehnutelnosti(double x, double y)
+    {
+        return this.qsNehnutelnosti.vyhladaj(x, y);
+    }
+
+    public ArrayList<DummyParcela> vyhladajDummyParcely(double vlavoDoleX, double vlavoDoleY, double vpravoHoreX, double vpravoHoreY)
+    {
+        this.skontrolujVstupy(vlavoDoleX, vlavoDoleY, vpravoHoreX, vpravoHoreY);
+        return this.qsParcely.vyhladaj(vlavoDoleX, vlavoDoleY, vpravoHoreX, vpravoHoreY);
+    }
+
+    public ArrayList<DummyNehnutelnost> vyhladajDummyNehnutelnosti(double vlavoDoleX, double vlavoDoleY, double vpravoHoreX, double vpravoHoreY)
+    {
+        this.skontrolujVstupy(vlavoDoleX, vlavoDoleY, vpravoHoreX, vpravoHoreY);
+        return this.qsNehnutelnosti.vyhladaj(vlavoDoleX, vlavoDoleY, vpravoHoreX, vpravoHoreY);
+    }
+
     public boolean vlozParcelu(String popis, double vlavoDoleX, double vlavoDoleY, double vpravoHoreX, double vpravoHoreY,
                                int forcedParcelaID, boolean forceParcelaID)
     {

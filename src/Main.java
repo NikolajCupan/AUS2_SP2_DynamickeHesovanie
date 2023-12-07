@@ -4,7 +4,7 @@ import Testovanie.Tester;
 
 public class Main
 {
-    public static final char REZIM = 'T';
+    public static final char REZIM = 'G';
 
     public static void main(String[] args)
     {

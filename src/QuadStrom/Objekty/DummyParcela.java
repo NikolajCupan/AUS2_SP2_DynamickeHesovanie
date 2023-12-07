@@ -39,4 +39,11 @@ public class DummyParcela extends Polygon
 
         return this.parcelaID == dummyParcela.getParcelaID();
     }
+
+    @Override
+    public String toString()
+    {
+        return "Parcela (" + this.parcelaID + "), {" + this.surVlavoDole.getX() + ", " + this.surVlavoDole.getY() +
+               "}, {" + this.surVpravoHore.getX() + ", " + this.surVpravoHore.getY() + "}";
+    }
 }

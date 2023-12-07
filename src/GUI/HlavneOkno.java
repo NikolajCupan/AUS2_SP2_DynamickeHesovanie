@@ -28,6 +28,8 @@ public class HlavneOkno extends JPanel
     private JButton button_oknoPridanieParcela;
     private JButton button_oknoPridanieNehnutelnost;
     private JButton button_oknoVyhladanie;
+    private JButton button_oknoVyhladanieSuradnica;
+    private JButton button_oknoVyhladavanieObdlznik;
 
     public HlavneOkno(Prezenter prezenter, GUI gui)
     {
@@ -60,6 +62,8 @@ public class HlavneOkno extends JPanel
         this.button_oknoPridanieParcela.addActionListener(e -> gui.zobrazOknoPridanieParcela());
         this.button_oknoPridanieNehnutelnost.addActionListener(e -> gui.zobrazOknoPridanieNehnutelnost());
         this.button_oknoVyhladanie.addActionListener(e -> gui.zobrazOknoVyhladanie());
+        this.button_oknoVyhladanieSuradnica.addActionListener(e -> gui.zobrazVyhladavanieSuradnica());
+        this.button_oknoVyhladavanieObdlznik.addActionListener(e -> gui.zobrazVyhladavanieObdlznik());
     }
 
     public JPanel getJPanel()

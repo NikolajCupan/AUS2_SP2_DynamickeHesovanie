@@ -39,4 +39,11 @@ public class DummyNehnutelnost extends Polygon
 
         return this.nehnutelnostID == dummyNehnutelnost.getNehnutelnostID();
     }
+
+    @Override
+    public String toString()
+    {
+        return "Nehnuteľnosť (" + this.nehnutelnostID + "), {" + this.surVlavoDole.getX() + ", " + this.surVlavoDole.getY() +
+                "}, {" + this.surVpravoHore.getX() + ", " + this.surVpravoHore.getY() + "}";
+    }
 }

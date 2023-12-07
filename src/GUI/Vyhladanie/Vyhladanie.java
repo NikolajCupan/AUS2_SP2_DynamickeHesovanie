@@ -1,6 +1,7 @@
-package GUI;
+package GUI.Vyhladanie;
 
 import Aplikacia.Prezenter;
+import GUI.GUI;
 import Objekty.Nehnutelnost;
 import Objekty.Parcela;
 

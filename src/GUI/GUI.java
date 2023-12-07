@@ -5,8 +5,15 @@ import GUI.Editovanie.EditovanieParcela;
 import GUI.Pridanie.Generovanie;
 import GUI.Pridanie.PridanieNehnutelnost;
 import GUI.Pridanie.PridanieParcela;
+import GUI.Vyhladanie.Vyhladanie;
+import GUI.Vyhladanie.VyhladanieObdlznik;
+import GUI.Vyhladanie.VyhladanieSuradnica;
+import Objekty.Polygon;
+import QuadStrom.Objekty.DummyNehnutelnost;
+import QuadStrom.Objekty.DummyParcela;
 
 import javax.swing.*;
+import java.util.ArrayList;
 
 public class GUI extends JFrame
 {
@@ -64,6 +71,36 @@ public class GUI extends JFrame
     {
         Vyhladanie vyhladanie = new Vyhladanie(this.prezenter, this);
         this.zmenObsah(vyhladanie.getJPanel());
+    }
+
+    public void zobrazVyhladavanieSuradnica()
+    {
+        VyhladanieSuradnica vyhladanieSuradnica = new VyhladanieSuradnica(this.prezenter, this);
+        this.zmenObsah(vyhladanieSuradnica.getJPanel());
+    }
+
+    public void zobrazVyhladavanieObdlznik()
+    {
+        VyhladanieObdlznik vyhladanieObdlznik = new VyhladanieObdlznik(this.prezenter, this);
+        this.zmenObsah(vyhladanieObdlznik.getJPanel());
+    }
+
+    public void zobrazZoznamDummyParciel(ArrayList<DummyParcela> dummyParcely)
+    {
+        Zoznam<DummyParcela> zoznam = new Zoznam<DummyParcela>(this.prezenter, this, dummyParcely);
+        this.zmenObsah(zoznam.getJPanel());
+    }
+
+    public void zobrazZoznamDummyNehnutelnosti(ArrayList<DummyNehnutelnost> dummyNehnutelnosti)
+    {
+        Zoznam<DummyNehnutelnost> zoznam = new Zoznam<DummyNehnutelnost>(this.prezenter, this, dummyNehnutelnosti);
+        this.zmenObsah(zoznam.getJPanel());
+    }
+
+    public void zobrazZoznamPolygonov(ArrayList<Polygon> polygony)
+    {
+        Zoznam<Polygon> zoznam = new Zoznam<Polygon>(this.prezenter, this, polygony);
+        this.zmenObsah(zoznam.getJPanel());
     }
 
     public void zobrazOknoGenerovanie()

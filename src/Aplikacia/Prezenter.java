@@ -3,10 +3,13 @@ package Aplikacia;
 import Hesovanie.DynamickeHesovanie;
 import Objekty.Nehnutelnost;
 import Objekty.Parcela;
+import Objekty.Polygon;
 import QuadStrom.Objekty.DummyNehnutelnost;
 import QuadStrom.Objekty.DummyParcela;
 import QuadStrom.QuadStrom;
 import Rozhrania.IData;
+
+import java.util.ArrayList;
 
 public class Prezenter
 {
@@ -102,6 +105,40 @@ public class Prezenter
     public Nehnutelnost vyhladajNehnutelnost(int nehnutelnostID)
     {
         return this.databaza.vyhladajNehnutelnost(nehnutelnostID);
+    }
+
+    public ArrayList<DummyParcela> vyhladajDummyParcely(double x, double y)
+    {
+        return this.databaza.vyhladajDummyParcely(x, y);
+    }
+
+    public ArrayList<DummyNehnutelnost> vyhladajDummyNehnutelnosti(double x, double y)
+    {
+        return this.databaza.vyhladajDummyNehnutelnosti(x, y);
+    }
+
+    public ArrayList<Polygon> vyhladajPolygony(double x, double y)
+    {
+        ArrayList<Polygon> polygony = new ArrayList<>(this.databaza.vyhladajDummyParcely(x, y));
+        polygony.addAll(this.databaza.vyhladajDummyNehnutelnosti(x, y));
+        return polygony;
+    }
+
+    public ArrayList<DummyParcela> vyhladajDummyParcely(double vlavoDoleX, double vlavoDoleY, double vpravoHoreX, double vpravoHoreY)
+    {
+        return this.databaza.vyhladajDummyParcely(vlavoDoleX, vlavoDoleY, vpravoHoreX, vpravoHoreY);
+    }
+
+    public ArrayList<DummyNehnutelnost> vyhladajDummyNehnutelnosti(double vlavoDoleX, double vlavoDoleY, double vpravoHoreX, double vpravoHoreY)
+    {
+        return this.databaza.vyhladajDummyNehnutelnosti(vlavoDoleX, vlavoDoleY, vpravoHoreX, vpravoHoreY);
+    }
+
+    public ArrayList<Polygon> vyhladajPolygony(double vlavoDoleX, double vlavoDoleY, double vpravoHoreX, double vpravoHoreY)
+    {
+        ArrayList<Polygon> polygony = new ArrayList<>(this.databaza.vyhladajDummyParcely(vlavoDoleX, vlavoDoleY, vpravoHoreX, vpravoHoreY));
+        polygony.addAll(this.databaza.vyhladajDummyNehnutelnosti(vlavoDoleX, vlavoDoleY, vpravoHoreX, vpravoHoreY));
+        return polygony;
     }
 
     public<T extends IData> String vyhladajToString(int ID, Class<T> typ)
