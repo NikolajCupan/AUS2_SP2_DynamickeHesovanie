@@ -407,9 +407,9 @@ public class SpravcaSuborov
         {
             Block<T> curBlock = new Block<>(this.blokovaciFaktorHlavnySubor, typ);
             curBlock.prevedZPolaBajtov(this.citajHlavnySubor(curOffset, curBlock.getVelkost()));
-            vysledok += "Offset: " + curOffset;
-            vysledok += "- next offset: " + curBlock.getOffsetNextVolny();
-            vysledok += "- prev offset: " + curBlock.getOffsetPrevVolny() + "\n";
+            vysledok += "Offset: " + curOffset + "\n";
+            vysledok += "- next offset: " + curBlock.getOffsetNextVolny() + "\n";
+            vysledok += "- prev offset: " + curBlock.getOffsetPrevVolny() + "\n\n";
 
             curOffset = curBlock.getOffsetNextVolny();
         }
@@ -426,9 +426,9 @@ public class SpravcaSuborov
         {
             Block<T> curBlock = new Block<>(this.blokovaciFaktorPreplnujuciSubor, typ);
             curBlock.prevedZPolaBajtov(this.citajPreplnujuciSubor(curOffset, curBlock.getVelkost()));
-            vysledok += "Offset: " + curOffset;
-            vysledok += "Next offset: " + curBlock.getOffsetNextVolny();
-            vysledok += "Prev offset: " + curBlock.getOffsetPrevVolny() + "\n";
+            vysledok += "Offset " + curOffset + ":\n";
+            vysledok += "Next offset: " + curBlock.getOffsetNextVolny() + "\n";
+            vysledok += "Prev offset: " + curBlock.getOffsetPrevVolny() + "\n\n";
 
             curOffset = curBlock.getOffsetNextVolny();
         }

@@ -605,7 +605,7 @@ public class Databaza
         return realneVymazana;
     }
 
-    // Skontroluje, ci pocet elementov v jednotlivych QS a DH sa zhoduju
+    // Skontroluje, ci pocet elementov v jednotlivych QS a DH sa zhoduje
     public boolean stavKorektny()
     {
         int pocetDhParcely = this.dhParcely.getPocetElementov();

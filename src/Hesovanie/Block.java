@@ -544,11 +544,18 @@ public class Block<T extends IData> implements IRecord
         string += "- offset next voľný: " + this.offsetNextVolny + "\n";
 
         string += "- záznamy:";
-        for (int i = 0; i < this.pocetPlatnychZaznamov; i++)
+        if (this.pocetPlatnychZaznamov == 0)
         {
-            String zaznam = "\n" + this.zaznamy.get(i).toString();
-            zaznam = zaznam.replace("\n", "\n\t");
-            string += zaznam;
+           string += "\n";
+        }
+        else
+        {
+            for (int i = 0; i < this.pocetPlatnychZaznamov; i++)
+            {
+                String zaznam = "\n" + this.zaznamy.get(i).toString();
+                zaznam = zaznam.replace("\n", "\n\t");
+                string += zaznam;
+            }
         }
 
         return string;
