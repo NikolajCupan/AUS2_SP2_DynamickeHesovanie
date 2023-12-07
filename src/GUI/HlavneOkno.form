@@ -10,12 +10,18 @@
     <children>
       <hspacer id="a007">
         <constraints>
-          <grid row="3" column="0" row-span="1" col-span="3" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="3" column="0" row-span="1" col-span="3" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false">
+            <minimum-size width="-1" height="10"/>
+            <preferred-size width="-1" height="10"/>
+            <maximum-size width="-1" height="10"/>
+          </grid>
         </constraints>
       </hspacer>
       <vspacer id="be009">
         <constraints>
-          <grid row="0" column="1" row-span="3" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+          <grid row="0" column="1" row-span="3" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false">
+            <preferred-size width="31" height="14"/>
+          </grid>
         </constraints>
       </vspacer>
       <component id="a6f9d" class="javax.swing.JLabel" binding="text_blokovaciFaktorHlavnySuborParciel">
@@ -36,12 +42,18 @@
       </component>
       <hspacer id="273f7">
         <constraints>
-          <grid row="7" column="0" row-span="1" col-span="3" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="7" column="0" row-span="1" col-span="3" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false">
+            <minimum-size width="-1" height="10"/>
+            <preferred-size width="-1" height="10"/>
+            <maximum-size width="-1" height="10"/>
+          </grid>
         </constraints>
       </hspacer>
       <vspacer id="8ac2c">
         <constraints>
-          <grid row="4" column="1" row-span="3" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+          <grid row="4" column="1" row-span="3" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false">
+            <preferred-size width="31" height="14"/>
+          </grid>
         </constraints>
       </vspacer>
       <component id="15c5f" class="javax.swing.JLabel" binding="text_minX">
@@ -54,12 +66,20 @@
       </component>
       <hspacer id="414c5">
         <constraints>
-          <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false">
+            <minimum-size width="-1" height="5"/>
+            <preferred-size width="-1" height="5"/>
+            <maximum-size width="-1" height="5"/>
+          </grid>
         </constraints>
       </hspacer>
       <hspacer id="bdfbc">
         <constraints>
-          <grid row="5" column="2" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="5" column="2" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false">
+            <minimum-size width="-1" height="5"/>
+            <preferred-size width="-1" height="5"/>
+            <maximum-size width="-1" height="5"/>
+          </grid>
         </constraints>
       </hspacer>
       <component id="ede45" class="javax.swing.JLabel" binding="text_maxX">
@@ -88,12 +108,18 @@
       </component>
       <vspacer id="1316c">
         <constraints>
-          <grid row="8" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+          <grid row="8" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false">
+            <preferred-size width="31" height="14"/>
+          </grid>
         </constraints>
       </vspacer>
       <hspacer id="8fcb6">
         <constraints>
-          <grid row="9" column="0" row-span="1" col-span="3" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="9" column="0" row-span="1" col-span="3" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false">
+            <minimum-size width="-1" height="10"/>
+            <preferred-size width="-1" height="10"/>
+            <maximum-size width="-1" height="10"/>
+          </grid>
         </constraints>
       </hspacer>
       <component id="a797a" class="javax.swing.JLabel" binding="text_maxUrovenParcely">
@@ -114,12 +140,20 @@
       </component>
       <hspacer id="da37e">
         <constraints>
-          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false">
+            <minimum-size width="-1" height="5"/>
+            <preferred-size width="-1" height="5"/>
+            <maximum-size width="-1" height="5"/>
+          </grid>
         </constraints>
       </hspacer>
       <hspacer id="ba802">
         <constraints>
-          <grid row="1" column="2" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="1" column="2" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false">
+            <minimum-size width="-1" height="5"/>
+            <preferred-size width="-1" height="5"/>
+            <maximum-size width="-1" height="5"/>
+          </grid>
         </constraints>
       </hspacer>
       <component id="41524" class="javax.swing.JLabel" binding="text_blokovaciFaktorPreplnujuciSuborParciel">
@@ -148,12 +182,18 @@
       </component>
       <hspacer id="d06ef">
         <constraints>
-          <grid row="13" column="0" row-span="1" col-span="3" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="13" column="0" row-span="1" col-span="3" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false">
+            <minimum-size width="-1" height="20"/>
+            <preferred-size width="-1" height="20"/>
+            <maximum-size width="-1" height="20"/>
+          </grid>
         </constraints>
       </hspacer>
       <vspacer id="e95b5">
         <constraints>
-          <grid row="10" column="1" row-span="3" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+          <grid row="10" column="1" row-span="3" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false">
+            <preferred-size width="31" height="14"/>
+          </grid>
         </constraints>
       </vspacer>
       <component id="995b1" class="javax.swing.JLabel" binding="text_pocetDhParcely">
@@ -166,12 +206,20 @@
       </component>
       <hspacer id="9b2ea">
         <constraints>
-          <grid row="11" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="11" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false">
+            <minimum-size width="-1" height="5"/>
+            <preferred-size width="-1" height="5"/>
+            <maximum-size width="-1" height="5"/>
+          </grid>
         </constraints>
       </hspacer>
       <hspacer id="aeccc">
         <constraints>
-          <grid row="11" column="2" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="11" column="2" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false">
+            <minimum-size width="-1" height="5"/>
+            <preferred-size width="-1" height="5"/>
+            <maximum-size width="-1" height="5"/>
+          </grid>
         </constraints>
       </hspacer>
       <component id="f4a39" class="javax.swing.JLabel" binding="text_pocetQsParcely">
@@ -200,7 +248,11 @@
       </component>
       <hspacer id="73a63">
         <constraints>
-          <grid row="19" column="0" row-span="1" col-span="3" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="19" column="0" row-span="1" col-span="3" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false">
+            <minimum-size width="-1" height="20"/>
+            <preferred-size width="-1" height="20"/>
+            <maximum-size width="-1" height="20"/>
+          </grid>
         </constraints>
       </hspacer>
       <component id="e0475" class="javax.swing.JLabel">
@@ -231,7 +283,9 @@
       </hspacer>
       <vspacer id="b7296">
         <constraints>
-          <grid row="18" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+          <grid row="18" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false">
+            <preferred-size width="31" height="14"/>
+          </grid>
         </constraints>
       </vspacer>
       <component id="d2b5a" class="javax.swing.JButton" binding="button_oknoPridanieParcela">
@@ -252,7 +306,11 @@
       </component>
       <hspacer id="e7547">
         <constraints>
-          <grid row="33" column="0" row-span="1" col-span="3" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="33" column="0" row-span="1" col-span="3" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false">
+            <minimum-size width="-1" height="20"/>
+            <preferred-size width="-1" height="20"/>
+            <maximum-size width="-1" height="20"/>
+          </grid>
         </constraints>
       </hspacer>
       <component id="21a88" class="javax.swing.JLabel">
@@ -291,7 +349,9 @@
       </component>
       <vspacer id="15287">
         <constraints>
-          <grid row="24" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+          <grid row="24" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false">
+            <preferred-size width="31" height="14"/>
+          </grid>
         </constraints>
       </vspacer>
       <component id="19e15" class="javax.swing.JButton" binding="button_oknoVyhladavanieObdlznik">
@@ -304,7 +364,11 @@
       </component>
       <hspacer id="6f32f">
         <constraints>
-          <grid row="25" column="0" row-span="1" col-span="3" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="25" column="0" row-span="1" col-span="3" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false">
+            <minimum-size width="-1" height="20"/>
+            <preferred-size width="-1" height="20"/>
+            <maximum-size width="-1" height="20"/>
+          </grid>
         </constraints>
       </hspacer>
       <component id="ee0c0" class="javax.swing.JLabel">
@@ -351,12 +415,18 @@
       </component>
       <vspacer id="9e98">
         <constraints>
-          <grid row="30" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+          <grid row="30" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false">
+            <preferred-size width="31" height="14"/>
+          </grid>
         </constraints>
       </vspacer>
       <hspacer id="e4235">
         <constraints>
-          <grid row="31" column="0" row-span="1" col-span="3" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="31" column="0" row-span="1" col-span="3" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false">
+            <minimum-size width="-1" height="20"/>
+            <preferred-size width="-1" height="20"/>
+            <maximum-size width="-1" height="20"/>
+          </grid>
         </constraints>
       </hspacer>
       <component id="f1c4d" class="javax.swing.JButton" binding="button_oknoDebug">
