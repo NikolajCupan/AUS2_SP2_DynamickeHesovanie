@@ -19,6 +19,11 @@ public class Zoznam<T extends IPolygon> extends JPanel
     private JList<T> list;
     private final DefaultListModel<T> model;
     private JTextArea detail;
+    private JButton button_oknoEdituj;
+    private JButton button_vymaz;
+
+    private int zvoleneID;
+    private Class zvolenyTyp;
 
     public Zoznam(Prezenter prezenter, GUI gui, ArrayList<T> zoznam)
     {
@@ -39,17 +44,26 @@ public class Zoznam<T extends IPolygon> extends JPanel
                 return;
             }
 
+            this.button_oknoEdituj.setEnabled(true);
+            this.button_vymaz.setEnabled(true);
+
             String vysledok = "--------------------------------------------------------------\n";
             vysledok       += "--------------- Dynamické hešovanie ---------------\n";
             vysledok       += "--------------------------------------------------------------\n\n";
 
             if (element instanceof DummyParcela dummyParcela)
             {
+                Zoznam.this.zvolenyTyp = Parcela.class;
+                Zoznam.this.zvoleneID = dummyParcela.getParcelaID();
+
                 int parcelaID = dummyParcela.getParcelaID();
                 vysledok += prezenter.vyhladajToString(parcelaID, Parcela.class);
             }
             else if (element instanceof DummyNehnutelnost dummyNehnutelnost)
             {
+                Zoznam.this.zvolenyTyp = Nehnutelnost.class;
+                Zoznam.this.zvoleneID = dummyNehnutelnost.getNehnutelnostID();
+
                 int nehnutelnostID = dummyNehnutelnost.getNehnutelnostID();
                 vysledok += prezenter.vyhladajToString(nehnutelnostID, Nehnutelnost.class);
             }
@@ -61,7 +75,7 @@ public class Zoznam<T extends IPolygon> extends JPanel
             vysledok += element + "\n";
 
             vysledok += "\n\nPrekrýva sa s:\n\n";
-            if (element instanceof DummyParcela dummyParcela)
+            if (element instanceof DummyParcela)
             {
                 ArrayList<DummyNehnutelnost> prekryvDummyNehnutelnosti = new ArrayList<>();
                 prekryvDummyNehnutelnosti.addAll(prezenter.vyhladajDummyNehnutelnosti(element.getVlavoDoleX(), element.getVlavoDoleY(),
@@ -72,7 +86,7 @@ public class Zoznam<T extends IPolygon> extends JPanel
                     vysledok += dummyNehnutelnost + "\n";
                 }
             }
-            else if (element instanceof DummyNehnutelnost dummyNehnutelnost)
+            else if (element instanceof DummyNehnutelnost)
             {
                 ArrayList<DummyParcela> prekryvDummyParcely = new ArrayList<>();
                 prekryvDummyParcely.addAll(prezenter.vyhladajDummyParcely(element.getVlavoDoleX(), element.getVlavoDoleY(),
@@ -85,6 +99,41 @@ public class Zoznam<T extends IPolygon> extends JPanel
             }
 
             this.detail.setText(vysledok);
+        });
+
+        this.button_oknoEdituj.addActionListener(e ->
+        {
+            if (this.zvolenyTyp.equals(Parcela.class))
+            {
+                gui.zobrazOknoEditovanieParcela(this.zvoleneID);
+            }
+            else if (this.zvolenyTyp.equals(Nehnutelnost.class))
+            {
+                gui.zobrazOknoEditovanieNehnutelnost(this.zvoleneID);
+            }
+        });
+
+        this.button_vymaz.addActionListener(e ->
+        {
+            boolean uspesneVymazane = false;
+
+            if (this.zvolenyTyp.equals(Parcela.class))
+            {
+                uspesneVymazane = prezenter.skusVymazatParcelu(this.zvoleneID);
+            }
+            else if (this.zvolenyTyp.equals(Nehnutelnost.class))
+            {
+                uspesneVymazane = prezenter.skusVymazatNehnutelnost(this.zvoleneID);
+            }
+
+            if (uspesneVymazane)
+            {
+                gui.zobrazHlavneOkno();
+            }
+            else
+            {
+                JOptionPane.showMessageDialog(Zoznam.this, "Pri vymazávaní záznamu nastala chyba!");
+            }
         });
     }
 

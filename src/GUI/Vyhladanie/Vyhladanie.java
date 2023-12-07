@@ -50,8 +50,8 @@ public class Vyhladanie extends JPanel
                 if (vysledok.equals("Parcela s daným identifikačným číslom neexistuje!") ||
                     vysledok.equals("Nehnuteľnosť s daným identifikačným číslom neexistuje!"))
                 {
-                        this.button_oknoEdituj.setEnabled(false);
-                        this.button_vymaz.setEnabled(false);
+                    this.button_oknoEdituj.setEnabled(false);
+                    this.button_vymaz.setEnabled(false);
                 }
                 else
                 {
@@ -92,7 +92,7 @@ public class Vyhladanie extends JPanel
 
             if (uspesneVymazane)
             {
-                gui.zobrazOknoVyhladanie();
+                gui.zobrazHlavneOkno();
             }
             else
             {

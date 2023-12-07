@@ -356,7 +356,7 @@ public class SpravcaSuborov
         }
     }
 
-    public<T extends IData> void vypisHlavnySubor(Class<T> typ)
+    public<T extends IData> String getStringHlavnySubor(Class<T> typ)
     {
         Block<T> block = new Block<>(this.blokovaciFaktorHlavnySubor, typ);
 
@@ -364,17 +364,20 @@ public class SpravcaSuborov
         int velkostBlocku = block.getVelkost();
         long velkostSuboru = this.getVelkostHlavnySubor();
 
+        String vysledok = "";
         while (curOffset <= velkostSuboru - velkostBlocku)
         {
             block.prevedZPolaBajtov(this.citajHlavnySubor(curOffset, velkostBlocku));
-            System.out.println("Offset " + curOffset + ":");
-            System.out.println(block + "\n");
+            vysledok += "Offset " + curOffset + ":\n";
+            vysledok += block + "\n";
 
             curOffset += velkostBlocku;
         }
+
+        return vysledok;
     }
 
-    public<T extends IData> void vypisPreplnujuciSubor(Class<T> typ)
+    public<T extends IData> String getStringPreplnujuciSubor(Class<T> typ)
     {
         Block<T> block = new Block<>(this.blokovaciFaktorPreplnujuciSubor, typ);
 
@@ -382,45 +385,55 @@ public class SpravcaSuborov
         int velkostBlocku = block.getVelkost();
         long velkostSuboru = this.getVelkostPreplnujuciSubor();
 
+        String vysledok = "";
         while (curOffset <= velkostSuboru - velkostBlocku)
         {
             block.prevedZPolaBajtov(this.citajPreplnujuciSubor(curOffset, velkostBlocku));
-            System.out.println("Offset " + curOffset + ":");
-            System.out.println(block + "\n");
+            vysledok += "Offset " + curOffset + ":\n";
+            vysledok += block + "\n";
 
             curOffset += velkostBlocku;
         }
+
+        return vysledok;
     }
 
-    public<T extends IData> void vypisZretazenie(Class<T> typ)
+    public<T extends IData> String getStringHlavnySuborZretazenie(Class<T> typ)
     {
-        System.out.println("-------------------- HLAVNY --------------------");
         long curOffset = this.offsetPrvyVolnyHlavnySubor;
+
+        String vysledok = "";
         while (curOffset != -1)
         {
             Block<T> curBlock = new Block<>(this.blokovaciFaktorHlavnySubor, typ);
             curBlock.prevedZPolaBajtov(this.citajHlavnySubor(curOffset, curBlock.getVelkost()));
-            System.out.println("Offset: " + curOffset);
-            System.out.println("Next offset: " + curBlock.getOffsetNextVolny());
-            System.out.println("Prev offset: " + curBlock.getOffsetPrevVolny());
-            System.out.println();
+            vysledok += "Offset: " + curOffset;
+            vysledok += "- next offset: " + curBlock.getOffsetNextVolny();
+            vysledok += "- prev offset: " + curBlock.getOffsetPrevVolny() + "\n";
 
             curOffset = curBlock.getOffsetNextVolny();
         }
 
-        System.out.println("----------------- PREPLNUJUCI -------------------");
-        curOffset = this.offsetPrvyVolnyPreplnujuciSubor;
+        return vysledok;
+    }
+
+    public<T extends IData> String getStringPreplnujuciSuborZretazenie(Class<T> typ)
+    {
+        long curOffset = this.offsetPrvyVolnyPreplnujuciSubor;
+
+        String vysledok = "";
         while (curOffset != -1)
         {
             Block<T> curBlock = new Block<>(this.blokovaciFaktorPreplnujuciSubor, typ);
             curBlock.prevedZPolaBajtov(this.citajPreplnujuciSubor(curOffset, curBlock.getVelkost()));
-            System.out.println("Offset: " + curOffset);
-            System.out.println("Next offset: " + curBlock.getOffsetNextVolny());
-            System.out.println("Prev offset: " + curBlock.getOffsetPrevVolny());
-            System.out.println();
+            vysledok += "Offset: " + curOffset;
+            vysledok += "Next offset: " + curBlock.getOffsetNextVolny();
+            vysledok += "Prev offset: " + curBlock.getOffsetPrevVolny() + "\n";
 
             curOffset = curBlock.getOffsetNextVolny();
         }
+
+        return vysledok;
     }
 
     private void skontrolujOffset(long offset)

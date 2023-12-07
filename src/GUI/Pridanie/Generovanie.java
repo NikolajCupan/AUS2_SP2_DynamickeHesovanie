@@ -45,7 +45,7 @@ public class Generovanie extends JPanel
                     realneVygenerovanych = prezenter.generujNehnutelnosti(supisneCislo, pocetGenerovanych, faktorZmensenia);
                 }
 
-                JOptionPane.showMessageDialog(Generovanie.this, "Vygenerovaných bolo: " + realneVygenerovanych +
+                JOptionPane.showMessageDialog(Generovanie.this, "Vygenerovaných bolo " + realneVygenerovanych +
                                                              "/" + pocetGenerovanych + " záznamov");
                 gui.zobrazHlavneOkno();
             }

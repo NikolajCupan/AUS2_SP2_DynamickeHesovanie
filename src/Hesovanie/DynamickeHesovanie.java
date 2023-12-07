@@ -61,24 +61,29 @@ public class DynamickeHesovanie<T extends IData>
         this.spravcaSuborov.inicializujOffsety(offsetPrvyVolnyHlavnySubor, offsetPrvyVolnyPreplnujuciSubor);
     }
 
-    public void vypisHlavnySubor()
+    public String getStringHlavnySubor()
     {
-        this.spravcaSuborov.vypisHlavnySubor(this.typ);
+        return this.spravcaSuborov.getStringHlavnySubor(this.typ);
     }
 
-    public void vypisPreplnujuciSubor()
+    public String getStringPreplnujuciSubor()
     {
-        this.spravcaSuborov.vypisPreplnujuciSubor(this.typ);
+        return this.spravcaSuborov.getStringPreplnujuciSubor(this.typ);
     }
 
-    public void vypisZretazenie()
+    public String getStringHlavnySuborZretazenie()
     {
-        this.spravcaSuborov.vypisZretazenie(this.typ);
+        return this.spravcaSuborov.getStringHlavnySuborZretazenie(this.typ);
     }
 
-    public void vypisStrom()
+    public String getStringPreplnujuciSuborZretazenie()
     {
-        this.digitalnyZnakovyStrom.vypisStrom(this.spravcaSuborov, this.typ);
+        return this.spravcaSuborov.getStringPreplnujuciSuborZretazenie(this.typ);
+    }
+
+    public String getStringStrom()
+    {
+        return this.digitalnyZnakovyStrom.getStringStrom(this.spravcaSuborov, this.typ);
     }
 
     public SpravcaSuborov getSpravcaSuborov()

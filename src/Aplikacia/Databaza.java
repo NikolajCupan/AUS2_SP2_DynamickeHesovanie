@@ -8,6 +8,7 @@ import Ostatne.Generator;
 import QuadStrom.Objekty.DummyNehnutelnost;
 import QuadStrom.Objekty.DummyParcela;
 import QuadStrom.QuadStrom;
+import QuadStrom.Quad;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -634,13 +635,112 @@ public class Databaza
             Parcela parcela = generator.getParcela();
             boolean uspesneVlozena = this.vlozParcelu(parcela.getPopis(), parcela.getVlavoDoleX(), parcela.getVlavoDoleY(),
                                                       parcela.getVpravoHoreX(), parcela.getVpravoHoreY(), -1, false);
+
+            if (uspesneVlozena)
+            {
+                uspesneVlozenych++;
+            }
         }
-        return 0;
+
+        return uspesneVlozenych;
     }
 
     public int generujNehnutelnosti(int zaciatocneSupisneCislo, int pocet, double faktorZmensenia)
     {
-        return 0;
+        Generator generator = new Generator(-1, -1, -1,
+                                            this.qsParcely.getRootQuad().getVlavoDoleX(), this.qsParcely.getRootQuad().getVlavoDoleY(),
+                                            this.qsParcely.getRootQuad().getVpravoHoreX(), this.qsParcely.getRootQuad().getVpravoHoreY(), faktorZmensenia);
+
+        int uspesneVlozenych = 0;
+        int curSupisneCislo = zaciatocneSupisneCislo;
+        for (int i = 0; i < pocet; i++)
+        {
+            Nehnutelnost nehnutelnost = generator.getNehnutelnost();
+            boolean uspesneVlozena = this.vlozNehnutelnost(zaciatocneSupisneCislo, nehnutelnost.getPopis(), nehnutelnost.getVlavoDoleX(), nehnutelnost.getVlavoDoleY(),
+                                                           nehnutelnost.getVpravoHoreX(), nehnutelnost.getVpravoHoreY(), -1, false);
+
+            if (uspesneVlozena)
+            {
+                uspesneVlozenych++;
+                curSupisneCislo++;
+            }
+        }
+
+        return uspesneVlozenych;
+    }
+
+    public ArrayList<DummyParcela> getVsetkyParcely()
+    {
+        ArrayList<DummyParcela> parcely = new ArrayList<>();
+
+        for (Quad<DummyParcela> quad : this.qsParcely)
+        {
+            parcely.addAll(quad.getData());
+        }
+
+        return parcely;
+    }
+
+    public ArrayList<DummyNehnutelnost> getVsetkyNehnutelnosti()
+    {
+        ArrayList<DummyNehnutelnost> nehnutelnosti = new ArrayList<>();
+
+        for (Quad<DummyNehnutelnost> quad : this.qsNehnutelnosti)
+        {
+            nehnutelnosti.addAll(quad.getData());
+        }
+
+        return nehnutelnosti;
+    }
+
+    public String getStringHlavnySuborParcely()
+    {
+        return this.dhParcely.getStringHlavnySubor();
+    }
+
+    public String getStringPreplnujuciSuborParcely()
+    {
+        return this.dhParcely.getStringPreplnujuciSubor();
+    }
+
+    public String getStringHlavnySuborZretazenieParcely()
+    {
+        return this.dhParcely.getStringHlavnySuborZretazenie();
+    }
+
+    public String getStringPreplnujuciSuborZretazenieParcely()
+    {
+        return this.dhParcely.getStringPreplnujuciSuborZretazenie();
+    }
+
+    public String getStringStromParcely()
+    {
+        return this.dhParcely.getStringStrom();
+    }
+
+    public String getStringHlavnySuborNehnutelnosti()
+    {
+        return this.dhNehnutelnosti.getStringHlavnySubor();
+    }
+
+    public String getStringPreplnujuciSuborNehnutelnosti()
+    {
+        return this.dhNehnutelnosti.getStringPreplnujuciSubor();
+    }
+
+    public String getStringHlavnySuborZretazenieNehnutelnosti()
+    {
+        return this.dhNehnutelnosti.getStringHlavnySuborZretazenie();
+    }
+
+    public String getStringPreplnujuciSuborZretazenieNehnutelnosti()
+    {
+        return this.dhNehnutelnosti.getStringPreplnujuciSuborZretazenie();
+    }
+
+    public String getStringStromNehnutelnosti()
+    {
+        return this.dhNehnutelnosti.getStringStrom();
     }
 
     // V pripade ak su vstupy neplatne, je vyhodena vynimka

@@ -5,6 +5,8 @@ import Objekty.Polygon;
 import Objekty.Suradnica;
 import Rozhrania.IPolygon;
 
+import java.text.DecimalFormat;
+
 public class DummyParcela extends Polygon
 {
     private final int parcelaID;
@@ -43,7 +45,9 @@ public class DummyParcela extends Polygon
     @Override
     public String toString()
     {
-        return "Parcela (" + this.parcelaID + "), {" + this.surVlavoDole.getX() + ", " + this.surVlavoDole.getY() +
-               "}, {" + this.surVpravoHore.getX() + ", " + this.surVpravoHore.getY() + "}";
+        DecimalFormat formatovac = new DecimalFormat("#.##");
+        return "Parcela (" + this.parcelaID + "), {" + formatovac.format(this.surVlavoDole.getX()) + ", " +
+               formatovac.format(this.surVlavoDole.getY()) + "}, {" + formatovac.format(this.surVpravoHore.getX()) +
+               ", " + formatovac.format(this.surVpravoHore.getY()) + "}";
     }
 }

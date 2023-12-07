@@ -495,11 +495,12 @@ public class DigitalnyZnakovyStrom
         }
     }
 
-    public<T extends IData> void vypisStrom(SpravcaSuborov spravcaSuborov, Class<T> typ)
+    public<T extends IData> String getStringStrom(SpravcaSuborov spravcaSuborov, Class<T> typ)
     {
         Stack<Vrchol> zasobnik = new Stack<>();
         zasobnik.push(this.root);
 
+        String vysledok = "";
         while (!zasobnik.isEmpty())
         {
             Vrchol curVrchol = zasobnik.pop();
@@ -511,9 +512,11 @@ public class DigitalnyZnakovyStrom
             }
             else
             {
-                System.out.println(((ExternyVrchol)curVrchol).naString(spravcaSuborov, typ) + "\n");
+                vysledok += ((ExternyVrchol)curVrchol).naString(spravcaSuborov, typ) + "\n";
             }
         }
+
+        return vysledok;
     }
 
     public boolean zapisDoSuboru(String nazovSuboru)

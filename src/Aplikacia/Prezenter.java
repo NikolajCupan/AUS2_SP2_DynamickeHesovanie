@@ -141,6 +141,23 @@ public class Prezenter
         return polygony;
     }
 
+    public ArrayList<DummyParcela> getVsetkyParcely()
+    {
+        return this.databaza.getVsetkyParcely();
+    }
+
+    public ArrayList<DummyNehnutelnost> getVsetkyNehnutelnosti()
+    {
+        return this.databaza.getVsetkyNehnutelnosti();
+    }
+
+    public ArrayList<Polygon> getVsetkyPolygony()
+    {
+        ArrayList<Polygon> polygony = new ArrayList<>(this.databaza.getVsetkyParcely());
+        polygony.addAll(this.databaza.getVsetkyNehnutelnosti());
+        return polygony;
+    }
+
     public<T extends IData> String vyhladajToString(int ID, Class<T> typ)
     {
         String vysledok = "";
@@ -192,6 +209,56 @@ public class Prezenter
     public int generujNehnutelnosti(int zaciatocneSupisneCislo, int pocet, double faktorZmensenia)
     {
         return this.databaza.generujNehnutelnosti(zaciatocneSupisneCislo, pocet, faktorZmensenia);
+    }
+
+    public String getStringHlavnySuborParcely()
+    {
+        return this.databaza.getStringHlavnySuborParcely();
+    }
+
+    public String getStringPreplnujuciSuborParcely()
+    {
+        return this.databaza.getStringPreplnujuciSuborParcely();
+    }
+
+    public String getStringHlavnySuborZretazenieParcely()
+    {
+        return this.databaza.getStringHlavnySuborZretazenieParcely();
+    }
+
+    public String getStringPreplnujuciSuborZretazenieParcely()
+    {
+        return this.databaza.getStringPreplnujuciSuborZretazenieParcely();
+    }
+
+    public String getStringStromParcely()
+    {
+        return this.databaza.getStringStromParcely();
+    }
+
+    public String getStringHlavnySuborNehnutelnosti()
+    {
+        return this.databaza.getStringHlavnySuborNehnutelnosti();
+    }
+
+    public String getStringPreplnujuciSuborNehnutelnosti()
+    {
+        return this.databaza.getStringPreplnujuciSuborNehnutelnosti();
+    }
+
+    public String getStringHlavnySuborZretazenieNehnutelnosti()
+    {
+        return this.databaza.getStringHlavnySuborZretazenieNehnutelnosti();
+    }
+
+    public String getStringPreplnujuciSuborZretazenieNehnutelnosti()
+    {
+        return this.databaza.getStringPreplnujuciSuborZretazenieNehnutelnosti();
+    }
+
+    public String getStringStromNehnutelnosti()
+    {
+        return this.databaza.getStringStromNehnutelnosti();
     }
 
     public void resetuj()

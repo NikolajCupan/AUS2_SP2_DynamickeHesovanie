@@ -8,6 +8,7 @@ import GUI.Pridanie.PridanieParcela;
 import GUI.Vyhladanie.Vyhladanie;
 import GUI.Vyhladanie.VyhladanieObdlznik;
 import GUI.Vyhladanie.VyhladanieSuradnica;
+import Objekty.Parcela;
 import Objekty.Polygon;
 import QuadStrom.Objekty.DummyNehnutelnost;
 import QuadStrom.Objekty.DummyParcela;
@@ -55,6 +56,12 @@ public class GUI extends JFrame
         });
     }
 
+    public void zobrazOknoDebug()
+    {
+        Debug debug = new Debug(this.prezenter, this);
+        this.zmenObsah(debug.getJPanel());
+    }
+
     public void zobrazOknoEditovanieParcela(int parcelaID)
     {
         EditovanieParcela editovanieParcela = new EditovanieParcela(this.prezenter, this, parcelaID);
@@ -99,6 +106,27 @@ public class GUI extends JFrame
 
     public void zobrazZoznamPolygonov(ArrayList<Polygon> polygony)
     {
+        Zoznam<Polygon> zoznam = new Zoznam<Polygon>(this.prezenter, this, polygony);
+        this.zmenObsah(zoznam.getJPanel());
+    }
+
+    public void zobrazVsetkyParcely()
+    {
+        ArrayList<DummyParcela> parcely = new ArrayList<>(this.prezenter.getVsetkyParcely());
+        Zoznam<DummyParcela> zoznam = new Zoznam<DummyParcela>(this.prezenter, this, parcely);
+        this.zmenObsah(zoznam.getJPanel());
+    }
+
+    public void zobrazVsetkyNehnutelnosti()
+    {
+        ArrayList<DummyNehnutelnost> polygony = new ArrayList<>(this.prezenter.getVsetkyNehnutelnosti());
+        Zoznam<DummyNehnutelnost> zoznam = new Zoznam<DummyNehnutelnost>(this.prezenter, this, polygony);
+        this.zmenObsah(zoznam.getJPanel());
+    }
+
+    public void zobrazVsetkyPolygony()
+    {
+        ArrayList<Polygon> polygony = new ArrayList<>(this.prezenter.getVsetkyPolygony());
         Zoznam<Polygon> zoznam = new Zoznam<Polygon>(this.prezenter, this, polygony);
         this.zmenObsah(zoznam.getJPanel());
     }

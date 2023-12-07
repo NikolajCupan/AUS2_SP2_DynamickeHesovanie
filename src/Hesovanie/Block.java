@@ -537,16 +537,18 @@ public class Block<T extends IData> implements IRecord
     public String toString()
     {
         String string = "";
-        string += "- max pocet zaznamov: " + this.maxPocetZaznamov + "\n";
-        string += "- pocet platnych zaznamov: " + this.pocetPlatnychZaznamov + "\n";
-        string += "- offset preplnujuci subor: " + this.offsetPreplnujuciSubor + "\n";
-        string += "- offset prev volny: " + this.offsetPrevVolny + "\n";
-        string += "- offset next bolny: " + this.offsetNextVolny + "\n";
+        string += "- max počet záznamov: " + this.maxPocetZaznamov + "\n";
+        string += "- počet platných záznamov: " + this.pocetPlatnychZaznamov + "\n";
+        string += "- offset preplňujúci súbor: " + this.offsetPreplnujuciSubor + "\n";
+        string += "- offset prev voľný: " + this.offsetPrevVolny + "\n";
+        string += "- offset next voľný: " + this.offsetNextVolny + "\n";
 
-        string += "- zaznamy:\n";
+        string += "- záznamy:";
         for (int i = 0; i < this.pocetPlatnychZaznamov; i++)
         {
-            string += this.zaznamy.get(i).toString();
+            String zaznam = "\n" + this.zaznamy.get(i).toString();
+            zaznam = zaznam.replace("\n", "\n\t");
+            string += zaznam;
         }
 
         return string;
