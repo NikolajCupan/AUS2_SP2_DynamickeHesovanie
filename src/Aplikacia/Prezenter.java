@@ -184,6 +184,16 @@ public class Prezenter
         return vysledok;
     }
 
+    public int generujParcely(int pocet, double faktorZmensenia)
+    {
+        return this.databaza.generujParcely(pocet, faktorZmensenia);
+    }
+
+    public int generujNehnutelnosti(int zaciatocneSupisneCislo, int pocet, double faktorZmensenia)
+    {
+        return this.databaza.generujNehnutelnosti(zaciatocneSupisneCislo, pocet, faktorZmensenia);
+    }
+
     public void resetuj()
     {
         this.databaza.zacniZnova();

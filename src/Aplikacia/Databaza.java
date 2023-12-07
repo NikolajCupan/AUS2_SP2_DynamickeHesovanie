@@ -1,10 +1,10 @@
 package Aplikacia;
 
-import Hesovanie.DigitalnyZnakovyStrom.DigitalnyZnakovyStrom;
 import Hesovanie.DynamickeHesovanie;
 import Objekty.Nehnutelnost;
 import Objekty.Parcela;
 import Objekty.Suradnica;
+import Ostatne.Generator;
 import QuadStrom.Objekty.DummyNehnutelnost;
 import QuadStrom.Objekty.DummyParcela;
 import QuadStrom.QuadStrom;
@@ -428,7 +428,7 @@ public class Databaza
                                int forcedParcelaID, boolean forceParcelaID)
     {
         this.skontrolujVstupy(vlavoDoleX, vlavoDoleY, vpravoHoreX, vpravoHoreY);
-        int pouziteParcelaID = forceParcelaID ? forcedParcelaID : this.curParcelaID++;
+        int pouziteParcelaID = forceParcelaID ? forcedParcelaID : this.curParcelaID;
 
         // Vstupy su korektne
         Parcela novaParcela = new Parcela(pouziteParcelaID, popis, new Suradnica(vlavoDoleX, vlavoDoleY), new Suradnica(vpravoHoreX, vpravoHoreY));
@@ -453,6 +453,11 @@ public class Databaza
             {
                 return false;
             }
+        }
+
+        if (!forceParcelaID)
+        {
+            this.curParcelaID++;
         }
 
         // Pridanie je mozne uskutocnit
@@ -482,7 +487,7 @@ public class Databaza
                                     int forcedNehnutelnostID, boolean forceNehnutelnostID)
     {
         this.skontrolujVstupy(vlavoDoleX, vlavoDoleY, vpravoHoreX, vpravoHoreY);
-        int pouziteNehnutelnostID = forceNehnutelnostID ? forcedNehnutelnostID : this.curNehnutelnostID++;
+        int pouziteNehnutelnostID = forceNehnutelnostID ? forcedNehnutelnostID : this.curNehnutelnostID;
 
         // Vstupy su korektne
         Nehnutelnost novaNehnutelnost = new Nehnutelnost(pouziteNehnutelnostID, supisneCislo, popis, new Suradnica(vlavoDoleX, vlavoDoleY), new Suradnica(vpravoHoreX, vpravoHoreY));
@@ -507,6 +512,11 @@ public class Databaza
             {
                 return false;
             }
+        }
+
+        if (!forceNehnutelnostID)
+        {
+            this.curNehnutelnostID++;
         }
 
         // Pridanie je mozne uskutocnit
@@ -610,6 +620,27 @@ public class Databaza
         }
 
         return true;
+    }
+
+    public int generujParcely(int pocet, double faktorZmensenia)
+    {
+        Generator generator = new Generator(-1, -1, -1,
+                                            this.qsParcely.getRootQuad().getVlavoDoleX(), this.qsParcely.getRootQuad().getVlavoDoleY(),
+                                            this.qsParcely.getRootQuad().getVpravoHoreX(), this.qsParcely.getRootQuad().getVpravoHoreY(), faktorZmensenia);
+
+        int uspesneVlozenych = 0;
+        for (int i = 0; i < pocet; i++)
+        {
+            Parcela parcela = generator.getParcela();
+            boolean uspesneVlozena = this.vlozParcelu(parcela.getPopis(), parcela.getVlavoDoleX(), parcela.getVlavoDoleY(),
+                                                      parcela.getVpravoHoreX(), parcela.getVpravoHoreY(), -1, false);
+        }
+        return 0;
+    }
+
+    public int generujNehnutelnosti(int zaciatocneSupisneCislo, int pocet, double faktorZmensenia)
+    {
+        return 0;
     }
 
     // V pripade ak su vstupy neplatne, je vyhodena vynimka

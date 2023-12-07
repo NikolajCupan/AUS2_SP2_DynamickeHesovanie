@@ -153,6 +153,11 @@ public class Generator
         return builder.toString();
     }
 
+    public int getCurSupisneCislo()
+    {
+        return this.curSupisneCislo;
+    }
+
     public void setCurNehnutelnostID(int curNehnutelnostID)
     {
         if (curNehnutelnostID < 0)
