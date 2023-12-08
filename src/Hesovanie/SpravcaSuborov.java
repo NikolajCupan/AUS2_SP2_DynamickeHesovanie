@@ -407,7 +407,7 @@ public class SpravcaSuborov
         {
             Block<T> curBlock = new Block<>(this.blokovaciFaktorHlavnySubor, typ);
             curBlock.prevedZPolaBajtov(this.citajHlavnySubor(curOffset, curBlock.getVelkost()));
-            vysledok += "Offset: " + curOffset + "\n";
+            vysledok += "Offset " + curOffset + ":\n";
             vysledok += "- next offset: " + curBlock.getOffsetNextVolny() + "\n";
             vysledok += "- prev offset: " + curBlock.getOffsetPrevVolny() + "\n\n";
 
