@@ -656,7 +656,7 @@ public class Databaza
         for (int i = 0; i < pocet; i++)
         {
             Nehnutelnost nehnutelnost = generator.getNehnutelnost();
-            boolean uspesneVlozena = this.vlozNehnutelnost(zaciatocneSupisneCislo, nehnutelnost.getPopis(), nehnutelnost.getVlavoDoleX(), nehnutelnost.getVlavoDoleY(),
+            boolean uspesneVlozena = this.vlozNehnutelnost(curSupisneCislo, nehnutelnost.getPopis(), nehnutelnost.getVlavoDoleX(), nehnutelnost.getVlavoDoleY(),
                                                            nehnutelnost.getVpravoHoreX(), nehnutelnost.getVpravoHoreY(), -1, false);
 
             if (uspesneVlozena)

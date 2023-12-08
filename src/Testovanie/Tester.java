@@ -1,5 +1,6 @@
 package Testovanie;
 
+import Hesovanie.DigitalnyZnakovyStrom.DigitalnyZnakovyStrom;
 import Hesovanie.DynamickeHesovanie;
 import Objekty.Parcela;
 import Objekty.Suradnica;
@@ -19,8 +20,8 @@ public class Tester
     private static final int BF_PS_MAX = 10;
 
     // Subory
-    private static final String NAZOV_HS = "hlavny";
-    private static final String NAZOV_PS = "preplnujuci";
+    private static final String NAZOV_HS = "TEST_HLAVNY";
+    private static final String NAZOV_PS = "TEST_PREPLNUJUCI";
 
     private final Random random;
 
@@ -52,6 +53,8 @@ public class Tester
             this.testZakladneOperacie03(blokovaciFaktorHlavnySubor, blokovaciFaktorPreplnujuciSubor);
             this.testZakladneOperacie04(blokovaciFaktorHlavnySubor, blokovaciFaktorPreplnujuciSubor);
             this.testZakladneOperacie05(blokovaciFaktorHlavnySubor, blokovaciFaktorPreplnujuciSubor);
+
+            this.testUkladanieDZS(blokovaciFaktorHlavnySubor, blokovaciFaktorPreplnujuciSubor);
         }
     }
 
@@ -411,6 +414,80 @@ public class Tester
         if (!dh.suboryPrazdne())
         {
             throw new RuntimeException("Subory nie su prazdne!");
+        }
+    }
+
+    public void testUkladanieDZS(int blokovaciFaktorHlavnySubor, int blokovaciFaktorPreplnujuciSubor)
+    {
+        // Vlastne parametre testu
+        final String NAZOV_SUBOR_DZS = "TEST_DZS";
+
+        final int ZACIATOCNA_VELKOST = 10000;
+        final int MIN_POCET_BITOV_HASH = 0;
+        final int MAX_POCET_BITOV_HASH = 5;
+
+        int pocetBitovHash = this.randomInt(MIN_POCET_BITOV_HASH, MAX_POCET_BITOV_HASH);
+
+        DynamickeHesovanie<Dummy> dh = new DynamickeHesovanie<>(blokovaciFaktorHlavnySubor, blokovaciFaktorPreplnujuciSubor, NAZOV_HS, NAZOV_PS, Dummy.class);
+        dh.vymazSubory();
+        if (!dh.suboryPrazdne())
+        {
+            throw new RuntimeException("Subory na zaciatku testu nie su prazdne!");
+        }
+
+        ArrayList<Dummy> zoznam = new ArrayList<>();
+        for (int i = 0; i < ZACIATOCNA_VELKOST; i++)
+        {
+            Dummy vytvoreny = new Dummy(i, pocetBitovHash);
+            zoznam.add(vytvoreny);
+        }
+        Collections.shuffle(zoznam, this.random);
+
+        for (int i = 0; i < ZACIATOCNA_VELKOST; i++)
+        {
+            dh.vloz(zoznam.get(i));
+        }
+
+        if (dh.getPocetElementov() != ZACIATOCNA_VELKOST)
+        {
+            throw new RuntimeException("Prvotna velkost Dynamickeho hesovania nie je spravna!");
+        }
+
+        Collections.shuffle(zoznam, this.random);
+        for (int i = 0; i < ZACIATOCNA_VELKOST; i++)
+        {
+            Dummy dummy = zoznam.get(i);
+            Dummy realneNajdena = dh.vyhladaj(dummy);
+
+            if (!dummy.jeRovnaky(realneNajdena))
+            {
+                throw new RuntimeException("Najdene elementy sa nezhoduju!");
+            }
+        }
+
+        dh.getDigitalnyZnakovyStrom().zapisDoSuboru(NAZOV_SUBOR_DZS);
+        dh.setDigitalnyZnakovyStrom(new DigitalnyZnakovyStrom());
+        if (dh.getPocetElementov() != 0)
+        {
+            throw new RuntimeException("Pocet elementov v digitalnom znakovom strome po jeho zmazani nie je rovny 0!");
+        }
+
+        dh.getDigitalnyZnakovyStrom().nacitajZoSuboru(NAZOV_SUBOR_DZS);
+        if (dh.getPocetElementov() != ZACIATOCNA_VELKOST)
+        {
+            throw new RuntimeException("Pocet elementov v digitalnom znakovom strome po jeho nacitani nie je spravny!");
+        }
+
+        Collections.shuffle(zoznam, this.random);
+        for (int i = 0; i < ZACIATOCNA_VELKOST; i++)
+        {
+            Dummy dummy = zoznam.get(i);
+            Dummy realneNajdena = dh.vyhladaj(dummy);
+
+            if (!dummy.jeRovnaky(realneNajdena))
+            {
+                throw new RuntimeException("Najdene elementy sa nezhoduju!");
+            }
         }
     }
 
