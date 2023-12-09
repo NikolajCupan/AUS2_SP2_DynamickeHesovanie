@@ -35,7 +35,7 @@ public class Nehnutelnost extends Polygon implements IData
 
         this.nehnutelnostID = nehnutelnostID;
         this.supisneCislo = supisneCislo;
-        this.popis = popis;
+        this.setPopis(popis);
         this.parcelyID = new ArrayList<>();
     }
 
