@@ -29,7 +29,7 @@ public class Vyhladanie extends JPanel
             try
             {
                 String typString = String.valueOf(this.combo_typ.getSelectedItem());
-                int ID = Integer.parseInt(input_ID.getText());
+                int ID = Integer.parseInt(this.input_ID.getText());
                 Vyhladanie.this.zvoleneID = ID;
 
                 Class typ;

@@ -27,10 +27,10 @@ public class PridanieNehnutelnost extends JPanel
                 String popis = this.input_popis.getText();
                 int supisneCislo = Integer.parseInt(this.input_supisneCislo.getText());
 
-                int vlavoDoleX = Integer.parseInt(this.input_vlavoDoleX.getText());
-                int vlavoDoleY = Integer.parseInt(this.input_vlavoDoleY.getText());
-                int vpravoHoreX = Integer.parseInt(this.input_vpravoHoreX.getText());
-                int vpravoHoreY = Integer.parseInt(this.input_vpravoHoreY.getText());
+                double vlavoDoleX = Double.parseDouble(this.input_vlavoDoleX.getText());
+                double vlavoDoleY = Double.parseDouble(this.input_vlavoDoleY.getText());
+                double vpravoHoreX = Double.parseDouble(this.input_vpravoHoreX.getText());
+                double vpravoHoreY = Double.parseDouble(this.input_vpravoHoreY.getText());
 
                 if (prezenter.skusVlozitNehnutelnost(supisneCislo, popis, vlavoDoleX, vlavoDoleY, vpravoHoreX, vpravoHoreY))
                 {
